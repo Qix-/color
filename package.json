@@ -1,0 +1,20 @@
+{
+    "name": "color",
+    "description": "Color conversion and manipulation with CSS string support",
+    "version": "0.1.0",
+    "author": "Heather Arthur <fayearthur@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/harthur/color.git"
+    },
+    "main": "./color",
+    "dependencies": {
+        "color-convert": "0.2.x",
+        "color-string": "0.1.x"
+    },
+    "devDependencies": {
+        "browserify": ">=1.1.0",
+        "uglify-js": "1.0.x"
+    },
+    "keywords": ["color", "colour", "css"]
+}
