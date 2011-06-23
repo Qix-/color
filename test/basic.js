@@ -21,7 +21,7 @@ assert.deepEqual(Color({hue: 10, saturation: 30, lightness: 25}).hsl(), {h: 10, 
 assert.deepEqual(Color({hue: 10, saturation: 30, value: 25}).hsv(), {h: 10, s: 30, v: 25});
 assert.deepEqual(Color({cyan: 10, magenta: 30, yellow: 25, black: 10}).cmyk(), {c: 10, m: 30, y: 25, k: 10});
 
-// setters
+// Setters
 assert.deepEqual(Color().rgb(10, 30, 25).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color().rgb(10, 30, 25, 0.4).rgb(), {r: 10, g: 30, b: 25, a: 0.4});
 assert.deepEqual(Color().rgb([10, 30, 25]).rgb(), {r: 10, g: 30, b: 25});
@@ -31,15 +31,14 @@ assert.deepEqual(Color().rgb({r: 10, g: 30, b: 25, a: 0.4}).rgb(), {r: 10, g: 30
 assert.deepEqual(Color().rgb({red: 10, green: 30, blue: 25}).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color().rgb({red: 10, green: 30, blue: 25, alpha: 0.4}).rgb(), {r: 10, g: 30, b: 25, a: 0.4});
 
-// retain alpha
-assert.equal(Color().rgb([10, 30, 25, 0.4]).rgb([10, 30, 25]).alpha(), 0.4);
-
 assert.deepEqual(Color().hsl([360, 10, 10]).hsl(), {h: 360, s: 10, l: 10});
 assert.deepEqual(Color().hsv([360, 10, 10]).hsv(), {h: 360, s: 10, v: 10});
 assert.deepEqual(Color().cmyk([10, 10, 10, 10]).cmyk(), {c: 10, m: 10, y: 10, k: 10});
 
+// retain alpha
+assert.equal(Color().rgb([10, 30, 25, 0.4]).rgb([10, 30, 25]).alpha(), 0.4);
 
-// translations
+// Translations
 assert.deepEqual(Color().rgb(10, 30, 25).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color().rgb(10, 30, 25).hsl(), {h: 165, s: 50, l: 8});
 assert.deepEqual(Color().rgb(10, 30, 25).hsv(), {h: 165, s: 67, v: 12});
@@ -78,9 +77,19 @@ assert.equal(Color("rgb(10, 30, 25, 0.3)").hslString(), "hsla(165, 50%, 8%, 0.3)
 assert.equal(Color("rgb(0, 0, 255)").keyword(), "blue")
 assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined)
 
-
 // Manipulators
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 107, b: 107});
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).negate().rgb(), {r: 188, g: 133, b: 121});
 assert.deepEqual(Color({h: 100, s: 50, l: 60}).lighten(0.5).hsl(), {"h": 100,"s": 50,"l": 90});
 assert.deepEqual(Color({h: 100, s: 50, l: 60}).darken(0.5).hsl(), {"h": 100,"s": 50,"l": 30});
+
+// Capping values
+assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
+assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
+assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
+assert.equal(Color().red(400).red(), 255);
+assert.equal(Color().red(-400).red(), 0);
+assert.equal(Color().rgb(10, 10, 10, 12).alpha(), 1);
+assert.equal(Color().rgb(10, 10, 10, -200).alpha(), 0);
+assert.equal(Color().alpha(-12).alpha(), 0);
+assert.equal(Color().alpha(3).alpha(), 1);

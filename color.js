@@ -33,7 +33,18 @@ function Color(cssString) {
          "cmyk": ["cyan", "magenta", "yellow", "black"]
       }
       
-      if (vals.length) {
+      var maxes = {
+         "rgb": [255, 255, 255],
+         "hsl": [360, 100, 100],
+         "hsv": [360, 100, 100],
+         "cmyk": [100, 100, 100, 100],
+      }
+      
+      var alpha = 1;
+      if (space == "alpha") {
+         alpha = vals;
+      }
+      else if (vals.length) {
          // [10, 10, 10]
          values[space] = vals.slice(0, space.length);
          alpha = vals[space.length];
@@ -53,12 +64,19 @@ function Color(cssString) {
          }
          alpha = vals.alpha;
       }
-      values.alpha = alpha || values.alpha || 1;
-      
+      values.alpha = Math.max(0, Math.min(1, alpha || values.alpha));
+      if (space == "alpha") {
+         return;
+      }
+
       // convert to all the other color spaces
-      for (var spaceName in spaces) {
-         if (spaceName != space) {
-            values[spaceName]  = convert[space][spaceName](values[space])
+      for (var sname in spaces) {
+         if (sname != space) {
+            values[sname] = convert[space][sname](values[space])
+         }
+         // cap values
+         for (var i = 0; i < sname.length; i++) {
+            values[sname][i] = Math.max(0, Math.min(maxes[sname][i], values[sname][i]));
          }
       }
    }
@@ -145,7 +163,7 @@ function Color(cssString) {
          if (val === undefined) {
             return values.alpha;
          }
-         values.alpha = val;
+         setValues("alpha", val);
          return color;
       },
 
@@ -238,7 +256,7 @@ function Color(cssString) {
       },
 
       toJSON: function() {
-        return rgb();
+        return color.rgb();
       }
    }  
    return color;

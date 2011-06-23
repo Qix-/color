@@ -2,11 +2,11 @@
 `color` is a library for color conversion and manipulation with support for CSS color strings.
 
 ```javascript
-var color = Color("#77E4FE");
+var color = Color("#7743CE");
 
 color.red(120).lighten(.5);
 
-console.log(color.hslString());  // "hsl(192, 99%, 110%)"
+console.log(color.hslString());  // "hsl(263, 59%, 81%)"
 ```	
 
 # Install
