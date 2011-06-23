@@ -1,5 +1,5 @@
-# css-color
-css-color is a library for color conversion and manipulation with support for CSS color strings.
+# color
+`color` is a library for color conversion and manipulation with support for CSS color strings.
 
 ```javascript
 var color = Color("#77E4FE");
@@ -11,10 +11,10 @@ console.log(color.hslString());  // "hsl(192, 99%, 110%)"
 
 # Install
 
-#### browser
+### browser
 Download the latest [color.js](http://github.com/harthur/color/downloads). The `Color` object is exported.
 
-#### node
+### node
 For [node](http://nodejs.org) with [npm](http://npmjs.org):
 
 	npm install color
