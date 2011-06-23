@@ -36,26 +36,24 @@ function Color(cssString) {
       if (vals.length) {
          // [10, 10, 10]
          values[space] = vals.slice(0, space.length);
-         values.alpha = vals[space.length];
+         alpha = vals[space.length];
       }
       else if (vals[space[0]] !== undefined) {
          // {r: 10, g: 10, b: 10}
-         values[space] = [];
          for (var i = 0; i < space.length; i++) {
-           values[space].push(vals[space[i]]);
+           values[space][i] = vals[space[i]];
          }
-         values.alpha = vals.a;
+         alpha = vals.a;
       }
       else if (vals[spaces[space][0]] !== undefined) {
          // {red: 10, green: 10, blue: 10}
          var chans = spaces[space];
-         values[space] = [];
          for (var i = 0; i < space.length; i++) {
-           values[space].push(vals[chans[i]]);
+           values[space][i] = vals[chans[i]];
          }
-         values.alpha = vals.alpha;
+         alpha = vals.alpha;
       }
-      values.alpha = values.alpha || 1;
+      values.alpha = alpha || values.alpha || 1;
       
       // convert to all the other color spaces
       for (var spaceName in spaces) {
@@ -130,10 +128,18 @@ function Color(cssString) {
          return setSpace("cmyk", arguments);
       },
       
-      rgbArray: function() { return values.rgb; },
-      hslArray: function() { return values.hsl; },
-      hsvArray: function() { return values.hsv; },
-      cmykArray: function() { return values.cmyk; },
+      rgbArray: function() {
+         return values.rgb;
+      },
+      hslArray: function() {
+         return values.hsl;
+      },
+      hsvArray: function() {
+         return values.hsv;
+      },
+      cmykArray: function() {
+         return values.cmyk;
+      },
             
       alpha: function(val) {
          if (val === undefined) {
@@ -153,8 +159,7 @@ function Color(cssString) {
          return setChannel("rgb", 2, val);
       },
       hue: function(val) {
-         setChannel("hsl", 0, val);
-         return setChannel("hsv", 0, val);
+         return setChannel("hsl", 0, val);
       },
       saturation: function(val) {
          return setChannel("hsl", 1, val);
@@ -184,27 +189,21 @@ function Color(cssString) {
       hexString: function() {
          return string.hexString(values.rgb);
       },
-
       rgbString: function() {
          return string.rgbString(values.rgb, values.alpha);
       },
-
       rgbaString: function() {
          return string.rgbaString(values.rgb, values.alpha);
       },
-
       percentString: function() {
          return string.percentString(values.rgb, values.alpha);
       },
-
       hslString: function() {
          return string.hslString(values.hsl, values.alpha); 
       },
-
       hslaString: function() {
          return string.hslaString(values.hsl, values.alpha);
       },
-
       keyword: function() {
          return string.keyword(values.rgb, values.alpha);
       },
