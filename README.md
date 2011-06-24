@@ -1,5 +1,5 @@
 # color
-`color` is a library for color conversion and manipulation with support for CSS color strings.
+`color` is a JavaScript library for color conversion and manipulation with support for CSS color strings.
 
 ```javascript
 var color = Color("#7743CE");
@@ -9,7 +9,7 @@ color.red(120).lighten(.5);
 console.log(color.hslString());  // "hsl(263, 59%, 81%)"
 ```	
 
-# Install
+## Install
 
 ### browser
 Download the latest [color.js](http://github.com/harthur/color/downloads). The `Color` object is exported.
@@ -17,13 +17,16 @@ Download the latest [color.js](http://github.com/harthur/color/downloads). The `
 ### node
 For [node](http://nodejs.org) with [npm](http://npmjs.org):
 
-	npm install color
-	
+```bash
+npm install color
+```
+
 And use with `var Color = require("color")`
 
-# API
+## API
 
-## Setters
+### Setters
+
 
 ```javascript
 var color = Color("rgb(255, 255, 255)")
@@ -40,7 +43,13 @@ var color = Color().rgb(255, 255, 255)
 ```
 Load in color values with `rgb()`, `hsl()`, `hsv()`,and `cmyk()`. The arguments can also be an array or hash.
 
-## Getters
+```javascript
+color.red(120)
+```
+Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturation` (hsl), `saturationv` (hsv), `lightness`, `cyan`, `magenta`, `yellow`, `black`
+
+### Getters
+
 
 ```javascript
 color.rgb()       // {r: 255, g: 255, b: 255}
@@ -57,12 +66,8 @@ color.red()       // 255
 ```
 Get the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturation` (hsl), `saturationv` (hsv), `lightness`, `cyan`, `magenta`, `yellow`, `black`
 
-```javascript
-color.red(100).alpha(0.6)
-```
-Also set the value of any channel.
+### CSS Strings
 
-## CSS Strings
 
 ```javascript
 color.hslString()  // "hsl(320, 50%, 100%)"
@@ -70,7 +75,8 @@ color.hslString()  // "hsl(320, 50%, 100%)"
 
 Different CSS String formats for the color are on `hexString`, `rgbString`, `percentString`, `hslString`, and `keyword` (undefined if it's not a keyword color). `"rgba"` and `"hsla"` are used if the current alpha value of the color isn't `1`.
 
-## Manipulation
+### Manipulation
+
 
 ```javascript
 color.negate()         // rgb(0, 100, 255) -> rgb(255, 155, 0)
@@ -93,3 +99,7 @@ color.green(100).greyscale().lighten(0.6)
 ```
 
 And more to come...
+
+## Propers
+
+The API was inspired by [color-js](https://github.com/brehaut/color-js). Manipulation functions by CSS tools like Sass, LESS, and Stylus.
