@@ -226,14 +226,6 @@ function Color(cssString) {
          return string.keyword(values.rgb, values.alpha);
       },
       
-      greyscale: function() {
-         var rgb = values.rgb;
-         // http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
-         var val = Math.round(rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11);
-         setValues("rgb", [val, val, val]);
-         return color;
-      },
-      
       negate: function() {
          var rgb = []
          for (var i = 0; i < 3; i++) {
@@ -248,11 +240,50 @@ function Color(cssString) {
          setValues("hsl", values.hsl);
          return color;
       },
-      
+
       darken: function(ratio) {
          values.hsl[2] -= Math.round(values.hsl[2] * ratio);
          setValues("hsl", values.hsl);
          return color;         
+      },
+      
+      saturate: function(ratio) {
+         values.hsl[1] += Math.round(values.hsl[1] * ratio);
+         setValues("hsl", values.hsl);
+         return color;
+      },
+
+      desaturate: function(ratio) {
+         values.hsl[1] -= Math.round(values.hsl[1] * ratio);
+         setValues("hsl", values.hsl);
+         return color;         
+      },    
+
+      greyscale: function() {
+         var rgb = values.rgb;
+         // http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+         var val = Math.round(rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11);
+         setValues("rgb", [val, val, val]);
+         return color;
+      },
+
+      clearer: function(ratio) {
+         setValues("alpha", values.alpha - (values.alpha * ratio));
+         return color;
+      },
+
+      opaquer: function(ratio) {
+         setValues("alpha", values.alpha + (values.alpha * ratio));
+         return color;
+      },
+
+      rotate: function(degrees) {
+         var hue = values.hsl[0];
+         hue = (hue + degrees) % 360;
+         hue = hue < 0 ? 360 + hue : hue;
+         values.hsl[0] = hue;
+         setValues("hsl", values.hsl);
+         return color;
       },
 
       toJSON: function() {

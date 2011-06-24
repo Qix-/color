@@ -62,6 +62,17 @@ assert.equal(Color({r: 10, g: 20, b: 30}).blue(60).blue(), 60);
 assert.equal(Color({h: 10, s: 20, l: 30}).hue(), 10);
 assert.equal(Color({h: 10, s: 20, l: 30}).hue(100).hue(), 100);
 
+// Capping values
+assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
+assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
+assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
+assert.equal(Color().red(400).red(), 255);
+assert.equal(Color().red(-400).red(), 0);
+assert.equal(Color().rgb(10, 10, 10, 12).alpha(), 1);
+assert.equal(Color().rgb(10, 10, 10, -200).alpha(), 0);
+assert.equal(Color().alpha(-12).alpha(), 0);
+assert.equal(Color().alpha(3).alpha(), 1);
+
 // Translate with channel setters
 assert.deepEqual(Color({r: 0, g: 0, b: 0}).lightness(50).hsl(), {h: 0, s: 0, l: 50});
 assert.deepEqual(Color({r: 0, g: 0, b: 0}).red(50).green(50).hsv(), {h: 60, s: 100, v: 20});
@@ -80,16 +91,11 @@ assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined)
 // Manipulators
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 107, b: 107});
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).negate().rgb(), {r: 188, g: 133, b: 121});
-assert.deepEqual(Color({h: 100, s: 50, l: 60}).lighten(0.5).hsl(), {"h": 100,"s": 50,"l": 90});
-assert.deepEqual(Color({h: 100, s: 50, l: 60}).darken(0.5).hsl(), {"h": 100,"s": 50,"l": 30});
-
-// Capping values
-assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
-assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
-assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
-assert.equal(Color().red(400).red(), 255);
-assert.equal(Color().red(-400).red(), 0);
-assert.equal(Color().rgb(10, 10, 10, 12).alpha(), 1);
-assert.equal(Color().rgb(10, 10, 10, -200).alpha(), 0);
-assert.equal(Color().alpha(-12).alpha(), 0);
-assert.equal(Color().alpha(3).alpha(), 1);
+assert.equal(Color({h: 100, s: 50, l: 60}).lighten(0.5).lightness(), 90);
+assert.equal(Color({h: 100, s: 50, l: 60}).darken(0.5).lightness(), 30);
+assert.equal(Color({h: 100, s: 40, l: 50}).saturate(0.5).saturation(), 60);
+assert.equal(Color({h: 100, s: 80, l: 60}).desaturate(0.5).saturation(), 40);
+assert.equal(Color({r: 10, g: 10, b: 10, a: 0.8}).clearer(0.5).alpha(), 0.4);
+assert.equal(Color({r: 10, g: 10, b: 10, a: 0.5}).opaquer(0.5).alpha(), 0.75);
+assert.equal(Color({h: 60, s: 0, l: 0}).rotate(180).hue(), 240);
+assert.equal(Color({h: 60, s: 0, l: 0}).rotate(-180).hue(), 240);

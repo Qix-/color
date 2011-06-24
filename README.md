@@ -73,10 +73,20 @@ Different CSS String formats for the color are on `hexString`, `rgbString`, `per
 ## Manipulation
 
 ```javascript
-color.greyscale()   // #5CBF54 -> #969696
-color.negate()      // rgb(0, 100, 255) -> rgb(255, 155, 0)
-color.lighten(0.5)  // hsl(100, 50%, 50%) -> hsl(100, 50%, 75%)
-color.darken(0.5)   // hsl(100, 50%, 50%) -> hsl(100, 50%, 25%)
+color.negate()         // rgb(0, 100, 255) -> rgb(255, 155, 0)
+
+color.lighten(0.5)     // hsl(100, 50%, 50%) -> hsl(100, 50%, 75%)
+color.darken(0.5)      // hsl(100, 50%, 50%) -> hsl(100, 50%, 25%)
+
+color.saturate(0.5)    // hsl(100, 50%, 50%) -> hsl(100, 75%, 50%)
+color.desaturate(0.5)  // hsl(100, 50%, 50%) -> hsl(100, 25%, 50%)
+color.greyscale()      // #5CBF54 -> #969696
+
+color.clearer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 0.6)
+color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
+
+color.rotate(180)      // hsl(60, 20%, 20%) -> hsl(240, 20%, 20%)
+color.rotate(-90)      // hsl(60, 20%, 20%) -> hsl(330, 20%, 20%)
 
 // chaining
 color.green(100).greyscale().lighten(0.6)
