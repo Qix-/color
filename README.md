@@ -29,11 +29,8 @@ And use with `var Color = require("color")`
 
 ```javascript
 var color = Color("rgb(255, 255, 255)")
-
 var color = Color({r: 255, g: 255, b: 255})
-
 var color = Color().rgb(255, 255, 255)
-
 var color = Color().rgb([255, 255, 255])
 ```
 Pass any valid CSS color string into `Color()` or a hash of values. Also load in color values with `rgb()`, `hsl()`, `hsv()`,and `cmyk()`.
@@ -87,7 +84,7 @@ color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
 color.rotate(180)      // hsl(60, 20%, 20%) -> hsl(240, 20%, 20%)
 color.rotate(-90)      // hsl(60, 20%, 20%) -> hsl(330, 20%, 20%)
 
-color.mix(Color("yellow"))   // cyan -> lime
+color.mix(Color("yellow"))   // cyan -> rgb(128, 255, 128)
 
 // chaining
 color.green(100).greyscale().lighten(0.6)

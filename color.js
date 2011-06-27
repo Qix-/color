@@ -307,21 +307,13 @@ function Color(cssString) {
          var weight1 = (((t1 * d == -1) ? t1 : (t1 + d) / (1 + t1 * d)) + 1) / 2;
          var weight2 = 1 - weight1;
          
-         var hsl = color.hslArray();
-         var hsl2 = color2.hslArray();
-         
-         if (hsl[1] == 0) {
-            // grey blended with any other color shouldn't average to another hue
-            hsl[0] = hsl2[0];
-         }
-         else if(hsl2[1] == 0) {
-            hsl2[0] = hsl[0];
-         }
+         var rgb = color.rgbArray();
+         var rgb2 = color2.rgbArray();
 
-         for (var i = 0; i < hsl.length; i++) {
-            hsl[i] = hsl[i] * weight1 + hsl2[i] * weight2;
+         for (var i = 0; i < rgb.length; i++) {
+            rgb[i] = rgb[i] * weight1 + rgb2[i] * weight2;
          }
-         setValues("hsl", hsl);
+         setValues("rgb", rgb);
          
          var alpha = color.alpha() * weight + color2.alpha() * (1 - weight);
          setValues("alpha", alpha);

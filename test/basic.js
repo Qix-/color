@@ -99,8 +99,9 @@ assert.equal(Color({r: 10, g: 10, b: 10, a: 0.8}).clearer(0.5).alpha(), 0.4);
 assert.equal(Color({r: 10, g: 10, b: 10, a: 0.5}).opaquer(0.5).alpha(), 0.75);
 assert.equal(Color({h: 60, s: 0, l: 0}).rotate(180).hue(), 240);
 assert.equal(Color({h: 60, s: 0, l: 0}).rotate(-180).hue(), 240);
-assert.equal(Color("yellow").mix(Color("cyan")).keyword(), "lime");
-assert.deepEqual(Color("yellow").mix(Color("grey")).hslArray(), [60, 50, 50]);
-assert.deepEqual(Color("yellow").mix(Color("grey"), 1).hslArray(), [60, 0, 50]);
-assert.deepEqual(Color("yellow").mix(Color("grey"), 0.8).hslArray(), [60, 20, 50]);
-assert.deepEqual(Color("yellow").mix(Color("cyan").alpha(0.5)).hslaArray(), [90, 100, 50, 0.75]);
+
+assert.deepEqual(Color("yellow").mix(Color("cyan")).rgbArray(), [128, 255, 128]);
+assert.deepEqual(Color("yellow").mix(Color("grey")).rgbArray(), [192, 192, 64]);
+assert.deepEqual(Color("yellow").mix(Color("grey"), 1).rgbArray(), [128, 128, 128]);
+assert.deepEqual(Color("yellow").mix(Color("grey"), 0.8).rgbArray(), [153, 153, 102]);
+assert.deepEqual(Color("yellow").mix(Color("grey").alpha(0.5)).rgbaArray(), [223, 223, 32, 0.75]);
