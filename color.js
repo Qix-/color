@@ -76,7 +76,7 @@ function Color(cssString) {
          }
          // cap values
          for (var i = 0; i < sname.length; i++) {
-            values[sname][i] = Math.max(0, Math.min(maxes[sname][i], values[sname][i]));
+            values[sname][i] = Math.round(Math.max(0, Math.min(maxes[sname][i], values[sname][i])));
          }
       }
    }
@@ -158,6 +158,16 @@ function Color(cssString) {
       cmykArray: function() {
          return values.cmyk;
       },
+      rgbaArray: function() {
+         var rgb = values.rgb;
+         rgb.push(values.alpha);
+         return rgb;
+      },
+      hslaArray: function() {
+         var hsl = values.hsl;
+         hsl.push(values.alpha);
+         return hsl;
+      },
             
       alpha: function(val) {
          if (val === undefined) {
@@ -236,25 +246,25 @@ function Color(cssString) {
       },
       
       lighten: function(ratio) {
-         values.hsl[2] += Math.round(values.hsl[2] * ratio);
+         values.hsl[2] += values.hsl[2] * ratio;
          setValues("hsl", values.hsl);
          return color;
       },
 
       darken: function(ratio) {
-         values.hsl[2] -= Math.round(values.hsl[2] * ratio);
+         values.hsl[2] -= values.hsl[2] * ratio;
          setValues("hsl", values.hsl);
          return color;         
       },
       
       saturate: function(ratio) {
-         values.hsl[1] += Math.round(values.hsl[1] * ratio);
+         values.hsl[1] += values.hsl[1] * ratio;
          setValues("hsl", values.hsl);
          return color;
       },
 
       desaturate: function(ratio) {
-         values.hsl[1] -= Math.round(values.hsl[1] * ratio);
+         values.hsl[1] -= values.hsl[1] * ratio;
          setValues("hsl", values.hsl);
          return color;         
       },    
@@ -262,7 +272,7 @@ function Color(cssString) {
       greyscale: function() {
          var rgb = values.rgb;
          // http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
-         var val = Math.round(rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11);
+         var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
          setValues("rgb", [val, val, val]);
          return color;
       },
@@ -283,6 +293,39 @@ function Color(cssString) {
          hue = hue < 0 ? 360 + hue : hue;
          values.hsl[0] = hue;
          setValues("hsl", values.hsl);
+         return color;
+      },
+      
+      mix: function(color2, weight) {
+         weight = 1 - (weight || 0.5);
+         
+         // algorithm from Sass's mix(). Ratio of first color in mix is
+         // determined by the alphas of both colors and the weight
+         var t1 = weight * 2 - 1,
+             d = color.alpha() - color2.alpha();
+
+         var weight1 = (((t1 * d == -1) ? t1 : (t1 + d) / (1 + t1 * d)) + 1) / 2;
+         var weight2 = 1 - weight1;
+         
+         var hsl = color.hslArray();
+         var hsl2 = color2.hslArray();
+         
+         if (hsl[1] == 0) {
+            // grey blended with any other color shouldn't average to another hue
+            hsl[0] = hsl2[0];
+         }
+         else if(hsl2[1] == 0) {
+            hsl2[0] = hsl[0];
+         }
+
+         for (var i = 0; i < hsl.length; i++) {
+            hsl[i] = hsl[i] * weight1 + hsl2[i] * weight2;
+         }
+         setValues("hsl", hsl);
+         
+         var alpha = color.alpha() * weight + color2.alpha() * (1 - weight);
+         setValues("alpha", alpha);
+         
          return color;
       },
 
