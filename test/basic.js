@@ -88,6 +88,20 @@ assert.equal(Color("rgb(10, 30, 25, 0.3)").hslString(), "hsla(165, 50%, 8%, 0.3)
 assert.equal(Color("rgb(0, 0, 255)").keyword(), "blue")
 assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined)
 
+// luminosity, etc.
+assert.equal(Color("white").luminosity(), 1);
+assert.equal(Color("black").luminosity(), 0);
+assert.equal(Color("red").luminosity(), 0.2126);
+assert.equal(Color("white").contrast(Color("black")), 21);
+assert.equal(Math.round(Color("white").contrast(Color("red"))), 4);
+assert.equal(Math.round(Color("red").contrast(Color("white"))), 4);
+assert.equal(Color("blue").contrast(Color("blue")), 1);
+assert.ok(Color("black").dark());
+assert.ok(!Color("black").light());
+assert.ok(Color("white").light());
+assert.ok(!Color("white").dark());
+assert.ok(Color("blue").dark());
+
 // Manipulators
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 107, b: 107});
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).negate().rgb(), {r: 188, g: 133, b: 121});

@@ -236,6 +236,35 @@ function Color(cssString) {
          return string.keyword(values.rgb, values.alpha);
       },
       
+      luminosity: function() {
+         // http://www.w3.org/TR/WCAG20/#relativeluminancedef
+         var rgb = values.rgb;
+         for (var i = 0; i < rgb.length; i++) {
+            var chan = rgb[i] / 255;
+            rgb[i] = (chan <= 0.03928) ? chan / 12.92
+                     : Math.pow(((chan + 0.055) / 1.055), 2.4)
+         }
+         return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+      },
+      
+      contrast: function(color2) {
+         // http://www.w3.org/TR/WCAG20/#contrast-ratiodef
+         var lum1 = color.luminosity();
+         var lum2 = color2.luminosity();
+         if (lum1 > lum2) {
+            return (lum1 + 0.05) / (lum2 + 0.05)
+         };
+         return (lum2 + 0.05) / (lum1 + 0.05);
+      },
+      
+      dark: function() {
+         return color.contrast(Color("white")) > color.contrast(Color("black"));
+      },
+      
+      light: function() {
+         return !color.dark();
+      },
+       
       negate: function() {
          var rgb = []
          for (var i = 0; i < 3; i++) {
@@ -244,7 +273,7 @@ function Color(cssString) {
          setValues("rgb", rgb);
          return color;
       },
-      
+
       lighten: function(ratio) {
          values.hsl[2] += values.hsl[2] * ratio;
          setValues("hsl", values.hsl);

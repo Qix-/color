@@ -66,6 +66,24 @@ color.hslString()  // "hsl(320, 50%, 100%)"
 
 Different CSS String formats for the color are on `hexString`, `rgbString`, `percentString`, `hslString`, and `keyword` (undefined if it's not a keyword color). `"rgba"` and `"hsla"` are used if the current alpha value of the color isn't `1`.
 
+### Luminosity
+
+```javascript
+color.luminosity();  // 0.412
+```
+The [WCAG luminosity](http://www.w3.org/TR/WCAG20/#relativeluminancedef) of the color. 0 is black, 1 is white.
+
+```javascript
+color.contrast(Color("blue"))  // 12
+```
+The [WCAG contrast ratio](http://www.w3.org/TR/WCAG20/#contrast-ratiodef) to another color, from 1 (same color) to 21 (contrast b/w white and black).
+
+```javascript
+color.light();  // true
+color.dark();   // false
+```
+Get whether the color is "light" or "dark", useful for deciding text color.
+
 ### Manipulation
 
 ```javascript
