@@ -20,7 +20,7 @@ task('build', [], function (dest) {
   var source = browserify.bundle({
     require: [path.join(__dirname, pkg.main)],
   });
-  source = "var Color = (function() {" + source + " return require('/color')})();"
+  source = "/* MIT license */\nvar Color = (function() {" + source + " return require('/color')})();"
   fs.writeFileSync(dest, source);
   console.log("> " + dest);
 });
