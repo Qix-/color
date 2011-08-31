@@ -168,7 +168,10 @@ Color.prototype = {
    },
    
    dark: function() {
-      return this.contrast(new Color("white")) > this.contrast(new Color("black"));
+      // YIQ equation from http://24ways.org/2010/calculating-color-contrast
+      var rgb = this.values.rgb,
+          yiq = rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114 / 1000;
+   	return yiq < 128;
    },
    
    light: function() {
