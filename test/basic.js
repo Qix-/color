@@ -101,6 +101,10 @@ assert.ok(!Color("black").light());
 assert.ok(Color("white").light());
 assert.ok(!Color("white").dark());
 assert.ok(Color("blue").dark());
+assert.ok(Color("darkgreen").dark());
+assert.ok(Color("pink").light());
+assert.ok(Color("goldenrod").light());
+assert.ok(Color("red").dark());
 
 // Manipulators
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 107, b: 107});
