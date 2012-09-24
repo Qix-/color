@@ -239,7 +239,7 @@ Color.prototype = {
    },
    
    mix: function(color2, weight) {
-      weight = 1 - (weight || 0.5);
+      weight = 1 - (weight == null ? 0.5 : weight);
       
       // algorithm from Sass's mix(). Ratio of first color in mix is
       // determined by the alphas of both colors and the weight
