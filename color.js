@@ -320,7 +320,7 @@ Color.prototype.setValues = function(space, vals) {
       }
       alpha = vals.alpha;
    }
-   this.values.alpha = Math.max(0, Math.min(1, alpha || this.values.alpha));
+   this.values.alpha = Math.max(0, Math.min(1, (alpha !== undefined ? alpha : this.values.alpha) ));
    if (space == "alpha") {
       return;
    }
