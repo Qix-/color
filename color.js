@@ -13,12 +13,12 @@ var Color = function(cssString) {
       hsv: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
-   } 
-   
+   }
+
    // parse Color() argument
    if (typeof cssString == "string") {
       var vals = string.getRgba(cssString);
-      if (vals) {  
+      if (vals) {
          this.setValues("rgb", vals);
       }
       else if(vals = string.getHsla(cssString)) {
@@ -55,7 +55,7 @@ Color.prototype = {
    cmyk: function(vals) {
       return this.setSpace("cmyk", arguments);
    },
-   
+
    rgbArray: function() {
       return this.values.rgb;
    },
@@ -78,7 +78,7 @@ Color.prototype = {
       hsl.push(this.values.alpha);
       return hsl;
    },
-         
+
    alpha: function(val) {
       if (val === undefined) {
          return this.values.alpha;
@@ -92,7 +92,7 @@ Color.prototype = {
    },
    green: function(val) {
       return this.setChannel("rgb", 1, val);
-   },      
+   },
    blue: function(val) {
       return this.setChannel("rgb", 2, val);
    },
@@ -137,7 +137,7 @@ Color.prototype = {
       return string.percentString(this.values.rgb, this.values.alpha);
    },
    hslString: function() {
-      return string.hslString(this.values.hsl, this.values.alpha); 
+      return string.hslString(this.values.hsl, this.values.alpha);
    },
    hslaString: function() {
       return string.hslaString(this.values.hsl, this.values.alpha);
@@ -145,18 +145,19 @@ Color.prototype = {
    keyword: function() {
       return string.keyword(this.values.rgb, this.values.alpha);
    },
-   
+
    luminosity: function() {
       // http://www.w3.org/TR/WCAG20/#relativeluminancedef
       var rgb = this.values.rgb;
+      var lum = [];
       for (var i = 0; i < rgb.length; i++) {
          var chan = rgb[i] / 255;
-         rgb[i] = (chan <= 0.03928) ? chan / 12.92
+         lum[i] = (chan <= 0.03928) ? chan / 12.92
                   : Math.pow(((chan + 0.055) / 1.055), 2.4)
       }
-      return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+      return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
    },
-   
+
    contrast: function(color2) {
       // http://www.w3.org/TR/WCAG20/#contrast-ratiodef
       var lum1 = this.luminosity();
@@ -166,18 +167,18 @@ Color.prototype = {
       };
       return (lum2 + 0.05) / (lum1 + 0.05);
    },
-   
+
    dark: function() {
       // YIQ equation from http://24ways.org/2010/calculating-color-contrast
       var rgb = this.values.rgb,
           yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
    	return yiq < 128;
    },
-   
+
    light: function() {
       return !this.dark();
    },
-    
+
    negate: function() {
       var rgb = []
       for (var i = 0; i < 3; i++) {
@@ -196,9 +197,9 @@ Color.prototype = {
    darken: function(ratio) {
       this.values.hsl[2] -= this.values.hsl[2] * ratio;
       this.setValues("hsl", this.values.hsl);
-      return this;         
+      return this;
    },
-   
+
    saturate: function(ratio) {
       this.values.hsl[1] += this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
@@ -208,8 +209,8 @@ Color.prototype = {
    desaturate: function(ratio) {
       this.values.hsl[1] -= this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
-      return this;         
-   },    
+      return this;
+   },
 
    greyscale: function() {
       var rgb = this.values.rgb;
@@ -237,10 +238,10 @@ Color.prototype = {
       this.setValues("hsl", this.values.hsl);
       return this;
    },
-   
+
    mix: function(color2, weight) {
       weight = 1 - (weight == null ? 0.5 : weight);
-      
+
       // algorithm from Sass's mix(). Ratio of first color in mix is
       // determined by the alphas of both colors and the weight
       var t1 = weight * 2 - 1,
@@ -248,7 +249,7 @@ Color.prototype = {
 
       var weight1 = (((t1 * d == -1) ? t1 : (t1 + d) / (1 + t1 * d)) + 1) / 2;
       var weight2 = 1 - weight1;
-      
+
       var rgb = this.rgbArray();
       var rgb2 = color2.rgbArray();
 
@@ -256,10 +257,10 @@ Color.prototype = {
          rgb[i] = rgb[i] * weight1 + rgb2[i] * weight2;
       }
       this.setValues("rgb", rgb);
-      
+
       var alpha = this.alpha() * weight + color2.alpha() * (1 - weight);
       this.setValues("alpha", alpha);
-      
+
       return this;
    },
 
@@ -280,7 +281,7 @@ Color.prototype.getValues = function(space) {
    // {r: 255, g: 255, b: 255, a: 0.4}
    return vals;
 }
-    
+
 Color.prototype.setValues = function(space, vals) {
    var spaces = {
       "rgb": ["red", "green", "blue"],
@@ -288,14 +289,14 @@ Color.prototype.setValues = function(space, vals) {
       "hsv": ["hue", "saturation", "value"],
       "cmyk": ["cyan", "magenta", "yellow", "black"]
    };
-   
+
    var maxes = {
       "rgb": [255, 255, 255],
       "hsl": [360, 100, 100],
       "hsv": [360, 100, 100],
       "cmyk": [100, 100, 100, 100],
    };
-   
+
    var alpha = 1;
    if (space == "alpha") {
       alpha = vals;
@@ -330,7 +331,7 @@ Color.prototype.setValues = function(space, vals) {
       if (sname != space) {
          this.values[sname] = convert[space][sname](this.values[space])
       }
-      
+
       // cap values
       for (var i = 0; i < sname.length; i++) {
          var capped = Math.max(0, Math.min(maxes[sname][i], this.values[sname][i]));
@@ -348,7 +349,7 @@ Color.prototype.setSpace = function(space, args) {
    }
    // color.rgb(10, 10, 10)
    if (typeof vals == "number") {
-      vals = Array.prototype.slice.call(args);        
+      vals = Array.prototype.slice.call(args);
    }
    this.setValues(space, vals);
    return this;
@@ -362,5 +363,5 @@ Color.prototype.setChannel = function(space, index, val) {
    // color.red(100)
    this.values[space][index] = val;
    this.setValues(space, this.values[space]);
-   return this;     
+   return this;
 }
