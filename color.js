@@ -74,8 +74,7 @@ Color.prototype = {
    },
    hslaArray: function() {
       var hsl = this.values.hsl;
-      hsl.push(this.values.alpha);
-      return hsl;
+      return hsl.concat([this.values.alpha]);
    },
 
    alpha: function(val) {
