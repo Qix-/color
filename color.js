@@ -70,8 +70,7 @@ Color.prototype = {
    },
    rgbaArray: function() {
       var rgb = this.values.rgb;
-      rgb.push(this.values.alpha);
-      return rgb;
+      return rgb.concat([this.values.alpha]);
    },
    hslaArray: function() {
       var hsl = this.values.hsl;

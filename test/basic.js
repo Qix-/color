@@ -50,6 +50,11 @@ assert.deepEqual(Color({h: 10, s: 20, l: 30}).hslArray(), [10, 20, 30]);
 assert.deepEqual(Color({h: 10, s: 20, v: 30}).hsvArray(), [10, 20, 30]);
 assert.deepEqual(Color({c: 10, m: 20, y: 30, k: 40}).cmykArray(), [10, 20, 30, 40]);
 
+// Multiple times
+var color = Color({r: 10, g: 20, b: 30});
+assert.deepEqual(color.rgbaArray(), [10, 20, 30, 1]);
+assert.deepEqual(color.rgbaArray(), [10, 20, 30, 1]);
+
 // Channel getters/setters
 assert.equal(Color({r: 10, g: 20, b: 30, a: 0.4}).alpha(), 0.4);
 assert.equal(Color({r: 10, g: 20, b: 30, a: 0.4}).alpha(0.7).alpha(), 0.7);
