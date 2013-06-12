@@ -1,20 +1,26 @@
 {
-    "name": "color",
-    "description": "Color conversion and manipulation with CSS string support",
-    "version": "0.4.4",
-    "author": "Heather Arthur <fayearthur@gmail.com>",
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/harthur/color.git"
-    },
-    "main": "./color",
-    "dependencies": {
-        "color-convert": "0.2.x",
-        "color-string": "0.1.x"
-    },
-    "devDependencies": {
-        "browserify": ">=1.1.0",
-        "uglify-js": "1.0.x"
-    },
-    "keywords": ["color", "colour", "css"]
+  "name": "color",
+  "description": "Color conversion and manipulation with CSS string support",
+  "version": "0.4.4",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/harthur/color.git"
+  },
+  "main": "./color",
+  "dependencies": {
+    "color-convert": "0.2.x",
+    "color-string": "0.1.x"
+  },
+  "devDependencies": {
+    "nomnom": "~1.5.2",
+    "browserify": "~2.18.1",
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.0"
+  },
+  "keywords": [
+    "color",
+    "colour",
+    "css"
+  ]
 }
