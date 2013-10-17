@@ -128,3 +128,9 @@ assert.deepEqual(Color("yellow").mix(Color("grey")).rgbArray(), [192, 192, 64]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 1).rgbArray(), [128, 128, 128]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 0.8).rgbArray(), [153, 153, 102]);
 assert.deepEqual(Color("yellow").mix(Color("grey").alpha(0.5)).rgbaArray(), [223, 223, 32, 0.75]);
+
+// Clone
+var clone = Color({r: 10, g: 20, b: 30});
+assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
+assert.deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
+assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
