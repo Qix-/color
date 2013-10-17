@@ -264,7 +264,11 @@ Color.prototype = {
 
    toJSON: function() {
      return this.rgb();
-   }
+   },
+
+   clone: function() {
+     return new Color(this.rgb());
+   },
 }
 
 
