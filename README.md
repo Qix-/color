@@ -108,6 +108,14 @@ color.mix(Color("yellow"))   // cyan -> rgb(128, 255, 128)
 color.green(100).greyscale().lighten(0.6)
 ```
 
+### Clone
+
+You can can create a copy of an existing color object using `clone()`:
+
+```javascript
+color.clone() // -> New color object
+```
+
 And more to come...
 
 ## Propers
