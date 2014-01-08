@@ -5,6 +5,7 @@
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": "harthur/color",
   "main": "color.js",
+  "scripts": ["color.js"],
   "dependencies": {
     "harthur/color-convert": "*",
     "harthur/color-string": "*"
