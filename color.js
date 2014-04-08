@@ -166,6 +166,15 @@ Color.prototype = {
       return (lum2 + 0.05) / (lum1 + 0.05);
    },
 
+   level: function(color2) {
+     var contrastRatio = this.contrast(color2);
+     return (contrastRatio >= 7.1)
+       ? 'AAA'
+       : (contrastRatio >= 4.5)
+        ? 'AA'
+        : '';
+   },
+
    dark: function() {
       // YIQ equation from http://24ways.org/2010/calculating-color-contrast
       var rgb = this.values.rgb,
