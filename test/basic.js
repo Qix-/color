@@ -139,3 +139,15 @@ assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 assert.equal(Color("white").level(Color("black")), "AAA");
 assert.equal(Color("grey").level(Color("black")), "AA");
 
+// Minifiy
+assert.equal(Color("white").min(), "#FFF");
+assert.equal(Color("black").min(), "#000");
+assert.equal(Color("fuchsia").min(), "#F0F");
+assert.equal(Color("red").min(), "red");
+assert.equal(Color("#333333").min(), "#333");
+assert.equal(Color("rgb(10, 30, 25)").min(), "#0A1E19");
+assert.equal(Color("rgba(10, 30, 25, 1)").min(), "#0A1E19");
+assert.equal(Color("rgba(10, 30, 25, 0.1)").min(), "rgba(10,30,25,.1)");
+assert.equal(Color("hsl(120, 50%, 60%)").min(), "#6C6");
+assert.equal(Color("blue").min(), "blue");
+assert.equal(Color("goldenrod").min(), "#DAA520");
