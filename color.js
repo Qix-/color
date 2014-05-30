@@ -143,6 +143,27 @@ Color.prototype = {
    keyword: function() {
       return string.keyword(this.values.rgb, this.values.alpha);
    },
+   min: function() {
+     var alpha = this.values.alpha;
+     if (alpha && alpha !== 1) {
+       // no choice, gotta be rgba
+       if (alpha < 1) {
+         alpha = String(alpha).replace('0.', '.');
+       }
+       return string.rgbaString(this.values.rgb, alpha).replace(/ /g, '');
+     }
+     
+     // hex, short hex, or keyword
+     var hex = this.hexString();
+     if (hex[1] === hex[2] && hex[3] === hex[4] && hex[5] === hex[6]) {
+       hex = ['#', hex[1], hex[3], hex[5]].join('');
+     }
+     var word = this.keyword();
+     if (!word || hex.length < word.length) {
+       return hex;
+     }
+     return word;
+   },
 
    luminosity: function() {
       // http://www.w3.org/TR/WCAG20/#relativeluminancedef
@@ -277,8 +298,8 @@ Color.prototype = {
 
    clone: function() {
      return new Color(this.rgb());
-   },
-}
+   }
+};
 
 
 Color.prototype.getValues = function(space) {
@@ -291,7 +312,7 @@ Color.prototype.getValues = function(space) {
    }
    // {r: 255, g: 255, b: 255, a: 0.4}
    return vals;
-}
+};
 
 Color.prototype.setValues = function(space, vals) {
    var spaces = {
@@ -350,7 +371,7 @@ Color.prototype.setValues = function(space, vals) {
       }
    }
    return true;
-}
+};
 
 Color.prototype.setSpace = function(space, args) {
    var vals = args[0];
@@ -364,7 +385,7 @@ Color.prototype.setSpace = function(space, args) {
    }
    this.setValues(space, vals);
    return this;
-}
+};
 
 Color.prototype.setChannel = function(space, index, val) {
    if (val === undefined) {
@@ -375,4 +396,4 @@ Color.prototype.setChannel = function(space, index, val) {
    this.values[space][index] = val;
    this.setValues(space, this.values[space]);
    return this;
-}
+};
