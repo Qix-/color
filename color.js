@@ -277,7 +277,7 @@ Color.prototype = {
 
    clone: function() {
      return new Color(this.rgb());
-   },
+   }
 }
 
 
@@ -305,7 +305,7 @@ Color.prototype.setValues = function(space, vals) {
       "rgb": [255, 255, 255],
       "hsl": [360, 100, 100],
       "hsv": [360, 100, 100],
-      "cmyk": [100, 100, 100, 100],
+      "cmyk": [100, 100, 100, 100]
    };
 
    var alpha = 1;
