@@ -102,7 +102,8 @@ color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
 color.rotate(180)      // hsl(60, 20%, 20%) -> hsl(240, 20%, 20%)
 color.rotate(-90)      // hsl(60, 20%, 20%) -> hsl(330, 20%, 20%)
 
-color.mix(Color("yellow"))   // cyan -> rgb(128, 255, 128)
+color.mix(Color("yellow"))        // cyan -> rgb(128, 255, 128)
+color.mix(Color("yellow"), 0.3)   // cyan -> rgb(77, 255, 179)
 
 // chaining
 color.green(100).greyscale().lighten(0.6)
