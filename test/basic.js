@@ -10,15 +10,19 @@ assert.deepEqual(Color("rgba(4%, 12%, 10%, 0.4)").rgb(), {r: 10, g: 31, b: 26, a
 assert.deepEqual(Color("blue").rgb(), {r: 0, g: 0, b: 255});
 assert.deepEqual(Color("hsl(120, 50%, 60%)").hsl(), {h: 120, s: 50, l: 60});
 assert.deepEqual(Color("hsla(120, 50%, 60%, 0.4)").hsl(), {h: 120, s: 50, l: 60, a: 0.4});
+assert.deepEqual(Color("hwb(120, 50%, 60%)").hwb(), {h: 120, w: 50, b: 60});
+assert.deepEqual(Color("hwb(120, 50%, 60%, 0.4)").hwb(), {h: 120, w: 50, b: 60, a: 0.4});
 
 assert.deepEqual(Color({r: 10, g: 30, b: 25}).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color({h: 10, s: 30, l: 25}).hsl(), {h: 10, s: 30, l: 25});
 assert.deepEqual(Color({h: 10, s: 30, v: 25}).hsv(), {h: 10, s: 30, v: 25});
+assert.deepEqual(Color({h: 10, w: 30, b: 25}).hwb(), {h: 10, w: 30, b: 25});
 assert.deepEqual(Color({c: 10, m: 30, y: 25, k: 10}).cmyk(), {c: 10, m: 30, y: 25, k: 10});
 
 assert.deepEqual(Color({red: 10, green: 30, blue: 25}).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color({hue: 10, saturation: 30, lightness: 25}).hsl(), {h: 10, s: 30, l: 25});
 assert.deepEqual(Color({hue: 10, saturation: 30, value: 25}).hsv(), {h: 10, s: 30, v: 25});
+assert.deepEqual(Color({hue: 10, whiteness: 30, blackness: 25}).hwb(), {h: 10, w: 30, b: 25});
 assert.deepEqual(Color({cyan: 10, magenta: 30, yellow: 25, black: 10}).cmyk(), {c: 10, m: 30, y: 25, k: 10});
 
 // Setters
@@ -31,8 +35,9 @@ assert.deepEqual(Color().rgb({r: 10, g: 30, b: 25, a: 0.4}).rgb(), {r: 10, g: 30
 assert.deepEqual(Color().rgb({red: 10, green: 30, blue: 25}).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color().rgb({red: 10, green: 30, blue: 25, alpha: 0.4}).rgb(), {r: 10, g: 30, b: 25, a: 0.4});
 
-assert.deepEqual(Color().hsl([360, 10, 10]).hsl(), {h: 360, s: 10, l: 10});
-assert.deepEqual(Color().hsv([360, 10, 10]).hsv(), {h: 360, s: 10, v: 10});
+assert.deepEqual(Color().hsl([260, 10, 10]).hsl(), {h: 260, s: 10, l: 10});
+assert.deepEqual(Color().hsv([260, 10, 10]).hsv(), {h: 260, s: 10, v: 10});
+assert.deepEqual(Color().hwb([260, 10, 10]).hwb(), {h: 260, w: 10, b: 10});
 assert.deepEqual(Color().cmyk([10, 10, 10, 10]).cmyk(), {c: 10, m: 10, y: 10, k: 10});
 
 // retain alpha
@@ -42,12 +47,14 @@ assert.equal(Color().rgb([10, 30, 25, 0.4]).rgb([10, 30, 25]).alpha(), 0.4);
 assert.deepEqual(Color().rgb(10, 30, 25).rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color().rgb(10, 30, 25).hsl(), {h: 165, s: 50, l: 8});
 assert.deepEqual(Color().rgb(10, 30, 25).hsv(), {h: 165, s: 67, v: 12});
+assert.deepEqual(Color().rgb(10, 30, 25).hwb(), {h: 165, w: 4, b: 88});
 assert.deepEqual(Color().rgb(10, 30, 25).cmyk(), {c: 67, m: 0, y: 17, k: 88});
 
 // Array getters
 assert.deepEqual(Color({r: 10, g: 20, b: 30}).rgbArray(), [10, 20, 30]);
 assert.deepEqual(Color({h: 10, s: 20, l: 30}).hslArray(), [10, 20, 30]);
 assert.deepEqual(Color({h: 10, s: 20, v: 30}).hsvArray(), [10, 20, 30]);
+assert.deepEqual(Color({h: 10, w: 20, b: 30}).hwbArray(), [10, 20, 30]);
 assert.deepEqual(Color({c: 10, m: 20, y: 30, k: 40}).cmykArray(), [10, 20, 30, 40]);
 
 // Multiple times
@@ -66,11 +73,18 @@ assert.equal(Color({r: 10, g: 20, b: 30}).blue(), 30);
 assert.equal(Color({r: 10, g: 20, b: 30}).blue(60).blue(), 60);
 assert.equal(Color({h: 10, s: 20, l: 30}).hue(), 10);
 assert.equal(Color({h: 10, s: 20, l: 30}).hue(100).hue(), 100);
+assert.equal(Color({h: 10, w: 20, b: 30}).hue(), 10);
+assert.equal(Color({h: 10, w: 20, b: 30}).hue(100).hue(), 100);
 
 // Capping values
 assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
 assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
 assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
+
+assert.equal(Color({h: 400, w: 50, b: 10}).hue(), 0); // 0 == 360
+assert.equal(Color({h: 100, w: 50, b: 80}).blacken(0.5).blackness(), 100);
+assert.equal(Color({h: -400, w: 50, b: 10}).hue(), 0);
+
 assert.equal(Color().red(400).red(), 255);
 assert.equal(Color().red(-400).red(), 0);
 assert.equal(Color().rgb(10, 10, 10, 12).alpha(), 1);
@@ -90,6 +104,8 @@ assert.equal(Color("rgb(10, 30, 25)").percentString(), "rgb(4%, 12%, 10%)")
 assert.equal(Color("rgb(10, 30, 25, 0.3)").percentString(), "rgba(4%, 12%, 10%, 0.3)")
 assert.equal(Color("rgb(10, 30, 25)").hslString(), "hsl(165, 50%, 8%)")
 assert.equal(Color("rgb(10, 30, 25, 0.3)").hslString(), "hsla(165, 50%, 8%, 0.3)")
+assert.equal(Color("rgb(10, 30, 25)").hwbString(), "hwb(165, 4%, 88%)")
+assert.equal(Color("rgb(10, 30, 25, 0.3)").hwbString(), "hwb(165, 4%, 88%, 0.3)")
 assert.equal(Color("rgb(0, 0, 255)").keyword(), "blue")
 assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined)
 
@@ -116,6 +132,8 @@ assert.deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 1
 assert.deepEqual(Color({r: 67, g: 122, b: 134}).negate().rgb(), {r: 188, g: 133, b: 121});
 assert.equal(Color({h: 100, s: 50, l: 60}).lighten(0.5).lightness(), 90);
 assert.equal(Color({h: 100, s: 50, l: 60}).darken(0.5).lightness(), 30);
+assert.equal(Color({h: 100, w: 50, b: 60}).whiten(0.5).whiteness(), 75);
+assert.equal(Color({h: 100, w: 50, b: 60}).blacken(0.5).blackness(), 90);
 assert.equal(Color({h: 100, s: 40, l: 50}).saturate(0.5).saturation(), 60);
 assert.equal(Color({h: 100, s: 80, l: 60}).desaturate(0.5).saturation(), 40);
 assert.equal(Color({r: 10, g: 10, b: 10, a: 0.8}).clearer(0.5).alpha(), 0.4);
@@ -138,4 +156,3 @@ assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 // Level
 assert.equal(Color("white").level(Color("black")), "AAA");
 assert.equal(Color("grey").level(Color("black")), "AA");
-
