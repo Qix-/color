@@ -303,8 +303,8 @@ Color.prototype.setValues = function(space, vals) {
 
    var maxes = {
       "rgb": [255, 255, 255],
-      "hsl": [360, 100, 100],
-      "hsv": [360, 100, 100],
+      "hsl": [359, 100, 100],
+      "hsv": [359, 100, 100],
       "cmyk": [100, 100, 100, 100]
    };
 
@@ -335,6 +335,12 @@ Color.prototype.setValues = function(space, vals) {
    this.values.alpha = Math.max(0, Math.min(1, (alpha !== undefined ? alpha : this.values.alpha) ));
    if (space == "alpha") {
       return;
+   }
+
+   // cap values of the space prior converting all values
+   for (var i = 0; i < space.length; i++) {
+      var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      this.values[space][i] = Math.round(capped);
    }
 
    // convert to all the other color spaces
