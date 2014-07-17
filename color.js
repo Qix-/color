@@ -24,6 +24,9 @@ var Color = function(cssString) {
       else if(vals = string.getHsla(cssString)) {
          this.setValues("hsl", vals);
       }
+      else {
+        throw new Error("Unable to parse color from string " + cssString);
+      }
    }
    else if (typeof cssString == "object") {
       var vals = cssString;
@@ -38,6 +41,9 @@ var Color = function(cssString) {
       }
       else if(vals["c"] !== undefined || vals["cyan"] !== undefined) {
          this.setValues("cmyk", vals)
+      }
+      else {
+        throw new Error("Unable to parse color from object " + JSON.stringify(cssString));
       }
    }
 }

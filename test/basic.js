@@ -139,3 +139,11 @@ assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 assert.equal(Color("white").level(Color("black")), "AAA");
 assert.equal(Color("grey").level(Color("black")), "AA");
 
+// Exceptions
+assert.throws(function () {
+  Color("unknow")
+}, /Unable to parse color from string/);
+
+assert.throws(function () {
+  Color({})
+}, /Unable to parse color from object/);
