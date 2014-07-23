@@ -16,6 +16,7 @@ var Color = function(cssString) {
       rgb: [0, 0, 0],
       hsl: [0, 0, 0],
       hsv: [0, 0, 0],
+      hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
    }
@@ -29,6 +30,12 @@ var Color = function(cssString) {
       else if(vals = string.getHsla(cssString)) {
          this.setValues("hsl", vals);
       }
+      else if(vals = string.getHwb(cssString)) {
+         this.setValues("hwb", vals);
+      }
+      else {
+        throw new Error("Unable to parse color from string " + cssString);
+      }
    }
    else if (typeof cssString == "object") {
       var vals = cssString;
@@ -41,8 +48,14 @@ var Color = function(cssString) {
       else if(vals["v"] !== undefined || vals["value"] !== undefined) {
          this.setValues("hsv", vals)
       }
+      else if(vals["w"] !== undefined || vals["whiteness"] !== undefined) {
+         this.setValues("hwb", vals)
+      }
       else if(vals["c"] !== undefined || vals["cyan"] !== undefined) {
          this.setValues("cmyk", vals)
+      }
+      else {
+        throw new Error("Unable to parse color from object " + JSON.stringify(cssString));
       }
    }
 }
@@ -57,6 +70,9 @@ Color.prototype = {
    hsv: function(vals) {
       return this.setSpace("hsv", arguments);
    },
+   hwb: function(vals) {
+      return this.setSpace("hwb", arguments);
+   },
    cmyk: function(vals) {
       return this.setSpace("cmyk", arguments);
    },
@@ -70,6 +86,12 @@ Color.prototype = {
    hsvArray: function() {
       return this.values.hsv;
    },
+   hwbArray: function() {
+      if (this.values.alpha !== 1) {
+        return this.values.hwb.concat([this.values.alpha])
+      }
+      return this.values.hwb;
+   },
    cmykArray: function() {
       return this.values.cmyk;
    },
@@ -81,7 +103,6 @@ Color.prototype = {
       var hsl = this.values.hsl;
       return hsl.concat([this.values.alpha]);
    },
-
    alpha: function(val) {
       if (val === undefined) {
          return this.values.alpha;
@@ -110,6 +131,12 @@ Color.prototype = {
    },
    saturationv: function(val) {
       return this.setChannel("hsv", 1, val);
+   },
+   whiteness: function(val) {
+      return this.setChannel("hwb", 1, val);
+   },
+   blackness: function(val) {
+      return this.setChannel("hwb", 2, val);
    },
    value: function(val) {
       return this.setChannel("hsv", 2, val);
@@ -145,6 +172,9 @@ Color.prototype = {
    hslaString: function() {
       return string.hslaString(this.values.hsl, this.values.alpha);
    },
+   hwbString: function() {
+      return string.hwbString(this.values.hwb, this.values.alpha);
+   },
    keyword: function() {
       return string.keyword(this.values.rgb, this.values.alpha);
    },
@@ -169,6 +199,15 @@ Color.prototype = {
          return (lum1 + 0.05) / (lum2 + 0.05)
       };
       return (lum2 + 0.05) / (lum1 + 0.05);
+   },
+
+   level: function(color2) {
+     var contrastRatio = this.contrast(color2);
+     return (contrastRatio >= 7.1)
+       ? 'AAA'
+       : (contrastRatio >= 4.5)
+        ? 'AA'
+        : '';
    },
 
    dark: function() {
@@ -212,6 +251,18 @@ Color.prototype = {
    desaturate: function(ratio) {
       this.values.hsl[1] -= this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
+      return this;
+   },
+
+   whiten: function(ratio) {
+      this.values.hwb[1] += this.values.hwb[1] * ratio;
+      this.setValues("hwb", this.values.hwb);
+      return this;
+   },
+
+   blacken: function(ratio) {
+      this.values.hwb[2] += this.values.hwb[2] * ratio;
+      this.setValues("hwb", this.values.hwb);
       return this;
    },
 
@@ -273,7 +324,7 @@ Color.prototype = {
 
    clone: function() {
      return new Color(this.rgb());
-   },
+   }
 }
 
 
@@ -294,6 +345,7 @@ Color.prototype.setValues = function(space, vals) {
       "rgb": ["red", "green", "blue"],
       "hsl": ["hue", "saturation", "lightness"],
       "hsv": ["hue", "saturation", "value"],
+      "hwb": ["hue", "whiteness", "blackness"],
       "cmyk": ["cyan", "magenta", "yellow", "black"]
    };
 
@@ -301,7 +353,8 @@ Color.prototype.setValues = function(space, vals) {
       "rgb": [255, 255, 255],
       "hsl": [360, 100, 100],
       "hsv": [360, 100, 100],
-      "cmyk": [100, 100, 100, 100],
+      "hwb": [360, 100, 100],
+      "cmyk": [100, 100, 100, 100]
    };
 
    var alpha = 1;
@@ -331,6 +384,12 @@ Color.prototype.setValues = function(space, vals) {
    this.values.alpha = Math.max(0, Math.min(1, (alpha !== undefined ? alpha : this.values.alpha) ));
    if (space == "alpha") {
       return;
+   }
+
+   // cap values of the space prior converting all values
+   for (var i = 0; i < space.length; i++) {
+      var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      this.values[space][i] = Math.round(capped);
    }
 
    // convert to all the other color spaces
@@ -373,15 +432,16 @@ Color.prototype.setChannel = function(space, index, val) {
    return this;
 }
 
-},{"color-convert":3,"color-string":4}],3:[function(require,module,exports){
+},{"color-string":3,"color-convert":4}],4:[function(require,module,exports){
 var conversions = require("./conversions");
 
-var exports = {};
-module.exports = exports;
+var convert = function() {
+   return new Converter();
+}
 
 for (var func in conversions) {
-  // export rgb2hslRaw
-  exports[func + "Raw"] =  (function(func) {
+  // export Raw versions
+  convert[func + "Raw"] =  (function(func) {
     // accept array or plain args
     return function(arg) {
       if (typeof arg == "number")
@@ -395,9 +455,9 @@ for (var func in conversions) {
       to = pair[2];
 
   // export rgb2hsl and ["rgb"]["hsl"]
-  exports[from] = exports[from] || {};
+  convert[from] = convert[from] || {};
 
-  exports[from][to] = exports[func] = (function(func) { 
+  convert[from][to] = convert[func] = (function(func) { 
     return function(arg) {
       if (typeof arg == "number")
         arg = Array.prototype.slice.call(arguments);
@@ -412,38 +472,115 @@ for (var func in conversions) {
     }
   })(func);
 }
+
+
+/* Converter does lazy conversion and caching */
+var Converter = function() {
+   this.convs = {};
+};
+
+/* Either get the values for a space or
+  set the values for a space, depending on args */
+Converter.prototype.routeSpace = function(space, args) {
+   var values = args[0];
+   if (values === undefined) {
+      // color.rgb()
+      return this.getValues(space);
+   }
+   // color.rgb(10, 10, 10)
+   if (typeof values == "number") {
+      values = Array.prototype.slice.call(args);        
+   }
+
+   return this.setValues(space, values);
+};
+  
+/* Set the values for a space, invalidating cache */
+Converter.prototype.setValues = function(space, values) {
+   this.space = space;
+   this.convs = {};
+   this.convs[space] = values;
+   return this;
+};
+
+/* Get the values for a space. If there's already
+  a conversion for the space, fetch it, otherwise
+  compute it */
+Converter.prototype.getValues = function(space) {
+   var vals = this.convs[space];
+   if (!vals) {
+      var fspace = this.space,
+          from = this.convs[fspace];
+      vals = convert[fspace][space](from);
+
+      this.convs[space] = vals;
+   }
+  return vals;
+};
+
+["rgb", "hsl", "hsv", "cmyk", "keyword"].forEach(function(space) {
+   Converter.prototype[space] = function(vals) {
+      return this.routeSpace(space, arguments);
+   }
+});
+
+module.exports = convert;
 },{"./conversions":5}],5:[function(require,module,exports){
 /* MIT license */
 
 module.exports = {
   rgb2hsl: rgb2hsl,
   rgb2hsv: rgb2hsv,
+  rgb2hwb: rgb2hwb,
   rgb2cmyk: rgb2cmyk,
   rgb2keyword: rgb2keyword,
   rgb2xyz: rgb2xyz,
   rgb2lab: rgb2lab,
+  rgb2lch: rgb2lch,
 
   hsl2rgb: hsl2rgb,
   hsl2hsv: hsl2hsv,
+  hsl2hwb: hsl2hwb,
   hsl2cmyk: hsl2cmyk,
   hsl2keyword: hsl2keyword,
 
   hsv2rgb: hsv2rgb,
   hsv2hsl: hsv2hsl,
+  hsv2hwb: hsv2hwb,
   hsv2cmyk: hsv2cmyk,
   hsv2keyword: hsv2keyword,
+
+  hwb2rgb: hwb2rgb,
+  hwb2hsl: hwb2hsl,
+  hwb2hsv: hwb2hsv,
+  hwb2cmyk: hwb2cmyk,
+  hwb2keyword: hwb2keyword,
 
   cmyk2rgb: cmyk2rgb,
   cmyk2hsl: cmyk2hsl,
   cmyk2hsv: cmyk2hsv,
+  cmyk2hwb: cmyk2hwb,
   cmyk2keyword: cmyk2keyword,
-  
+
   keyword2rgb: keyword2rgb,
   keyword2hsl: keyword2hsl,
   keyword2hsv: keyword2hsv,
+  keyword2hwb: keyword2hwb,
   keyword2cmyk: keyword2cmyk,
-  
+  keyword2lab: keyword2lab,
+  keyword2xyz: keyword2xyz,
+
   xyz2rgb: xyz2rgb,
+  xyz2lab: xyz2lab,
+  xyz2lch: xyz2lch,
+
+  lab2xyz: lab2xyz,
+  lab2rgb: lab2rgb,
+  lab2lch: lab2lch,
+
+  lch2lab: lch2lab,
+  lch2xyz: lch2xyz,
+  lch2rgb: lch2rgb
 }
 
 
@@ -458,10 +595,10 @@ function rgb2hsl(rgb) {
 
   if (max == min)
     h = 0;
-  else if (r == max) 
-    h = (g - b) / delta; 
+  else if (r == max)
+    h = (g - b) / delta;
   else if (g == max)
-    h = 2 + (b - r) / delta; 
+    h = 2 + (b - r) / delta;
   else if (b == max)
     h = 4 + (r - g)/ delta;
 
@@ -498,16 +635,16 @@ function rgb2hsv(rgb) {
 
   if (max == min)
     h = 0;
-  else if (r == max) 
-    h = (g - b) / delta; 
+  else if (r == max)
+    h = (g - b) / delta;
   else if (g == max)
-    h = 2 + (b - r) / delta; 
+    h = 2 + (b - r) / delta;
   else if (b == max)
     h = 4 + (r - g) / delta;
 
   h = Math.min(h * 60, 360);
 
-  if (h < 0) 
+  if (h < 0)
     h += 360;
 
   v = ((max / 255) * 1000) / 10;
@@ -515,12 +652,23 @@ function rgb2hsv(rgb) {
   return [h, s, v];
 }
 
+function rgb2hwb(rgb) {
+  var r = rgb[0],
+      g = rgb[1],
+      b = rgb[2],
+      h = rgb2hsl(rgb)[0]
+      w = 1/255 * Math.min(r, Math.min(g, b))
+      b = 1 - 1/255 * Math.max(r, Math.max(g, b));
+
+  return [h, w * 100, b * 100];
+}
+
 function rgb2cmyk(rgb) {
   var r = rgb[0] / 255,
       g = rgb[1] / 255,
       b = rgb[2] / 255,
       c, m, y, k;
-      
+
   k = Math.min(1 - r, 1 - g, 1 - b);
   c = (1 - r - k) / (1 - k);
   m = (1 - g - k) / (1 - k);
@@ -541,7 +689,7 @@ function rgb2xyz(rgb) {
   r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
   g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
   b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
-  
+
   var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
   var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
   var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
@@ -567,10 +715,13 @@ function rgb2lab(rgb) {
   l = (116 * y) - 16;
   a = 500 * (x - y);
   b = 200 * (y - z);
-  
+
   return [l, a, b];
 }
 
+function rgb2lch(args) {
+  return lab2lch(rgb2lab(args));
+}
 
 function hsl2rgb(hsl) {
   var h = hsl[0] / 360,
@@ -606,7 +757,7 @@ function hsl2rgb(hsl) {
 
     rgb[i] = val * 255;
   }
-  
+
   return rgb;
 }
 
@@ -619,7 +770,11 @@ function hsl2hsv(hsl) {
   s *= (l <= 1) ? l : 2 - l;
   v = (l + s) / 2;
   sv = (2 * s) / (l + s);
-  return [h, s * 100, v * 100];
+  return [h, sv * 100, v * 100];
+}
+
+function hsl2hwb(args) {
+  return rgb2hwb(hsl2rgb(args));
 }
 
 function hsl2cmyk(args) {
@@ -665,11 +820,15 @@ function hsv2hsl(hsv) {
       v = hsv[2] / 100,
       sl, l;
 
-  l = (2 - s) * v;  
+  l = (2 - s) * v;
   sl = s * v;
   sl /= (l <= 1) ? l : 2 - l;
   l /= 2;
   return [h, sl * 100, l * 100];
+}
+
+function hsv2hwb(args) {
+  return rgb2hwb(hsv2rgb(args))
 }
 
 function hsv2cmyk(args) {
@@ -678,6 +837,58 @@ function hsv2cmyk(args) {
 
 function hsv2keyword(args) {
   return rgb2keyword(hsv2rgb(args));
+}
+
+// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+function hwb2rgb(hwb) {
+  var h = hwb[0] / 360,
+      wh = hwb[1] / 100,
+      bl = hwb[2] / 100,
+      ratio = wh + bl,
+      i, v, f, n;
+
+  // wh + bl cant be > 1
+  if (ratio > 1) {
+    wh /= ratio;
+    bl /= ratio;
+  }
+
+  i = Math.floor(6 * h);
+  v = 1 - bl;
+  f = 6 * h - i;
+  if ((i & 0x01) != 0) {
+    f = 1 - f;
+  }
+  n = wh + f * (v - wh);  // linear interpolation
+
+  switch (i) {
+    default:
+    case 6:
+    case 0: r = v; g = n; b = wh; break;
+    case 1: r = n; g = v; b = wh; break;
+    case 2: r = wh; g = v; b = n; break;
+    case 3: r = wh; g = n; b = v; break;
+    case 4: r = n; g = wh; b = v; break;
+    case 5: r = v; g = wh; b = n; break;
+  }
+
+  return [r * 255, g * 255, b * 255];
+}
+
+function hwb2hsl(args) {
+  return rgb2hsl(hwb2rgb(args));
+}
+
+function hwb2hsv(args) {
+  return rgb2hsv(hwb2rgb(args));
+}
+
+function hwb2cmyk(args) {
+  return rgb2cmyk(hwb2rgb(args));
+}
+
+function hwb2keyword(args) {
+  return rgb2keyword(hwb2rgb(args));
 }
 
 function cmyk2rgb(cmyk) {
@@ -701,6 +912,10 @@ function cmyk2hsv(args) {
   return rgb2hsv(cmyk2rgb(args));
 }
 
+function cmyk2hwb(args) {
+  return rgb2hwb(cmyk2rgb(args));
+}
+
 function cmyk2keyword(args) {
   return rgb2keyword(cmyk2rgb(args));
 }
@@ -722,17 +937,101 @@ function xyz2rgb(xyz) {
 
   g = g > 0.0031308 ? ((1.055 * Math.pow(g, 1.0 / 2.4)) - 0.055)
     : g = (g * 12.92);
-        
+
   b = b > 0.0031308 ? ((1.055 * Math.pow(b, 1.0 / 2.4)) - 0.055)
     : b = (b * 12.92);
 
-  r = (r < 0) ? 0 : r;
-  g = (g < 0) ? 0 : g;
-  b = (b < 0) ? 0 : b;
+  r = Math.min(Math.max(0, r), 1);
+  g = Math.min(Math.max(0, g), 1);
+  b = Math.min(Math.max(0, b), 1);
 
   return [r * 255, g * 255, b * 255];
 }
 
+function xyz2lab(xyz) {
+  var x = xyz[0],
+      y = xyz[1],
+      z = xyz[2],
+      l, a, b;
+
+  x /= 95.047;
+  y /= 100;
+  z /= 108.883;
+
+  x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x) + (16 / 116);
+  y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y) + (16 / 116);
+  z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z) + (16 / 116);
+
+  l = (116 * y) - 16;
+  a = 500 * (x - y);
+  b = 200 * (y - z);
+
+  return [l, a, b];
+}
+
+function xyz2lch(args) {
+  return lab2lch(xyz2lab(args));
+}
+
+function lab2xyz(lab) {
+  var l = lab[0],
+      a = lab[1],
+      b = lab[2],
+      x, y, z, y2;
+
+  if (l <= 8) {
+    y = (l * 100) / 903.3;
+    y2 = (7.787 * (y / 100)) + (16 / 116);
+  } else {
+    y = 100 * Math.pow((l + 16) / 116, 3);
+    y2 = Math.pow(y / 100, 1/3);
+  }
+
+  x = x / 95.047 <= 0.008856 ? x = (95.047 * ((a / 500) + y2 - (16 / 116))) / 7.787 : 95.047 * Math.pow((a / 500) + y2, 3);
+
+  z = z / 108.883 <= 0.008859 ? z = (108.883 * (y2 - (b / 200) - (16 / 116))) / 7.787 : 108.883 * Math.pow(y2 - (b / 200), 3);
+
+  return [x, y, z];
+}
+
+function lab2lch(lab) {
+  var l = lab[0],
+      a = lab[1],
+      b = lab[2],
+      hr, h, c;
+
+  hr = Math.atan2(b, a);
+  h = hr * 360 / 2 / Math.PI;
+  if (h < 0) {
+    h += 360;
+  }
+  c = Math.sqrt(a * a + b * b);
+  return [l, c, h];
+}
+
+function lab2rgb(args) {
+  return xyz2rgb(lab2xyz(args));
+}
+
+function lch2lab(lch) {
+  var l = lch[0],
+      c = lch[1],
+      h = lch[2],
+      a, b, hr;
+
+  hr = h / 360 * 2 * Math.PI;
+  a = c * Math.cos(hr);
+  b = c * Math.sin(hr);
+  return [l, a, b];
+}
+
+function lch2xyz(args) {
+  return lab2xyz(lch2lab(args));
+}
+
+function lch2rgb(args) {
+  return lab2rgb(lch2lab(args));
+}
 
 function keyword2rgb(keyword) {
   return cssKeywords[keyword];
@@ -746,8 +1045,20 @@ function keyword2hsv(args) {
   return rgb2hsv(keyword2rgb(args));
 }
 
+function keyword2hwb(args) {
+  return rgb2hwb(keyword2rgb(args));
+}
+
 function keyword2cmyk(args) {
   return rgb2cmyk(keyword2rgb(args));
+}
+
+function keyword2lab(args) {
+  return rgb2lab(keyword2rgb(args));
+}
+
+function keyword2xyz(args) {
+  return rgb2xyz(keyword2rgb(args));
 }
 
 var cssKeywords = {
@@ -870,6 +1181,7 @@ var cssKeywords = {
   plum: [221,160,221],
   powderblue: [176,224,230],
   purple: [128,0,128],
+  rebeccapurple: [102, 51, 153],
   red:  [255,0,0],
   rosybrown:  [188,143,143],
   royalblue:  [65,105,225],
@@ -905,7 +1217,7 @@ for (var key in cssKeywords) {
   reverseKeywords[JSON.stringify(cssKeywords[key])] = key;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /* MIT license */
 var convert = require("color-convert");
 
@@ -914,6 +1226,7 @@ module.exports = {
    getHsla: getHsla,
    getRgb: getRgb,
    getHsl: getHsl,
+   getHwb: getHwb,
    getAlpha: getAlpha,
 
    hexString: hexString,
@@ -923,6 +1236,7 @@ module.exports = {
    percentaString: percentaString,
    hslString: hslString,
    hslaString: hslaString,
+   hwbString: hwbString,
    keyword: keyword
 }
 
@@ -1001,12 +1315,29 @@ function getHsla(string) {
    }
 }
 
+function getHwb(string) {
+   if (!string) {
+      return;
+   }
+   var hwb = /^hwb\(\s*(\d+)\s*,\s*([\d\.]+)%\s*,\s*([\d\.]+)%\s*(?:,\s*([\d\.]+)\s*)?\)/;
+   var match = string.match(hwb);
+   if (match) {
+      var h = scale(parseInt(match[1]), 0, 360),
+          w = scale(parseFloat(match[2]), 0, 100),
+          b = scale(parseFloat(match[3]), 0, 100),
+          a = scale(parseFloat(match[4]) || 1, 0, 1);
+      return [h, w, b, a];
+   }
+}
+
 function getRgb(string) {
-   return getRgba(string).slice(0, 3);
+   var rgba = getRgba(string);
+   return rgba && rgba.slice(0, 3);
 }
 
 function getHsl(string) {
-   return getHsla(string).slice(0, 3);
+  var hsla = getHsla(string);
+  return hsla && hsla.slice(0, 3);
 }
 
 function getAlpha(string) {
@@ -1015,6 +1346,9 @@ function getAlpha(string) {
       return vals[3];
    }
    else if (vals = getHsla(string)) {
+      return vals[3];
+   }
+   else if (vals = getHwb(string)) {
       return vals[3];
    }
 }
@@ -1073,6 +1407,16 @@ function hslaString(hsla, alpha) {
            + alpha + ")";
 }
 
+// hwb is a bit different than rgb(a) & hsl(a) since there is no alpha specific syntax
+// (hwb have alpha optional & 1 is default value)
+function hwbString(hwb, alpha) {
+   if (alpha === undefined) {
+      alpha = (hwb[3] !== undefined ? hwb[3] : 1);
+   }
+   return "hwb(" + hwb[0] + ", " + hwb[1] + "%, " + hwb[2] + "%"
+           + (alpha !== undefined && alpha !== 1 ? ", " + alpha : "") + ")";
+}
+
 function keyword(rgb) {
    return convert.rgb2keyword(rgb.slice(0, 3));
 }
@@ -1090,12 +1434,13 @@ function hexDouble(num) {
 },{"color-convert":6}],6:[function(require,module,exports){
 var conversions = require("./conversions");
 
-var exports = {};
-module.exports = exports;
+var convert = function() {
+   return new Converter();
+}
 
 for (var func in conversions) {
-  // export rgb2hslRaw
-  exports[func + "Raw"] =  (function(func) {
+  // export Raw versions
+  convert[func + "Raw"] =  (function(func) {
     // accept array or plain args
     return function(arg) {
       if (typeof arg == "number")
@@ -1109,9 +1454,9 @@ for (var func in conversions) {
       to = pair[2];
 
   // export rgb2hsl and ["rgb"]["hsl"]
-  exports[from] = exports[from] || {};
+  convert[from] = convert[from] || {};
 
-  exports[from][to] = exports[func] = (function(func) { 
+  convert[from][to] = convert[func] = (function(func) { 
     return function(arg) {
       if (typeof arg == "number")
         arg = Array.prototype.slice.call(arguments);
@@ -1126,38 +1471,115 @@ for (var func in conversions) {
     }
   })(func);
 }
+
+
+/* Converter does lazy conversion and caching */
+var Converter = function() {
+   this.convs = {};
+};
+
+/* Either get the values for a space or
+  set the values for a space, depending on args */
+Converter.prototype.routeSpace = function(space, args) {
+   var values = args[0];
+   if (values === undefined) {
+      // color.rgb()
+      return this.getValues(space);
+   }
+   // color.rgb(10, 10, 10)
+   if (typeof values == "number") {
+      values = Array.prototype.slice.call(args);        
+   }
+
+   return this.setValues(space, values);
+};
+  
+/* Set the values for a space, invalidating cache */
+Converter.prototype.setValues = function(space, values) {
+   this.space = space;
+   this.convs = {};
+   this.convs[space] = values;
+   return this;
+};
+
+/* Get the values for a space. If there's already
+  a conversion for the space, fetch it, otherwise
+  compute it */
+Converter.prototype.getValues = function(space) {
+   var vals = this.convs[space];
+   if (!vals) {
+      var fspace = this.space,
+          from = this.convs[fspace];
+      vals = convert[fspace][space](from);
+
+      this.convs[space] = vals;
+   }
+  return vals;
+};
+
+["rgb", "hsl", "hsv", "cmyk", "keyword"].forEach(function(space) {
+   Converter.prototype[space] = function(vals) {
+      return this.routeSpace(space, arguments);
+   }
+});
+
+module.exports = convert;
 },{"./conversions":7}],7:[function(require,module,exports){
 /* MIT license */
 
 module.exports = {
   rgb2hsl: rgb2hsl,
   rgb2hsv: rgb2hsv,
+  rgb2hwb: rgb2hwb,
   rgb2cmyk: rgb2cmyk,
   rgb2keyword: rgb2keyword,
   rgb2xyz: rgb2xyz,
   rgb2lab: rgb2lab,
+  rgb2lch: rgb2lch,
 
   hsl2rgb: hsl2rgb,
   hsl2hsv: hsl2hsv,
+  hsl2hwb: hsl2hwb,
   hsl2cmyk: hsl2cmyk,
   hsl2keyword: hsl2keyword,
 
   hsv2rgb: hsv2rgb,
   hsv2hsl: hsv2hsl,
+  hsv2hwb: hsv2hwb,
   hsv2cmyk: hsv2cmyk,
   hsv2keyword: hsv2keyword,
+
+  hwb2rgb: hwb2rgb,
+  hwb2hsl: hwb2hsl,
+  hwb2hsv: hwb2hsv,
+  hwb2cmyk: hwb2cmyk,
+  hwb2keyword: hwb2keyword,
 
   cmyk2rgb: cmyk2rgb,
   cmyk2hsl: cmyk2hsl,
   cmyk2hsv: cmyk2hsv,
+  cmyk2hwb: cmyk2hwb,
   cmyk2keyword: cmyk2keyword,
-  
+
   keyword2rgb: keyword2rgb,
   keyword2hsl: keyword2hsl,
   keyword2hsv: keyword2hsv,
+  keyword2hwb: keyword2hwb,
   keyword2cmyk: keyword2cmyk,
-  
+  keyword2lab: keyword2lab,
+  keyword2xyz: keyword2xyz,
+
   xyz2rgb: xyz2rgb,
+  xyz2lab: xyz2lab,
+  xyz2lch: xyz2lch,
+
+  lab2xyz: lab2xyz,
+  lab2rgb: lab2rgb,
+  lab2lch: lab2lch,
+
+  lch2lab: lch2lab,
+  lch2xyz: lch2xyz,
+  lch2rgb: lch2rgb
 }
 
 
@@ -1172,10 +1594,10 @@ function rgb2hsl(rgb) {
 
   if (max == min)
     h = 0;
-  else if (r == max) 
-    h = (g - b) / delta; 
+  else if (r == max)
+    h = (g - b) / delta;
   else if (g == max)
-    h = 2 + (b - r) / delta; 
+    h = 2 + (b - r) / delta;
   else if (b == max)
     h = 4 + (r - g)/ delta;
 
@@ -1212,16 +1634,16 @@ function rgb2hsv(rgb) {
 
   if (max == min)
     h = 0;
-  else if (r == max) 
-    h = (g - b) / delta; 
+  else if (r == max)
+    h = (g - b) / delta;
   else if (g == max)
-    h = 2 + (b - r) / delta; 
+    h = 2 + (b - r) / delta;
   else if (b == max)
     h = 4 + (r - g) / delta;
 
   h = Math.min(h * 60, 360);
 
-  if (h < 0) 
+  if (h < 0)
     h += 360;
 
   v = ((max / 255) * 1000) / 10;
@@ -1229,12 +1651,23 @@ function rgb2hsv(rgb) {
   return [h, s, v];
 }
 
+function rgb2hwb(rgb) {
+  var r = rgb[0],
+      g = rgb[1],
+      b = rgb[2],
+      h = rgb2hsl(rgb)[0]
+      w = 1/255 * Math.min(r, Math.min(g, b))
+      b = 1 - 1/255 * Math.max(r, Math.max(g, b));
+
+  return [h, w * 100, b * 100];
+}
+
 function rgb2cmyk(rgb) {
   var r = rgb[0] / 255,
       g = rgb[1] / 255,
       b = rgb[2] / 255,
       c, m, y, k;
-      
+
   k = Math.min(1 - r, 1 - g, 1 - b);
   c = (1 - r - k) / (1 - k);
   m = (1 - g - k) / (1 - k);
@@ -1255,7 +1688,7 @@ function rgb2xyz(rgb) {
   r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
   g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
   b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
-  
+
   var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
   var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
   var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
@@ -1281,10 +1714,13 @@ function rgb2lab(rgb) {
   l = (116 * y) - 16;
   a = 500 * (x - y);
   b = 200 * (y - z);
-  
+
   return [l, a, b];
 }
 
+function rgb2lch(args) {
+  return lab2lch(rgb2lab(args));
+}
 
 function hsl2rgb(hsl) {
   var h = hsl[0] / 360,
@@ -1320,7 +1756,7 @@ function hsl2rgb(hsl) {
 
     rgb[i] = val * 255;
   }
-  
+
   return rgb;
 }
 
@@ -1333,7 +1769,11 @@ function hsl2hsv(hsl) {
   s *= (l <= 1) ? l : 2 - l;
   v = (l + s) / 2;
   sv = (2 * s) / (l + s);
-  return [h, s * 100, v * 100];
+  return [h, sv * 100, v * 100];
+}
+
+function hsl2hwb(args) {
+  return rgb2hwb(hsl2rgb(args));
 }
 
 function hsl2cmyk(args) {
@@ -1379,11 +1819,15 @@ function hsv2hsl(hsv) {
       v = hsv[2] / 100,
       sl, l;
 
-  l = (2 - s) * v;  
+  l = (2 - s) * v;
   sl = s * v;
   sl /= (l <= 1) ? l : 2 - l;
   l /= 2;
   return [h, sl * 100, l * 100];
+}
+
+function hsv2hwb(args) {
+  return rgb2hwb(hsv2rgb(args))
 }
 
 function hsv2cmyk(args) {
@@ -1392,6 +1836,58 @@ function hsv2cmyk(args) {
 
 function hsv2keyword(args) {
   return rgb2keyword(hsv2rgb(args));
+}
+
+// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+function hwb2rgb(hwb) {
+  var h = hwb[0] / 360,
+      wh = hwb[1] / 100,
+      bl = hwb[2] / 100,
+      ratio = wh + bl,
+      i, v, f, n;
+
+  // wh + bl cant be > 1
+  if (ratio > 1) {
+    wh /= ratio;
+    bl /= ratio;
+  }
+
+  i = Math.floor(6 * h);
+  v = 1 - bl;
+  f = 6 * h - i;
+  if ((i & 0x01) != 0) {
+    f = 1 - f;
+  }
+  n = wh + f * (v - wh);  // linear interpolation
+
+  switch (i) {
+    default:
+    case 6:
+    case 0: r = v; g = n; b = wh; break;
+    case 1: r = n; g = v; b = wh; break;
+    case 2: r = wh; g = v; b = n; break;
+    case 3: r = wh; g = n; b = v; break;
+    case 4: r = n; g = wh; b = v; break;
+    case 5: r = v; g = wh; b = n; break;
+  }
+
+  return [r * 255, g * 255, b * 255];
+}
+
+function hwb2hsl(args) {
+  return rgb2hsl(hwb2rgb(args));
+}
+
+function hwb2hsv(args) {
+  return rgb2hsv(hwb2rgb(args));
+}
+
+function hwb2cmyk(args) {
+  return rgb2cmyk(hwb2rgb(args));
+}
+
+function hwb2keyword(args) {
+  return rgb2keyword(hwb2rgb(args));
 }
 
 function cmyk2rgb(cmyk) {
@@ -1415,6 +1911,10 @@ function cmyk2hsv(args) {
   return rgb2hsv(cmyk2rgb(args));
 }
 
+function cmyk2hwb(args) {
+  return rgb2hwb(cmyk2rgb(args));
+}
+
 function cmyk2keyword(args) {
   return rgb2keyword(cmyk2rgb(args));
 }
@@ -1436,17 +1936,101 @@ function xyz2rgb(xyz) {
 
   g = g > 0.0031308 ? ((1.055 * Math.pow(g, 1.0 / 2.4)) - 0.055)
     : g = (g * 12.92);
-        
+
   b = b > 0.0031308 ? ((1.055 * Math.pow(b, 1.0 / 2.4)) - 0.055)
     : b = (b * 12.92);
 
-  r = (r < 0) ? 0 : r;
-  g = (g < 0) ? 0 : g;
-  b = (b < 0) ? 0 : b;
+  r = Math.min(Math.max(0, r), 1);
+  g = Math.min(Math.max(0, g), 1);
+  b = Math.min(Math.max(0, b), 1);
 
   return [r * 255, g * 255, b * 255];
 }
 
+function xyz2lab(xyz) {
+  var x = xyz[0],
+      y = xyz[1],
+      z = xyz[2],
+      l, a, b;
+
+  x /= 95.047;
+  y /= 100;
+  z /= 108.883;
+
+  x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x) + (16 / 116);
+  y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y) + (16 / 116);
+  z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z) + (16 / 116);
+
+  l = (116 * y) - 16;
+  a = 500 * (x - y);
+  b = 200 * (y - z);
+
+  return [l, a, b];
+}
+
+function xyz2lch(args) {
+  return lab2lch(xyz2lab(args));
+}
+
+function lab2xyz(lab) {
+  var l = lab[0],
+      a = lab[1],
+      b = lab[2],
+      x, y, z, y2;
+
+  if (l <= 8) {
+    y = (l * 100) / 903.3;
+    y2 = (7.787 * (y / 100)) + (16 / 116);
+  } else {
+    y = 100 * Math.pow((l + 16) / 116, 3);
+    y2 = Math.pow(y / 100, 1/3);
+  }
+
+  x = x / 95.047 <= 0.008856 ? x = (95.047 * ((a / 500) + y2 - (16 / 116))) / 7.787 : 95.047 * Math.pow((a / 500) + y2, 3);
+
+  z = z / 108.883 <= 0.008859 ? z = (108.883 * (y2 - (b / 200) - (16 / 116))) / 7.787 : 108.883 * Math.pow(y2 - (b / 200), 3);
+
+  return [x, y, z];
+}
+
+function lab2lch(lab) {
+  var l = lab[0],
+      a = lab[1],
+      b = lab[2],
+      hr, h, c;
+
+  hr = Math.atan2(b, a);
+  h = hr * 360 / 2 / Math.PI;
+  if (h < 0) {
+    h += 360;
+  }
+  c = Math.sqrt(a * a + b * b);
+  return [l, c, h];
+}
+
+function lab2rgb(args) {
+  return xyz2rgb(lab2xyz(args));
+}
+
+function lch2lab(lch) {
+  var l = lch[0],
+      c = lch[1],
+      h = lch[2],
+      a, b, hr;
+
+  hr = h / 360 * 2 * Math.PI;
+  a = c * Math.cos(hr);
+  b = c * Math.sin(hr);
+  return [l, a, b];
+}
+
+function lch2xyz(args) {
+  return lab2xyz(lch2lab(args));
+}
+
+function lch2rgb(args) {
+  return lab2rgb(lch2lab(args));
+}
 
 function keyword2rgb(keyword) {
   return cssKeywords[keyword];
@@ -1460,8 +2044,20 @@ function keyword2hsv(args) {
   return rgb2hsv(keyword2rgb(args));
 }
 
+function keyword2hwb(args) {
+  return rgb2hwb(keyword2rgb(args));
+}
+
 function keyword2cmyk(args) {
   return rgb2cmyk(keyword2rgb(args));
+}
+
+function keyword2lab(args) {
+  return rgb2lab(keyword2rgb(args));
+}
+
+function keyword2xyz(args) {
+  return rgb2xyz(keyword2rgb(args));
 }
 
 var cssKeywords = {
@@ -1584,6 +2180,7 @@ var cssKeywords = {
   plum: [221,160,221],
   powderblue: [176,224,230],
   purple: [128,0,128],
+  rebeccapurple: [102, 51, 153],
   red:  [255,0,0],
   rosybrown:  [188,143,143],
   royalblue:  [65,105,225],
