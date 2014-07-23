@@ -7,7 +7,7 @@ var color = Color("#7743CE");
 color.alpha(0.5).lighten(0.5);
 
 console.log(color.hslString());  // "hsla(262, 59%, 81%, 0.5)"
-```	
+```
 
 ## Install
 
@@ -33,12 +33,12 @@ var color = Color({r: 255, g: 255, b: 255})
 var color = Color().rgb(255, 255, 255)
 var color = Color().rgb([255, 255, 255])
 ```
-Pass any valid CSS color string into `Color()` or a hash of values. Also load in color values with `rgb()`, `hsl()`, `hsv()`,and `cmyk()`.
+Pass any valid CSS color string into `Color()` or a hash of values. Also load in color values with `rgb()`, `hsl()`, `hsv()`, `hwb()`, and `cmyk()`.
 
 ```javascript
 color.red(120)
 ```
-Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturation` (hsl), `saturationv` (hsv), `lightness`, `cyan`, `magenta`, `yellow`, `black`
+Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturation` (hsl), `saturationv` (hsv), `lightness`, `whiteness`, `blackness`, `cyan`, `magenta`, `yellow`, `black`
 
 ### Getters
 
@@ -64,7 +64,7 @@ Get the value for an individual channel.
 color.hslString()  // "hsl(320, 50%, 100%)"
 ```
 
-Different CSS String formats for the color are on `hexString`, `rgbString`, `percentString`, `hslString`, and `keyword` (undefined if it's not a keyword color). `"rgba"` and `"hsla"` are used if the current alpha value of the color isn't `1`.
+Different CSS String formats for the color are on `hexString`, `rgbString`, `percentString`, `hslString`, `hwbString`, and `keyword` (undefined if it's not a keyword color). `"rgba"` and `"hsla"` are used if the current alpha value of the color isn't `1`.
 
 ### Luminosity
 
@@ -95,6 +95,9 @@ color.darken(0.5)      // hsl(100, 50%, 50%) -> hsl(100, 50%, 25%)
 color.saturate(0.5)    // hsl(100, 50%, 50%) -> hsl(100, 75%, 50%)
 color.desaturate(0.5)  // hsl(100, 50%, 50%) -> hsl(100, 25%, 50%)
 color.greyscale()      // #5CBF54 -> #969696
+
+color.whiten(0.5)      // hwb(100, 50%, 50%) -> hwb(100, 75%, 50%)
+color.blacken(0.5)     // hwb(100, 50%, 50%) -> hwb(100, 50%, 75%)
 
 color.clearer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 0.4)
 color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
