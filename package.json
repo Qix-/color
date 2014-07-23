@@ -9,8 +9,8 @@
   },
   "main": "./color",
   "dependencies": {
-    "color-convert": "0.2.x",
-    "color-string": "0.1.x"
+    "color-convert": "0.5.x",
+    "color-string": "0.2.x"
   },
   "devDependencies": {
     "nomnom": "~1.5.2",

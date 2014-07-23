@@ -11,6 +11,7 @@ var Color = function(cssString) {
       rgb: [0, 0, 0],
       hsl: [0, 0, 0],
       hsv: [0, 0, 0],
+      hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
    }
@@ -24,6 +25,9 @@ var Color = function(cssString) {
       else if(vals = string.getHsla(cssString)) {
          this.setValues("hsl", vals);
       }
+      else if(vals = string.getHwb(cssString)) {
+         this.setValues("hwb", vals);
+      }
    }
    else if (typeof cssString == "object") {
       var vals = cssString;
@@ -35,6 +39,9 @@ var Color = function(cssString) {
       }
       else if(vals["v"] !== undefined || vals["value"] !== undefined) {
          this.setValues("hsv", vals)
+      }
+      else if(vals["w"] !== undefined || vals["whiteness"] !== undefined) {
+         this.setValues("hwb", vals)
       }
       else if(vals["c"] !== undefined || vals["cyan"] !== undefined) {
          this.setValues("cmyk", vals)
@@ -52,6 +59,9 @@ Color.prototype = {
    hsv: function(vals) {
       return this.setSpace("hsv", arguments);
    },
+   hwb: function(vals) {
+      return this.setSpace("hwb", arguments);
+   },
    cmyk: function(vals) {
       return this.setSpace("cmyk", arguments);
    },
@@ -65,6 +75,12 @@ Color.prototype = {
    hsvArray: function() {
       return this.values.hsv;
    },
+   hwbArray: function() {
+      if (this.values.alpha !== 1) {
+        return this.values.hwb.concat([this.values.alpha])
+      }
+      return this.values.hwb;
+   },
    cmykArray: function() {
       return this.values.cmyk;
    },
@@ -76,7 +92,6 @@ Color.prototype = {
       var hsl = this.values.hsl;
       return hsl.concat([this.values.alpha]);
    },
-
    alpha: function(val) {
       if (val === undefined) {
          return this.values.alpha;
@@ -105,6 +120,12 @@ Color.prototype = {
    },
    saturationv: function(val) {
       return this.setChannel("hsv", 1, val);
+   },
+   whiteness: function(val) {
+      return this.setChannel("hwb", 1, val);
+   },
+   blackness: function(val) {
+      return this.setChannel("hwb", 2, val);
    },
    value: function(val) {
       return this.setChannel("hsv", 2, val);
@@ -139,6 +160,9 @@ Color.prototype = {
    },
    hslaString: function() {
       return string.hslaString(this.values.hsl, this.values.alpha);
+   },
+   hwbString: function() {
+      return string.hwbString(this.values.hwb, this.values.alpha);
    },
    keyword: function() {
       return string.keyword(this.values.rgb, this.values.alpha);
@@ -216,6 +240,18 @@ Color.prototype = {
    desaturate: function(ratio) {
       this.values.hsl[1] -= this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
+      return this;
+   },
+
+   whiten: function(ratio) {
+      this.values.hwb[1] += this.values.hwb[1] * ratio;
+      this.setValues("hwb", this.values.hwb);
+      return this;
+   },
+
+   blacken: function(ratio) {
+      this.values.hwb[2] += this.values.hwb[2] * ratio;
+      this.setValues("hwb", this.values.hwb);
       return this;
    },
 
@@ -298,6 +334,7 @@ Color.prototype.setValues = function(space, vals) {
       "rgb": ["red", "green", "blue"],
       "hsl": ["hue", "saturation", "lightness"],
       "hsv": ["hue", "saturation", "value"],
+      "hwb": ["hue", "whiteness", "blackness"],
       "cmyk": ["cyan", "magenta", "yellow", "black"]
    };
 
@@ -305,6 +342,7 @@ Color.prototype.setValues = function(space, vals) {
       "rgb": [255, 255, 255],
       "hsl": [360, 100, 100],
       "hsv": [360, 100, 100],
+      "hwb": [360, 100, 100],
       "cmyk": [100, 100, 100, 100]
    };
 
@@ -335,6 +373,12 @@ Color.prototype.setValues = function(space, vals) {
    this.values.alpha = Math.max(0, Math.min(1, (alpha !== undefined ? alpha : this.values.alpha) ));
    if (space == "alpha") {
       return;
+   }
+
+   // cap values of the space prior converting all values
+   for (var i = 0; i < space.length; i++) {
+      var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      this.values[space][i] = Math.round(capped);
    }
 
    // convert to all the other color spaces
