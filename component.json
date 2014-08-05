@@ -9,6 +9,7 @@
     "harthur/color-convert": "*",
     "harthur/color-string": "*"
   },
+  "scripts": ["color.js"],
   "keywords": [
     "color",
     "colour",
