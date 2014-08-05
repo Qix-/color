@@ -390,7 +390,7 @@ Color.prototype.setValues = function(space, vals) {
    // convert to all the other color spaces
    for (var sname in spaces) {
       if (sname != space) {
-         this.values[sname] = convert[space][sname](this.values[space])
+         this.values[sname] = convert[space+'2'+sname](this.values[space])
       }
 
       // cap values
