@@ -2,11 +2,10 @@
 var convert = require("color-convert"),
     string = require("color-string");
 
-module.exports = function(cssString) {
-   return new Color(cssString);
-};
-
 var Color = function(cssString) {
+  if (cssString instanceof Color) return cssString;
+  if (! (this instanceof Color)) return new Color(cssString);
+
    this.values = {
       rgb: [0, 0, 0],
       hsl: [0, 0, 0],
@@ -426,3 +425,5 @@ Color.prototype.setChannel = function(space, index, val) {
    this.setValues(space, this.values[space]);
    return this;
 }
+
+module.exports = Color;
