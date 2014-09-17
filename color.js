@@ -174,6 +174,10 @@ Color.prototype = {
       return string.keyword(this.values.rgb, this.values.alpha);
    },
 
+   rgbNumber: function() {
+       return (this.values.rgb[0] << 16) | (this.values.rgb[1] << 8) | this.values.rgb[2];
+   },
+
    luminosity: function() {
       // http://www.w3.org/TR/WCAG20/#relativeluminancedef
       var rgb = this.values.rgb;
