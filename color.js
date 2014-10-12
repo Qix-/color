@@ -2,11 +2,15 @@
 var convert = require("color-convert"),
     string = require("color-string");
 
-module.exports = function(cssString) {
-   return new Color(cssString);
-};
+module.exports = Color;
 
-var Color = function(cssString) {
+function Color(cssString) {
+   //prevent double init
+   if (cssString instanceof Color) return cssString;
+
+   //force new 
+   if (!this || this.constructor !== Color) return new Color(cssString);
+
    this.values = {
       rgb: [0, 0, 0],
       hsl: [0, 0, 0],
@@ -14,7 +18,7 @@ var Color = function(cssString) {
       hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
-   }
+   };
 
    // parse Color() argument
    if (typeof cssString == "string") {
@@ -56,6 +60,8 @@ var Color = function(cssString) {
 }
 
 Color.prototype = {
+   constructor: Color,
+
    rgb: function (vals) {
       return this.setSpace("rgb", arguments);
    },
