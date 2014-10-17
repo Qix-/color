@@ -420,11 +420,13 @@ Color.prototype.setSpace = function(space, args) {
 }
 
 Color.prototype.setChannel = function(space, index, val) {
+   console.log("setting channel", space, index, val);
    if (val === undefined) {
       // color.red()
       return this.values[space][index];
    }
    // color.red(100)
+   console.log(this.values[space]);
    this.values[space][index] = val;
    this.setValues(space, this.values[space]);
    return this;
