@@ -1,6 +1,9 @@
 var Color = require("../color"),
     assert = require("assert");
 
+// Color() instance
+assert.equal(new Color("red").red(), 255);
+
 // Color() argument
 assert.deepEqual(Color("#0A1E19").rgb(), {r: 10, g: 30, b: 25});
 assert.deepEqual(Color("rgb(10, 30, 25)").rgb(), {r: 10, g: 30, b: 25});
