@@ -112,6 +112,9 @@ assert.equal(Color("rgb(10, 30, 25, 0.3)").hwbString(), "hwb(165, 4%, 88%, 0.3)"
 assert.equal(Color("rgb(0, 0, 255)").keyword(), "blue")
 assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined)
 
+// Number getters
+assert.equal(Color("rgb(10, 30, 25)").rgbNumber(), 0xA1E19)
+
 // luminosity, etc.
 assert.equal(Color("white").luminosity(), 1);
 assert.equal(Color("black").luminosity(), 0);
