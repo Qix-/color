@@ -28,7 +28,7 @@ var Color = function(cssString) {
          this.setValues("hwb", vals);
       }
       else {
-        throw new Error("Unable to parse color from string " + cssString);
+        throw new Error("Unable to parse color from string \"" + cssString + "\"");
       }
    }
    else if (typeof cssString == "object") {
