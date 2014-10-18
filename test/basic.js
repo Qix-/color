@@ -155,6 +155,7 @@ assert.deepEqual(Color("yellow").mix(Color("grey")).rgbArray(), [192, 192, 64]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 1).rgbArray(), [128, 128, 128]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 0.8).rgbArray(), [153, 153, 102]);
 assert.deepEqual(Color("yellow").mix(Color("grey").alpha(0.5)).rgbaArray(), [223, 223, 32, 0.75]);
+assert.deepEqual(Color('red').mix(Color('red').hue(360), .5, 'hsl').hslArray(), [180, 100, 50]);
 
 // Clone
 var clone = Color({r: 10, g: 20, b: 30});
