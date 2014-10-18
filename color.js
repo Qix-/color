@@ -212,7 +212,7 @@ Color.prototype = {
       // YIQ equation from http://24ways.org/2010/calculating-color-contrast
       var rgb = this.values.rgb,
           yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-   	return yiq < 128;
+      return yiq < 128;
    },
 
    light: function() {
@@ -291,7 +291,9 @@ Color.prototype = {
       return this;
    },
 
-   mix: function(color2, weight) {
+   mix: function(color2, weight, space) {
+      space = space || 'rgb';
+
       weight = 1 - (weight == null ? 0.5 : weight);
 
       // algorithm from Sass's mix(). Ratio of first color in mix is
@@ -302,13 +304,13 @@ Color.prototype = {
       var weight1 = (((t1 * d == -1) ? t1 : (t1 + d) / (1 + t1 * d)) + 1) / 2;
       var weight2 = 1 - weight1;
 
-      var rgb = this.rgbArray();
-      var rgb2 = color2.rgbArray();
+      var vals = this.values[space];
+      var vals2 = color2.values[space];
 
-      for (var i = 0; i < rgb.length; i++) {
-         rgb[i] = rgb[i] * weight1 + rgb2[i] * weight2;
+      for (var i = 0; i < vals.length; i++) {
+         vals[i] = vals[i] * weight1 + vals2[i] * weight2;
       }
-      this.setValues("rgb", rgb);
+      this.setValues(space, vals);
 
       var alpha = this.alpha() * weight + color2.alpha() * (1 - weight);
       this.setValues("alpha", alpha);
