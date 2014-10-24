@@ -359,6 +359,10 @@ Color.prototype = {
    clone: function() {
       //TODO: optimize clone performance
      return new Color(this.rgb());
+   },
+
+   toString: function(){
+      return string[this.space + 'String'](this.values[this.space], this.values.alpha);
    }
 };
 
@@ -446,7 +450,6 @@ Color.prototype.actualizeSpace = function(space){
    //space is already actual
    if (currSpace === space) return this;
    if (space === 'alpha') return this;
-
    var maxes = Color.maxes;
 
    // cap values of the space prior converting all values
