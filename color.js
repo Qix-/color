@@ -15,6 +15,10 @@ var Color = function(cssString) {
       alpha: 1
    }
 
+   //keep actual values reference
+   this.space = 'rgb';
+
+
    // parse Color() argument
    if (typeof cssString == "string") {
       var vals = string.getRgba(cssString);
@@ -52,7 +56,7 @@ var Color = function(cssString) {
         throw new Error("Unable to parse color from object " + JSON.stringify(cssString));
       }
    }
-}
+};
 
 Color.prototype = {
    rgb: function (vals) {
@@ -72,28 +76,35 @@ Color.prototype = {
    },
 
    rgbArray: function() {
+      this.actualizeSpace('rgb');
       return this.values.rgb;
    },
    hslArray: function() {
+      this.actualizeSpace('hsl');
       return this.values.hsl;
    },
    hsvArray: function() {
+      this.actualizeSpace('hsv');
       return this.values.hsv;
    },
    hwbArray: function() {
+      this.actualizeSpace('hwb');
       if (this.values.alpha !== 1) {
         return this.values.hwb.concat([this.values.alpha])
       }
       return this.values.hwb;
    },
    cmykArray: function() {
+      this.actualizeSpace('cmyk');
       return this.values.cmyk;
    },
    rgbaArray: function() {
+      this.actualizeSpace('rgb');
       var rgb = this.values.rgb;
       return rgb.concat([this.values.alpha]);
    },
    hslaArray: function() {
+      this.actualizeSpace('hsl');
       var hsl = this.values.hsl;
       return hsl.concat([this.values.alpha]);
    },
@@ -106,79 +117,103 @@ Color.prototype = {
    },
 
    red: function(val) {
+      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 0, val);
    },
    green: function(val) {
+      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 1, val);
    },
    blue: function(val) {
+      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 2, val);
    },
    hue: function(val) {
+      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 0, val);
    },
    saturation: function(val) {
+      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 1, val);
    },
    lightness: function(val) {
+      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 2, val);
    },
    saturationv: function(val) {
+      this.actualizeSpace('hsv');
       return this.setChannel("hsv", 1, val);
    },
    whiteness: function(val) {
+      this.actualizeSpace('hwb');
       return this.setChannel("hwb", 1, val);
    },
    blackness: function(val) {
+      this.actualizeSpace('hwb');
       return this.setChannel("hwb", 2, val);
    },
    value: function(val) {
+      this.actualizeSpace('hsv');
       return this.setChannel("hsv", 2, val);
    },
    cyan: function(val) {
+      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 0, val);
    },
    magenta: function(val) {
+      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 1, val);
    },
    yellow: function(val) {
+      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 2, val);
    },
    black: function(val) {
+      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 3, val);
    },
 
    hexString: function() {
+      this.actualizeSpace('rgb');
       return string.hexString(this.values.rgb);
    },
    rgbString: function() {
+      this.actualizeSpace('rgb');
       return string.rgbString(this.values.rgb, this.values.alpha);
    },
    rgbaString: function() {
+      this.actualizeSpace('rgb');
       return string.rgbaString(this.values.rgb, this.values.alpha);
    },
    percentString: function() {
+      this.actualizeSpace('rgb');
       return string.percentString(this.values.rgb, this.values.alpha);
    },
    hslString: function() {
+      this.actualizeSpace('hsl');
       return string.hslString(this.values.hsl, this.values.alpha);
    },
    hslaString: function() {
+      this.actualizeSpace('hsl');
       return string.hslaString(this.values.hsl, this.values.alpha);
    },
    hwbString: function() {
+      this.actualizeSpace('hwb');
       return string.hwbString(this.values.hwb, this.values.alpha);
    },
    keyword: function() {
+      this.actualizeSpace('rgb');
       return string.keyword(this.values.rgb, this.values.alpha);
    },
 
    rgbNumber: function() {
+      this.actualizeSpace('rgb');
       return (this.values.rgb[0] << 16) | (this.values.rgb[1] << 8) | this.values.rgb[2];
    },
 
    luminosity: function() {
       // http://www.w3.org/TR/WCAG20/#relativeluminancedef
+      this.actualizeSpace('rgb');
       var rgb = this.values.rgb;
       var lum = [];
       for (var i = 0; i < rgb.length; i++) {
@@ -210,6 +245,7 @@ Color.prototype = {
 
    dark: function() {
       // YIQ equation from http://24ways.org/2010/calculating-color-contrast
+      this.actualizeSpace('rgb');
       var rgb = this.values.rgb,
           yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
       return yiq < 128;
@@ -220,7 +256,8 @@ Color.prototype = {
    },
 
    negate: function() {
-      var rgb = []
+      this.actualizeSpace('rgb');
+      var rgb = [];
       for (var i = 0; i < 3; i++) {
          rgb[i] = 255 - this.values.rgb[i];
       }
@@ -229,42 +266,49 @@ Color.prototype = {
    },
 
    lighten: function(ratio) {
+      this.actualizeSpace('hsl');
       this.values.hsl[2] += this.values.hsl[2] * ratio;
       this.setValues("hsl", this.values.hsl);
       return this;
    },
 
    darken: function(ratio) {
+      this.actualizeSpace('hsl');
       this.values.hsl[2] -= this.values.hsl[2] * ratio;
       this.setValues("hsl", this.values.hsl);
       return this;
    },
 
    saturate: function(ratio) {
+      this.actualizeSpace('hsl');
       this.values.hsl[1] += this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
       return this;
    },
 
    desaturate: function(ratio) {
+      this.actualizeSpace('hsl');
       this.values.hsl[1] -= this.values.hsl[1] * ratio;
       this.setValues("hsl", this.values.hsl);
       return this;
    },
 
    whiten: function(ratio) {
+      this.actualizeSpace('hwb');
       this.values.hwb[1] += this.values.hwb[1] * ratio;
       this.setValues("hwb", this.values.hwb);
       return this;
    },
 
    blacken: function(ratio) {
+      this.actualizeSpace('hwb');
       this.values.hwb[2] += this.values.hwb[2] * ratio;
       this.setValues("hwb", this.values.hwb);
       return this;
    },
 
    greyscale: function() {
+      this.actualizeSpace('rgb');
       var rgb = this.values.rgb;
       // http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
       var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
@@ -283,6 +327,7 @@ Color.prototype = {
    },
 
    rotate: function(degrees) {
+      this.actualizeSpace('hsl');
       var hue = this.values.hsl[0];
       hue = (hue + degrees) % 360;
       hue = hue < 0 ? 360 + hue : hue;
@@ -293,6 +338,8 @@ Color.prototype = {
 
    mix: function(color2, weight, space) {
       space = space || 'rgb';
+
+      this.actualizeSpace(space);
 
       weight = 1 - (weight == null ? 0.5 : weight);
 
@@ -325,10 +372,12 @@ Color.prototype = {
    clone: function() {
      return new Color(this.rgb());
    }
-}
+};
 
 
 Color.prototype.getValues = function(space) {
+   this.actualizeSpace(space);
+
    var vals = {};
    for (var i = 0; i < space.length; i++) {
       vals[space[i]] = this.values[space][i];
@@ -338,7 +387,7 @@ Color.prototype.getValues = function(space) {
    }
    // {r: 255, g: 255, b: 255, a: 0.4}
    return vals;
-}
+};
 
 
 Color.spaces = {
@@ -361,6 +410,9 @@ Color.prototype.setValues = function(space, vals) {
    var spaces = Color.spaces, maxes = Color.maxes;
 
    var alpha = 1;
+   //actualize target space
+   this.actualizeSpace(space);
+
    if (space == "alpha") {
       alpha = vals;
    }
@@ -389,28 +441,44 @@ Color.prototype.setValues = function(space, vals) {
       return;
    }
 
+   // cap values
+   for (var i = 0, capped; i < space.length; i++) {
+      capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      this.values[space][i] = Math.round(capped);
+   }
+
+   return true;
+};
+
+
+/** Update values for the space passed */
+Color.prototype.actualizeSpace = function(space){
+   var currSpace = this.space;
+
+   //space is already actual
+   if (currSpace === space) return this;
+   if (space === 'alpha') return this;
+
+   var maxes = Color.maxes;
+
    // cap values of the space prior converting all values
    for (var i = 0; i < space.length; i++) {
       var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
       this.values[space][i] = Math.round(capped);
    }
 
-   // convert to all the other color spaces
-   for (var sname in spaces) {
-      if (sname != space) {
-         this.values[sname] = convert[space][sname](this.values[space])
-      }
+   //calc new space values
+   this.values[space] = convert[currSpace][space](this.values[currSpace]);
 
-      // cap values
-      for (var i = 0; i < sname.length; i++) {
-         var capped = Math.max(0, Math.min(maxes[sname][i], this.values[sname][i]));
-         this.values[sname][i] = Math.round(capped);
-      }
-   }
-   return true;
-}
+   //save last actual space
+   this.space = space;
+
+   return this;
+};
+
 
 Color.prototype.setSpace = function(space, args) {
+   this.actualizeSpace(space);
    var vals = args[0];
    if (vals === undefined) {
       // color.rgb()
@@ -422,9 +490,10 @@ Color.prototype.setSpace = function(space, args) {
    }
    this.setValues(space, vals);
    return this;
-}
+};
 
 Color.prototype.setChannel = function(space, index, val) {
+   this.actualizeSpace(space);
    if (val === undefined) {
       // color.red()
       return this.values[space][index];
@@ -433,6 +502,6 @@ Color.prototype.setChannel = function(space, index, val) {
    this.values[space][index] = val;
    this.setValues(space, this.values[space]);
    return this;
-}
+};
 
 module.exports = Color;
