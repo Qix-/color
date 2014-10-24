@@ -201,6 +201,16 @@ Color.prototype = {
       this.actualizeSpace('hwb');
       return string.hwbString(this.values.hwb, this.values.alpha);
    },
+
+   /** Get actual space string representation */
+   toString: function(){
+      var strMethod = this[this.space + 'String'];
+      if (strMethod) {
+         return strMethod.call(this, this.values[this.space], this.values.alpha);
+      }
+      return this.rgbString();
+   },
+
    keyword: function() {
       this.actualizeSpace('rgb');
       return string.keyword(this.values.rgb, this.values.alpha);
