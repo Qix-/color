@@ -117,59 +117,45 @@ Color.prototype = {
    },
 
    red: function(val) {
-      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 0, val);
    },
    green: function(val) {
-      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 1, val);
    },
    blue: function(val) {
-      this.actualizeSpace('rgb');
       return this.setChannel("rgb", 2, val);
    },
    hue: function(val) {
-      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 0, val);
    },
    saturation: function(val) {
-      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 1, val);
    },
    lightness: function(val) {
-      this.actualizeSpace('hsl');
       return this.setChannel("hsl", 2, val);
    },
    saturationv: function(val) {
-      this.actualizeSpace('hsv');
       return this.setChannel("hsv", 1, val);
    },
    whiteness: function(val) {
-      this.actualizeSpace('hwb');
       return this.setChannel("hwb", 1, val);
    },
    blackness: function(val) {
-      this.actualizeSpace('hwb');
       return this.setChannel("hwb", 2, val);
    },
    value: function(val) {
-      this.actualizeSpace('hsv');
       return this.setChannel("hsv", 2, val);
    },
    cyan: function(val) {
-      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 0, val);
    },
    magenta: function(val) {
-      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 1, val);
    },
    yellow: function(val) {
-      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 2, val);
    },
    black: function(val) {
-      this.actualizeSpace('cmyk');
       return this.setChannel("cmyk", 3, val);
    },
 
@@ -200,15 +186,6 @@ Color.prototype = {
    hwbString: function() {
       this.actualizeSpace('hwb');
       return string.hwbString(this.values.hwb, this.values.alpha);
-   },
-
-   /** Get actual space string representation */
-   toString: function(){
-      var strMethod = this[this.space + 'String'];
-      if (strMethod) {
-         return strMethod.call(this, this.values[this.space], this.values.alpha);
-      }
-      return this.rgbString();
    },
 
    keyword: function() {
@@ -380,8 +357,14 @@ Color.prototype = {
    },
 
    clone: function() {
+      //TODO: optimize clone performance
      return new Color(this.rgb());
-   }
+   },
+
+   // Get actual space string representation
+   toString: function(){
+      return string[this.space + 'String'](this.values[this.space], this.values.alpha);
+   },
 };
 
 
