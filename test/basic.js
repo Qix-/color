@@ -114,9 +114,6 @@ assert.equal(Color("rgb(10, 30, 25)").hwbString(), "hwb(165, 4%, 88%)")
 assert.equal(Color("rgb(10, 30, 25, 0.3)").hwbString(), "hwb(165, 4%, 88%, 0.3)")
 assert.equal(Color("rgb(0, 0, 255)").keyword(), "blue")
 assert.strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined);
-assert.equal(Color("rgb(0,10,20)").toString(), "rgb(0, 10, 20)");
-assert.equal(Color("rgba(0,10,20,.2)").toString(), "rgba(0, 10, 20, 0.2)");
-assert.equal(Color("hsl(0,10%,20%)").toString(), "hsl(0, 10%, 20%)");
 
 // Number getters
 assert.equal(Color("rgb(10, 30, 25)").rgbNumber(), 0xA1E19)

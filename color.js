@@ -359,12 +359,7 @@ Color.prototype = {
    clone: function() {
       //TODO: optimize clone performance
      return new Color(this.rgb());
-   },
-
-   // Get actual space string representation
-   toString: function(){
-      return string[this.space + 'String'](this.values[this.space], this.values.alpha);
-   },
+   }
 };
 
 
@@ -492,8 +487,8 @@ Color.prototype.setChannel = function(space, index, val) {
       return this.values[space][index];
    }
    // color.red(100)
-   this.values[space][index] = val;
-   this.setValues(space, this.values[space]);
+   this.values[space][index] = Math.max(Math.min(val, Color.maxes[space][index]), 0);
+   // this.setValues(space, this.values[space]);
    return this;
 };
 
