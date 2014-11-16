@@ -162,6 +162,7 @@ assert.deepEqual(Color('red').mix(Color('red').hue(360), .5, 'hsl').hslArray(), 
 var clone = Color({r: 10, g: 20, b: 30});
 assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 assert.deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
+assert.deepEqual(clone.clone().rgbaArray(), [10, 20, 30, 1]);
 assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 
 // Level
