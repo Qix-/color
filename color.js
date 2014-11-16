@@ -22,7 +22,7 @@ var Color = function(cssString) {
    // parse Color() argument
    //[0,0,0]
    if (cssString instanceof Array) {
-      this.values.rgb = cssString.slice();
+      this.values.rgb = cssString;
    }
    //rgb(0,0,0)
    else if (typeof cssString == "string") {
@@ -363,7 +363,7 @@ Color.prototype = {
    },
 
    clone: function() {
-     return new Color(this.rgbArray());
+     return new Color(this.rgbArray().slice());
    },
 
    toString: function(){
