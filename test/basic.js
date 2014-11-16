@@ -1,6 +1,7 @@
 var Color = require("../color"),
     assert = require("assert");
 
+
 // Color() instance
 assert.equal(new Color("red").red(), 255);
 
@@ -175,3 +176,29 @@ assert.throws(function () {
 assert.throws(function () {
   Color({})
 }, /Unable to parse color from object/);
+
+
+
+//Performance - render 100x100 range
+var color = new Color('red');
+var space = 'hsl';
+var h = 500;
+var w = 500;
+
+console.time('performance');
+for (var x, y = h, row; y--;){
+	//calc right & left colors
+	rc = color.clone().setChannel(space, 1, 255);
+	rc.setChannel(space, 2, 255 - 255 * y / h);
+	lc = color.clone().setChannel(space, 1, 0);
+	lc.setChannel(space, 2, 255 - 255 * y / h);
+
+	for (x = 0; x < w; x++){
+		lc.setChannel(space, 1, 255 * x / w);
+
+		lc.red();
+		lc.green();
+		lc.blue();
+	}
+}
+console.timeEnd('performance');

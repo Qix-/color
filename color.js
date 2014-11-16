@@ -402,6 +402,7 @@ Color.prototype.setValues = function(space, vals) {
    var spaces = Color.spaces, maxes = Color.maxes;
 
    var alpha = 1;
+
    //actualize target space
    this.actualizeSpace(space);
 
@@ -450,10 +451,11 @@ Color.prototype.actualizeSpace = function(space){
    //space is already actual
    if (currSpace === space) return this;
    if (space === 'alpha') return this;
+
    var maxes = Color.maxes;
 
    // cap values of the space prior converting all values
-   for (var i = 0; i < space.length; i++) {
+   for (var i = space.length; i--;) {
       var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
       this.values[space][i] = Math.round(capped);
    }
@@ -491,7 +493,6 @@ Color.prototype.setChannel = function(space, index, val) {
    }
    // color.red(100)
    this.values[space][index] = Math.max(Math.min(val, Color.maxes[space][index]), 0);
-   // this.setValues(space, this.values[space]);
    return this;
 };
 
