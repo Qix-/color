@@ -476,7 +476,6 @@ Color.prototype.actualizeSpace = function(space){
 
 
 Color.prototype.setSpace = function(space, args) {
-   this.actualizeSpace(space);
    var vals = args[0];
    if (vals === undefined) {
       // color.rgb()
