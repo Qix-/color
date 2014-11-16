@@ -22,7 +22,7 @@ var Color = function(cssString) {
    // parse Color() argument
    //[0,0,0]
    if (cssString instanceof Array) {
-      this.values.rgb = cssString;
+      this.values.rgb = cssString.slice();
    }
    //rgb(0,0,0)
    else if (typeof cssString == "string") {
