@@ -194,7 +194,7 @@ for (var x, y = h, row; y--;){
 	lc.setChannel(space, 2, 255 - 255 * y / h);
 
 	for (x = 0; x < w; x++){
-		lc.clone().setChannel(space, 1, 255 * x / w);
+		lc.setChannel(space, 1, 255 * x / w);
 
 		lc.red();
 		lc.green();
