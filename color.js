@@ -20,7 +20,12 @@ var Color = function(cssString) {
 
 
    // parse Color() argument
-   if (typeof cssString == "string") {
+   //[0,0,0]
+   if (cssString instanceof Array) {
+      this.values.rgb = cssString;
+   }
+   //rgb(0,0,0)
+   else if (typeof cssString == "string") {
       var vals = string.getRgba(cssString);
       if (vals) {
          this.setValues("rgb", vals);
@@ -35,6 +40,7 @@ var Color = function(cssString) {
         throw new Error("Unable to parse color from string \"" + cssString + "\"");
       }
    }
+   //{r:0, g:0, b:0}
    else if (typeof cssString == "object") {
       var vals = cssString;
       if(vals["r"] !== undefined || vals["red"] !== undefined) {
@@ -357,8 +363,7 @@ Color.prototype = {
    },
 
    clone: function() {
-      //TODO: optimize clone performance
-     return new Color(this.rgb());
+     return new Color(this.rgbArray());
    },
 
    toString: function(){
