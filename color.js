@@ -83,30 +83,30 @@ Color.prototype = {
 
    rgbArray: function() {
       this.actualizeSpace('rgb');
-      return this.values.rgb;
+      return this.values.rgb.slice();
    },
    hslArray: function() {
       this.actualizeSpace('hsl');
-      return this.values.hsl;
+      return this.values.hsl.slice();
    },
    hsvArray: function() {
       this.actualizeSpace('hsv');
-      return this.values.hsv;
+      return this.values.hsv.slice();
    },
    hwbArray: function() {
       this.actualizeSpace('hwb');
       if (this.values.alpha !== 1) {
         return this.values.hwb.concat([this.values.alpha])
       }
-      return this.values.hwb;
+      return this.values.hwb.slice();
    },
    cmykArray: function() {
       this.actualizeSpace('cmyk');
-      return this.values.cmyk;
+      return this.values.cmyk.slice();
    },
    rgbaArray: function() {
       this.actualizeSpace('rgb');
-      var rgb = this.values.rgb;
+      var rgb = this.values.rgb.slice();
       return rgb.concat([this.values.alpha]);
    },
    hslaArray: function() {
@@ -363,7 +363,7 @@ Color.prototype = {
    },
 
    clone: function() {
-     return new Color(this.rgbArray().slice());
+     return new Color(this.rgbArray());
    },
 
    toString: function(){

@@ -165,6 +165,11 @@ assert.deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
 assert.deepEqual(clone.clone().rgbaArray(), [10, 20, 30, 1]);
 assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 
+//changing array should not affect color
+var arr = clone.rgbArray();
+arr.push(255);
+assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
+
 // Level
 assert.equal(Color("white").level(Color("black")), "AAA");
 assert.equal(Color("grey").level(Color("black")), "AA");
