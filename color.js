@@ -395,16 +395,9 @@ Color.spaces = {
    "cmyk": ["cyan", "magenta", "yellow", "black"]
 };
 
-Color.maxes = {
-   "rgb": [255, 255, 255],
-   "hsl": [360, 100, 100],
-   "hsv": [360, 100, 100],
-   "hwb": [360, 100, 100],
-   "cmyk": [100, 100, 100, 100]
-};
 
 Color.prototype.setValues = function(space, vals) {
-   var spaces = Color.spaces, maxes = Color.maxes;
+   var spaces = Color.spaces;
 
    var alpha = 1;
 
@@ -441,7 +434,7 @@ Color.prototype.setValues = function(space, vals) {
 
    // cap values
    for (var i = 0, capped; i < space.length; i++) {
-      capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      capped = Math.max(0, Math.min(convert[space].max[i], this.values[space][i]));
       this.values[space][i] = Math.round(capped);
    }
 
@@ -457,11 +450,9 @@ Color.prototype.actualizeSpace = function(space){
    if (currSpace === space) return this;
    if (space === 'alpha') return this;
 
-   var maxes = Color.maxes;
-
    // cap values of the space prior converting all values
    for (var i = space.length; i--;) {
-      var capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
+      var capped = Math.max(0, Math.min(convert[space].max[i], this.values[space][i]));
       this.values[space][i] = Math.round(capped);
    }
 
@@ -497,7 +488,7 @@ Color.prototype.setChannel = function(space, index, val) {
       return this.values[space][index];
    }
    // color.red(100)
-   this.values[space][index] = Math.max(Math.min(val, Color.maxes[space][index]), 0);
+   this.values[space][index] = Math.max(Math.min(val, convert[space].max[index]), 0);
    return this;
 };
 
