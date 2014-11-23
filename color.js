@@ -6,6 +6,7 @@ var Color = function(cssString) {
   if (cssString instanceof Color) return cssString;
   if (! (this instanceof Color)) return new Color(cssString);
 
+   //TODO: get rid of this set, replace with values array. There are too many spaces to keep.
    this.values = {
       rgb: [0, 0, 0],
       hsl: [0, 0, 0],
