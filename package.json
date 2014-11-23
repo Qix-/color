@@ -3,14 +3,15 @@
   "description": "Color conversion and manipulation with CSS string support",
   "version": "0.7.3",
   "author": "Heather Arthur <fayearthur@gmail.com>",
+  "contributors": "Dyma Ywanov <dfcreative@gmail.com>",
   "repository": {
     "type": "git",
     "url": "http://github.com/harthur/color.git"
   },
   "main": "./color",
   "dependencies": {
-    "color-convert": "0.5.x",
-    "color-string": "0.2.x"
+    "color-string": "dfcreative/color-string",
+    "color-space": "0.x"
   },
   "devDependencies": {
     "nomnom": "~1.5.2",
@@ -23,7 +24,7 @@
     "colour",
     "css"
   ],
-  "scripts":{
+  "scripts": {
     "test": "node test/basic.js"
   }
 }

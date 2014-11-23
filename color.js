@@ -1,5 +1,5 @@
 /* MIT license */
-var convert = require("color-convert"),
+var convert = require("color-space"),
     string = require("color-string");
 
 var Color = function(cssString) {
@@ -13,7 +13,7 @@ var Color = function(cssString) {
       hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
-   }
+   };
 
    //keep actual values reference
    this.space = 'rgb';
@@ -467,6 +467,7 @@ Color.prototype.actualizeSpace = function(space){
 
    //calc new space values
    this.values[space] = convert[currSpace][space](this.values[currSpace]);
+   for (var i = this.values[space].length; i--;) this.values[space][i] = Math.round(this.values[space][i]);
 
    //save last actual space
    this.space = space;
