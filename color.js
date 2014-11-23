@@ -387,18 +387,7 @@ Color.prototype.getValues = function(space) {
 };
 
 
-Color.spaces = {
-   "rgb": ["red", "green", "blue"],
-   "hsl": ["hue", "saturation", "lightness"],
-   "hsv": ["hue", "saturation", "value"],
-   "hwb": ["hue", "whiteness", "blackness"],
-   "cmyk": ["cyan", "magenta", "yellow", "black"]
-};
-
-
 Color.prototype.setValues = function(space, vals) {
-   var spaces = Color.spaces;
-
    var alpha = 1;
 
    //actualize target space
@@ -419,9 +408,9 @@ Color.prototype.setValues = function(space, vals) {
       }
       alpha = vals.a;
    }
-   else if (vals[spaces[space][0]] !== undefined) {
+   else if (vals[convert[space].channel[0]] !== undefined) {
       // {red: 10, green: 10, blue: 10}
-      var chans = spaces[space];
+      var chans = convert[space].channel;
       for (var i = 0; i < space.length; i++) {
         this.values[space][i] = vals[chans[i]];
       }
