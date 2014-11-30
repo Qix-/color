@@ -87,7 +87,7 @@ assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
 assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
 assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
 
-assert.equal(Color({h: 400, w: 50, b: 10}).hue(), 0); // 0 == 360
+assert.equal(Color({h: 400, w: 50, b: 10}).hue(), 360); // 0 == 360
 assert.equal(Color({h: 100, w: 50, b: 80}).blacken(0.5).blackness(), 100);
 assert.equal(Color({h: -400, w: 50, b: 10}).hue(), 0);
 
@@ -187,23 +187,13 @@ assert.throws(function () {
 //Performance - render 100x100 range
 var color = new Color('red');
 var space = 'hsl';
-var h = 500;
-var w = 500;
 
 console.time('performance');
-for (var x, y = h, row; y--;){
-	//calc right & left colors
-	rc = color.clone().setChannel(space, 1, 255);
-	rc.setChannel(space, 2, 255 - 255 * y / h);
-	lc = color.clone().setChannel(space, 1, 0);
-	lc.setChannel(space, 2, 255 - 255 * y / h);
+for (var x = 0, end = 2e5; x < end; x++){
+	color.setChannel(space, 1, 255 * x / end);
 
-	for (x = 0; x < w; x++){
-		lc.setChannel(space, 1, 255 * x / w);
-
-		lc.red();
-		lc.green();
-		lc.blue();
-	}
+	color.red();
+	color.green();
+	color.blue();
 }
 console.timeEnd('performance');

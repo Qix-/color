@@ -11,7 +11,7 @@
   "main": "./color",
   "dependencies": {
     "color-string": "dfcreative/color-string",
-    "color-space": "0.x"
+    "color-space": ">=1.0.0"
   },
   "devDependencies": {
     "nomnom": "~1.5.2",
