@@ -190,8 +190,7 @@ var space = 'hsl';
 
 console.time('performance');
 for (var x = 0, end = 2e5; x < end; x++){
-	color.setChannel(space, 1, 255 * x / end);
-
+	color.setChannel(space, 1, 100 * x / end);
 	color.red();
 	color.green();
 	color.blue();

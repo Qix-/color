@@ -90,10 +90,11 @@ Color.prototype = {
    },
    hwbArray: function() {
       this.actualizeSpace('hwb');
+      var hwb = this.values.slice()
       if (this._alpha !== 1) {
-        return this.values.concat(this._alpha);
+        return hwb.concat(this._alpha);
       }
-      return this.values.slice();
+      return hwb;
    },
    cmykArray: function() {
       this.actualizeSpace('cmyk');
@@ -362,6 +363,15 @@ Color.prototype = {
      return new Color(this.rgbArray());
    },
 
+   //somewhat generic getters
+   toArray: function(){
+      var vals = this.values.slice();
+      if (this._alpha === 1) {
+         return vals.concat(this._alpha);
+      }
+      return vals;
+   },
+
    toString: function(){
       return string[this.space + 'String'](this.values, this._alpha);
    }
@@ -412,7 +422,9 @@ Color.prototype.setValues = function(space, vals) {
       }
       alpha = vals.alpha;
    }
+
    this._alpha = Math.max(0, Math.min(1, (alpha !== undefined ? alpha : this._alpha) ));
+
    if (space == "alpha") {
       return;
    }
@@ -432,22 +444,14 @@ Color.prototype.actualizeSpace = function(space){
    var currSpace = this.space;
 
    //space is already actual
-   if (currSpace === space) return this;
-   if (space === 'alpha') return this;
+   if (currSpace !== space && space !== 'alpha') {
+      //calc new space values
+      this.values = convert[currSpace][space](this.values);
+      for (var i = this.values.length; i--;) this.values[i] = Math.round(this.values[i]);
 
-   // cap values of the space prior converting all values
-   //FIXME
-   // for (var i = space.length; i--;) {
-   //    var capped = Math.max(0, Math.min(convert[space].max[i], this.values[space][i]));
-   //    this.values[space][i] = Math.round(capped);
-   // }
-
-   //calc new space values
-   this.values = convert[currSpace][space](this.values);
-   for (var i = this.values.length; i--;) this.values[i] = Math.round(this.values[i]);
-
-   //save last actual space
-   this.space = space;
+      //save last actual space
+      this.space = space;
+   }
 
    return this;
 };
