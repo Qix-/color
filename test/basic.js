@@ -1,6 +1,7 @@
 var Color = require("../color"),
     assert = require("assert");
 
+
 // Color() instance
 assert.equal(new Color("red").red(), 255);
 
@@ -86,7 +87,7 @@ assert.equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
 assert.equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
 assert.equal(Color({h: -400, s: 50, l: 10}).hue(), 0);
 
-assert.equal(Color({h: 400, w: 50, b: 10}).hue(), 0); // 0 == 360
+assert.equal(Color({h: 400, w: 50, b: 10}).hue(), 360); // 0 == 360
 assert.equal(Color({h: 100, w: 50, b: 80}).blacken(0.5).blackness(), 100);
 assert.equal(Color({h: -400, w: 50, b: 10}).hue(), 0);
 
@@ -155,11 +156,18 @@ assert.deepEqual(Color("yellow").mix(Color("grey")).rgbArray(), [192, 192, 64]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 1).rgbArray(), [128, 128, 128]);
 assert.deepEqual(Color("yellow").mix(Color("grey"), 0.8).rgbArray(), [153, 153, 102]);
 assert.deepEqual(Color("yellow").mix(Color("grey").alpha(0.5)).rgbaArray(), [223, 223, 32, 0.75]);
+assert.deepEqual(Color('red').mix(Color('red').hue(360), .5, 'hsl').hslArray(), [180, 100, 50]);
 
 // Clone
 var clone = Color({r: 10, g: 20, b: 30});
 assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 assert.deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
+assert.deepEqual(clone.clone().rgbaArray(), [10, 20, 30, 1]);
+assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
+
+//changing array should not affect color
+var arr = clone.rgbArray();
+arr.push(255);
 assert.deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 
 // Level
@@ -174,3 +182,17 @@ assert.throws(function () {
 assert.throws(function () {
   Color({})
 }, /Unable to parse color from object/);
+
+
+//Performance - render 100x100 range
+var color = new Color('red');
+var space = 'hsl';
+
+console.time('performance');
+for (var x = 0, end = 2e5; x < end; x++){
+	color.setChannel(space, 1, 100 * x / end);
+	color.red();
+	color.green();
+	color.blue();
+}
+console.timeEnd('performance');
