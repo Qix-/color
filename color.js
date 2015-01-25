@@ -329,7 +329,7 @@ Color.prototype = {
 Color.prototype.getValues = function(space) {
    var vals = {};
    for (var i = 0; i < space.length; i++) {
-      vals[space[i]] = this.values[space][i];
+      vals[space.charAt(i)] = this.values[space][i];
    }
    if (this.values.alpha != 1) {
       vals["a"] = this.values.alpha;
@@ -364,10 +364,10 @@ Color.prototype.setValues = function(space, vals) {
       this.values[space] = vals.slice(0, space.length);
       alpha = vals[space.length];
    }
-   else if (vals[space[0]] !== undefined) {
+   else if (vals[space.charAt(0)] !== undefined) {
       // {r: 10, g: 10, b: 10}
       for (var i = 0; i < space.length; i++) {
-        this.values[space][i] = vals[space[i]];
+        this.values[space][i] = vals[space.charAt(i)];
       }
       alpha = vals.a;
    }
