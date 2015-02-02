@@ -2,9 +2,9 @@
 var convert = require("color-convert"),
     string = require("color-string");
 
-var Color = function(cssString) {
-  if (cssString instanceof Color) return cssString;
-  if (! (this instanceof Color)) return new Color(cssString);
+var Color = function(obj) {
+  if (obj instanceof Color) return obj;
+  if (! (this instanceof Color)) return new Color(obj);
 
    this.values = {
       rgb: [0, 0, 0],
@@ -16,23 +16,23 @@ var Color = function(cssString) {
    }
 
    // parse Color() argument
-   if (typeof cssString == "string") {
-      var vals = string.getRgba(cssString);
+   if (typeof obj == "string") {
+      var vals = string.getRgba(obj);
       if (vals) {
          this.setValues("rgb", vals);
       }
-      else if(vals = string.getHsla(cssString)) {
+      else if(vals = string.getHsla(obj)) {
          this.setValues("hsl", vals);
       }
-      else if(vals = string.getHwb(cssString)) {
+      else if(vals = string.getHwb(obj)) {
          this.setValues("hwb", vals);
       }
       else {
-        throw new Error("Unable to parse color from string \"" + cssString + "\"");
+        throw new Error("Unable to parse color from string \"" + obj + "\"");
       }
    }
-   else if (typeof cssString == "object") {
-      var vals = cssString;
+   else if (typeof obj == "object") {
+      var vals = obj;
       if(vals["r"] !== undefined || vals["red"] !== undefined) {
          this.setValues("rgb", vals)
       }
@@ -49,7 +49,7 @@ var Color = function(cssString) {
          this.setValues("cmyk", vals)
       }
       else {
-        throw new Error("Unable to parse color from object " + JSON.stringify(cssString));
+        throw new Error("Unable to parse color from object " + JSON.stringify(obj));
       }
    }
 }
@@ -212,7 +212,7 @@ Color.prototype = {
       // YIQ equation from http://24ways.org/2010/calculating-color-contrast
       var rgb = this.values.rgb,
           yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-   	return yiq < 128;
+      return yiq < 128;
    },
 
    light: function() {
