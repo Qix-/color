@@ -12,19 +12,15 @@ console.log(color.hslString());  // "hsla(262, 59%, 81%, 0.5)"
 
 ## Install
 
-### browser
-Download the latest [color.js](https://github.com/harthur/color/tree/gh-pages). The `Color` object is exported.
-
-### node
-For [node](http://nodejs.org) with [npm](http://npmjs.org):
-
 ```console
 $ npm install color
 ```
 
-And use with `var Color = require("color")`
+## Usage
 
-## API
+```js
+var Color = require("color")
+```
 
 ### Setters
 

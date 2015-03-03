@@ -1,29 +1,31 @@
 {
   "name": "color",
+  "version": "0.8.0",
   "description": "Color conversion and manipulation with CSS string support",
-  "version": "0.7.3",
-  "author": "Heather Arthur <fayearthur@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/harthur/color.git"
-  },
-  "main": "./color",
-  "dependencies": {
-    "color-convert": "0.5.x",
-    "color-string": "0.3.x"
-  },
-  "devDependencies": {
-    "nomnom": "~1.5.2",
-    "browserify": "~2.18.1",
-    "grunt": "~0.4.1",
-    "grunt-contrib-uglify": "~0.2.0"
-  },
   "keywords": [
     "color",
     "colour",
     "css"
   ],
+  "authors": [
+    "Heather Arthur <fayearthur@gmail.com>",
+    "Maxime Thirouin"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/harthur/color.git"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "index.js"
+  ],
   "scripts": {
-    "test": "node test/basic.js"
+    "test": "node test"
+  },
+  "dependencies": {
+    "color-convert": "^0.5.0",
+    "color-string": "^0.3.0"
   }
 }

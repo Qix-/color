@@ -1,4 +1,4 @@
-var Color = require("../color"),
+var Color = require(".."),
     assert = require("assert");
 
 // Color() instance
