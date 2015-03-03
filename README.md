@@ -1,4 +1,4 @@
-# color
+# color [![Build Status](https://travis-ci.org/harthur/color.svg?branch=master)](https://travis-ci.org/harthur/color)
 `color` is a JavaScript library for color conversion and manipulation with support for CSS color strings.
 
 ```javascript

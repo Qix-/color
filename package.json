@@ -22,5 +22,8 @@
     "color",
     "colour",
     "css"
-  ]
+  ],
+  "scripts": {
+    "test": "node test/basic.js"
+  }
 }
