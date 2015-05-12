@@ -19,7 +19,7 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
-    "index.js"
+    "dist/"
   ],
   "scripts": {
     "test": "node test"
