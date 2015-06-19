@@ -5,3 +5,5 @@ Thanks for taking the time to contribute to color.js. Follow these guidelines to
 2. Follow the style of the file when it comes to syntax like curly braces and indents.
 
 3. Add a test for the feature or fix, if possible. See the `test` directory for existing tests and README describing how to run these tests.
+
+4. Run tests with `npm test`
