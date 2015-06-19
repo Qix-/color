@@ -291,29 +291,29 @@ Color.prototype = {
       return this;
    },
 
-   mix: function(color2, weight) {
-      weight = 1 - (weight == null ? 0.5 : weight);
+   /**
+    * Ported from sass implementation in C
+    * https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
+    */
+   mix: function(mixinColor, weight) {
+      var color1 = this;
+      var color2 = mixinColor;
+      var weight = weight || 50;
 
-      // algorithm from Sass's mix(). Ratio of first color in mix is
-      // determined by the alphas of both colors and the weight
-      var t1 = weight * 2 - 1,
-          d = this.alpha() - color2.alpha();
+      var p = weight / 100;
+      var w = 2 * p - 1;
+      var a = color1.alpha() - color2.alpha();
 
-      var weight1 = (((t1 * d == -1) ? t1 : (t1 + d) / (1 + t1 * d)) + 1) / 2;
-      var weight2 = 1 - weight1;
+      var w1 = (((w * a == -1) ? w : (w + a)/(1 + w*a)) + 1) / 2.0;
+      var w2 = 1 - w1;
 
-      var rgb = this.rgbArray();
-      var rgb2 = color2.rgbArray();
-
-      for (var i = 0; i < rgb.length; i++) {
-         rgb[i] = rgb[i] * weight1 + rgb2[i] * weight2;
-      }
-      this.setValues("rgb", rgb);
-
-      var alpha = this.alpha() * weight + color2.alpha() * (1 - weight);
-      this.setValues("alpha", alpha);
-
-      return this;
+      return this
+        .rgb(
+          w1 * color1.red() + w2 * color2.red(),
+          w1 * color1.green() + w2 * color2.green(),
+          w1 * color1.blue() + w2 * color2.blue()
+        )
+        .alpha(color1.alpha() * p + color2.alpha() * (1 - p));
    },
 
    toJSON: function() {
