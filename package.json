@@ -22,10 +22,13 @@
     "index.js"
   ],
   "scripts": {
-    "test": "node test"
+    "test": "mocha"
   },
   "dependencies": {
     "color-convert": "^0.5.0",
     "color-string": "^0.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
   }
 }
