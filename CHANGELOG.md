@@ -1,3 +1,8 @@
+# 0.9.0 - 2015-06-21
+
+- Fixed: `mix()` implementation is now the same as in Sass
+([#60](https://github.com/harthur/color/pull/60))
+
 # 0.8.0 - 2015-03-03
 
 - Removed: bower support

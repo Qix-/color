@@ -1,6 +1,6 @@
 {
   "name": "color",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Color conversion and manipulation with CSS string support",
   "keywords": [
     "color",
@@ -25,7 +25,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "color-convert": "^0.5.0",
+    "color-convert": "^0.5.3",
     "color-string": "^0.3.0"
   },
   "devDependencies": {
