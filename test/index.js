@@ -174,6 +174,10 @@ it('Mix: basic', function() {
   equal(Color("#f00").mix(Color("#00f")).hexString(), '#800080');
 });
 
+it('Mix: color as string and weight', function() {
+  equal(Color('cyan').mix(Color('yellow'), 0.3).rgbArray(), [77, 255, 179]);
+});
+
 it('Mix: weight', function() {
   equal(Color("#f00").mix(Color("#00f"), 25).hexString(), '#4000BF');
 });
