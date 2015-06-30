@@ -182,6 +182,19 @@ it('Mix: alpha', function() {
   equal(Color("rgba(255, 0, 0, 0.5)").mix(Color("#00f")).rgbaString(), 'rgba(64, 0, 191, 0.75)');
 });
 
+it('Mix: 50%', function() {
+  equal(Color("#f00").mix(Color("#00f"), 0.5).hexString(), '#800080');
+});
+
+it('Mix: 0%', function() {
+  equal(Color("#f00").mix(Color("#00f"), 0).hexString(), '#0000FF');
+});
+
+it('Mix: 100%', function() {
+  equal(Color("#f00").mix(Color("#00f"), 1.0).hexString(), '#FF0000');
+});
+
+
 it('Clone', function() {
   var clone = Color({r: 10, g: 20, b: 30});
   deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
