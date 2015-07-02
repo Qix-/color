@@ -298,9 +298,8 @@ Color.prototype = {
    mix: function(mixinColor, weight) {
       var color1 = this;
       var color2 = mixinColor;
-      var weight = (weight || 0.5) * 100;
+      var p = weight !== undefined ? weight : 0.5;
 
-      var p = weight / 100;
       var w = 2 * p - 1;
       var a = color1.alpha() - color2.alpha();
 
