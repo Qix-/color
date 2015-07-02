@@ -1,3 +1,8 @@
+# 0.10.0 - 2015-07-02
+
+- Fixed: `mix()` works with a 0..1 range (instead of 0..100 since 0.9.0)
+([#64](https://github.com/harthur/color/pull/64))
+
 # 0.9.0 - 2015-06-21
 
 - Fixed: `mix()` implementation is now the same as in Sass
