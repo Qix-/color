@@ -1,3 +1,8 @@
+# 0.10.1 - 2015-07-02
+
+- Fixed: handling of 0% mix
+([#65](https://github.com/harthur/color/pull/65))
+
 # 0.10.0 - 2015-07-02
 
 - Fixed: `mix()` works with a 0..1 range (instead of 0..100 since 0.9.0)

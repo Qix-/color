@@ -1,6 +1,6 @@
 {
   "name": "color",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Color conversion and manipulation with CSS string support",
   "keywords": [
     "color",
