@@ -155,7 +155,7 @@ it('luminosity, etc.', function() {
   ok(Color("red").dark());
 });
 
-it('Manipulators w/ mix', function() {
+it('Manipulators wo/ mix', function() {
   deepEqual(Color({r: 67, g: 122, b: 134}).greyscale().rgb(), {r: 107, g: 107, b: 107});
   deepEqual(Color({r: 67, g: 122, b: 134}).negate().rgb(), {r: 188, g: 133, b: 121});
   equal(Color({h: 100, s: 50, l: 60}).lighten(0.5).lightness(), 90);
@@ -175,7 +175,7 @@ it('Mix: basic', function() {
 });
 
 it('Mix: weight', function() {
-  equal(Color("#f00").mix(Color("#00f"), 25).hexString(), '#4000BF');
+  equal(Color("#f00").mix(Color("#00f"), 0.25).hexString(), '#4000BF');
 });
 
 it('Mix: alpha', function() {
