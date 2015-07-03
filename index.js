@@ -13,7 +13,7 @@ var Color = function(obj) {
       hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
-   }
+  };
 
    // parse Color() argument
    if (typeof obj == "string") {
@@ -33,26 +33,26 @@ var Color = function(obj) {
    }
    else if (typeof obj == "object") {
       var vals = obj;
-      if(vals["r"] !== undefined || vals["red"] !== undefined) {
-         this.setValues("rgb", vals)
+      if(vals.r !== undefined || vals.red !== undefined) {
+         this.setValues("rgb", vals);
       }
-      else if(vals["l"] !== undefined || vals["lightness"] !== undefined) {
-         this.setValues("hsl", vals)
+      else if(vals.l !== undefined || vals.lightness !== undefined) {
+         this.setValues("hsl", vals);
       }
-      else if(vals["v"] !== undefined || vals["value"] !== undefined) {
-         this.setValues("hsv", vals)
+      else if(vals.v !== undefined || vals.value !== undefined) {
+         this.setValues("hsv", vals);
       }
-      else if(vals["w"] !== undefined || vals["whiteness"] !== undefined) {
-         this.setValues("hwb", vals)
+      else if(vals.w !== undefined || vals.whiteness !== undefined) {
+         this.setValues("hwb", vals);
       }
-      else if(vals["c"] !== undefined || vals["cyan"] !== undefined) {
-         this.setValues("cmyk", vals)
+      else if(vals.c !== undefined || vals.cyan !== undefined) {
+         this.setValues("cmyk", vals);
       }
       else {
         throw new Error("Unable to parse color from object " + JSON.stringify(obj));
       }
    }
-}
+};
 
 Color.prototype = {
    rgb: function (vals) {
@@ -82,7 +82,7 @@ Color.prototype = {
    },
    hwbArray: function() {
       if (this.values.alpha !== 1) {
-        return this.values.hwb.concat([this.values.alpha])
+        return this.values.hwb.concat([this.values.alpha]);
       }
       return this.values.hwb;
    },
@@ -184,7 +184,7 @@ Color.prototype = {
       for (var i = 0; i < rgb.length; i++) {
          var chan = rgb[i] / 255;
          lum[i] = (chan <= 0.03928) ? chan / 12.92
-                  : Math.pow(((chan + 0.055) / 1.055), 2.4)
+                  : Math.pow(((chan + 0.055) / 1.055), 2.4);
       }
       return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
    },
@@ -194,8 +194,8 @@ Color.prototype = {
       var lum1 = this.luminosity();
       var lum2 = color2.luminosity();
       if (lum1 > lum2) {
-         return (lum1 + 0.05) / (lum2 + 0.05)
-      };
+         return (lum1 + 0.05) / (lum2 + 0.05);
+      }
       return (lum2 + 0.05) / (lum1 + 0.05);
    },
 
@@ -220,7 +220,7 @@ Color.prototype = {
    },
 
    negate: function() {
-      var rgb = []
+      var rgb = [];
       for (var i = 0; i < 3; i++) {
          rgb[i] = 255 - this.values.rgb[i];
       }
@@ -331,11 +331,11 @@ Color.prototype.getValues = function(space) {
       vals[space.charAt(i)] = this.values[space][i];
    }
    if (this.values.alpha != 1) {
-      vals["a"] = this.values.alpha;
+      vals.a = this.values.alpha;
    }
    // {r: 255, g: 255, b: 255, a: 0.4}
    return vals;
-}
+};
 
 Color.prototype.setValues = function(space, vals) {
    var spaces = {
@@ -392,7 +392,7 @@ Color.prototype.setValues = function(space, vals) {
    // convert to all the other color spaces
    for (var sname in spaces) {
       if (sname != space) {
-         this.values[sname] = convert[space][sname](this.values[space])
+         this.values[sname] = convert[space][sname](this.values[space]);
       }
 
       // cap values
@@ -402,7 +402,7 @@ Color.prototype.setValues = function(space, vals) {
       }
    }
    return true;
-}
+};
 
 Color.prototype.setSpace = function(space, args) {
    var vals = args[0];
@@ -416,7 +416,7 @@ Color.prototype.setSpace = function(space, args) {
    }
    this.setValues(space, vals);
    return this;
-}
+};
 
 Color.prototype.setChannel = function(space, index, val) {
    if (val === undefined) {
@@ -427,6 +427,6 @@ Color.prototype.setChannel = function(space, index, val) {
    this.values[space][index] = val;
    this.setValues(space, this.values[space]);
    return this;
-}
+};
 
 module.exports = Color;

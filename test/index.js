@@ -10,7 +10,7 @@ var throws = assert.throws;
 
 it('Color() instance', function() {
   equal(new Color("red").red(), 255);
-  ok((new Color) instanceof Color);
+  ok((new Color()) instanceof Color);
 });
 
 it('Color() argument', function() {
@@ -118,22 +118,22 @@ it('Translate with channel setters', function() {
 });
 
 it('CSS String getters', function() {
-  equal(Color("rgb(10, 30, 25)").hexString(), "#0A1E19")
-  equal(Color("rgb(10, 30, 25)").rgbString(), "rgb(10, 30, 25)")
-  equal(Color("rgb(10, 30, 25, 0.4)").rgbString(), "rgba(10, 30, 25, 0.4)")
-  equal(Color("rgb(10, 30, 25)").percentString(), "rgb(4%, 12%, 10%)")
-  equal(Color("rgb(10, 30, 25, 0.3)").percentString(), "rgba(4%, 12%, 10%, 0.3)")
-  equal(Color("rgb(10, 30, 25)").hslString(), "hsl(165, 50%, 8%)")
+  equal(Color("rgb(10, 30, 25)").hexString(), "#0A1E19");
+  equal(Color("rgb(10, 30, 25)").rgbString(), "rgb(10, 30, 25)");
+  equal(Color("rgb(10, 30, 25, 0.4)").rgbString(), "rgba(10, 30, 25, 0.4)");
+  equal(Color("rgb(10, 30, 25)").percentString(), "rgb(4%, 12%, 10%)");
+  equal(Color("rgb(10, 30, 25, 0.3)").percentString(), "rgba(4%, 12%, 10%, 0.3)");
+  equal(Color("rgb(10, 30, 25)").hslString(), "hsl(165, 50%, 8%)");
   equal(Color("rgb(10, 30, 25, 0.3)").hslString(), "hsla(165, 50%, 8%, 0.3)");
   equal(Color({ h : 0, s : 0, v : 100 }).hslString(), "hsl(0, 0%, 100%)");
-  equal(Color("rgb(10, 30, 25)").hwbString(), "hwb(165, 4%, 88%)")
-  equal(Color("rgb(10, 30, 25, 0.3)").hwbString(), "hwb(165, 4%, 88%, 0.3)")
-  equal(Color("rgb(0, 0, 255)").keyword(), "blue")
+  equal(Color("rgb(10, 30, 25)").hwbString(), "hwb(165, 4%, 88%)");
+  equal(Color("rgb(10, 30, 25, 0.3)").hwbString(), "hwb(165, 4%, 88%, 0.3)");
+  equal(Color("rgb(0, 0, 255)").keyword(), "blue");
   strictEqual(Color("rgb(10, 30, 25)").keyword(), undefined);
 });
 
 it('Number getters', function() {
-  equal(Color("rgb(10, 30, 25)").rgbNumber(), 0xA1E19)
+  equal(Color("rgb(10, 30, 25)").rgbNumber(), 0xA1E19);
 });
 
 it('luminosity, etc.', function() {
@@ -209,10 +209,10 @@ it('Level', function() {
 
 it('Exceptions', function() {
   throws(function () {
-    Color("unknow")
+    Color("unknow");
   }, /Unable to parse color from string/);
 
   throws(function () {
-    Color({})
+    Color({});
   }, /Unable to parse color from object/);
 });
