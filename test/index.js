@@ -96,7 +96,7 @@ it('Channel getters/setters', function() {
 });
 
 it('Setting the same value', function () {
-  var colorString = 'BADA55',
+  var colorString = '#BADA55',
       color = Color(colorString),
       alpha = color.alpha(),
       red = color.red(),
