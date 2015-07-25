@@ -95,6 +95,83 @@ it('Channel getters/setters', function() {
   equal(Color({h: 10, w: 20, b: 30}).hue(100).hue(), 100);
 });
 
+it('Setting the same value', function () {
+  var colorString = 'BADA55',
+      color = Color(colorString),
+      alpha = color.alpha(),
+      red = color.red(),
+      green = color.green(),
+      blue = color.blue(),
+      hue = color.hue(),
+      saturation = color.saturation(),
+      saturationv = color.saturationv(),
+      lightness = color.lightness(),
+      whiteness = color.whiteness(),
+      blackness = color.blackness(),
+      cyan = color.cyan(),
+      magenta = color.magenta(),
+      yellow = color.yellow(),
+      black = color.black();
+
+  equal(color.hexString(), colorString);
+
+  color.alpha(alpha);
+  equal(color.alpha(), alpha);
+  equal(color.hexString(), colorString);
+
+  color.red(red);
+  equal(color.red(), red);
+  equal(color.hexString(), colorString);
+
+  color.green(green);
+  equal(color.green(), green);
+  equal(color.hexString(), colorString);
+
+  color.blue(blue);
+  equal(color.blue(), blue);
+  equal(color.hexString(), colorString);
+
+  color.hue(hue);
+  equal(color.hue(), hue);
+  equal(color.hexString(), colorString);
+
+  color.saturation(saturation);
+  equal(color.saturation(), saturation);
+  equal(color.hexString(), colorString);
+
+  color.saturationv(saturationv);
+  equal(color.saturationv(), saturationv);
+  equal(color.hexString(), colorString);
+
+  color.lightness(lightness);
+  equal(color.lightness(), lightness);
+  equal(color.hexString(), colorString);
+
+  color.whiteness(whiteness);
+  equal(color.whiteness(), whiteness);
+  equal(color.hexString(), colorString);
+
+  color.blackness(blackness);
+  equal(color.blackness(), blackness);
+  equal(color.hexString(), colorString);
+
+  color.cyan(cyan);
+  equal(color.cyan(), cyan);
+  equal(color.hexString(), colorString);
+
+  color.magenta(magenta);
+  equal(color.magenta(), magenta);
+  equal(color.hexString(), colorString);
+
+  color.yellow(yellow);
+  equal(color.yellow(), yellow);
+  equal(color.hexString(), colorString);
+
+  color.black(black);
+  equal(color.black(), black);
+  equal(color.hexString(), colorString);
+});
+
 it('Capping values', function() {
   equal(Color({h: 400, s: 50, l: 10}).hue(), 360);
   equal(Color({h: 100, s: 50, l: 80}).lighten(0.5).lightness(), 100);
