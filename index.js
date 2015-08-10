@@ -422,6 +422,9 @@ Color.prototype.setChannel = function(space, index, val) {
    if (val === undefined) {
       // color.red()
       return this.values[space][index];
+   } else if (val === this.values[space][index]) {
+      // color.red(color.red())
+      return this;
    }
    // color.red(100)
    this.values[space][index] = val;
