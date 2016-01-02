@@ -1,6 +1,6 @@
 {
   "name": "color",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Color conversion and manipulation with CSS string support",
   "keywords": [
     "color",
@@ -9,12 +9,13 @@
   ],
   "authors": [
     "Heather Arthur <fayearthur@gmail.com>",
-    "Maxime Thirouin"
+    "Maxime Thirouin",
+    "Josh Junon"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/harthur/color.git"
+    "url": "http://github.com/MoOx/color.git"
   },
   "files": [
     "CHANGELOG.md",
