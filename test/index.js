@@ -93,6 +93,10 @@ it('Channel getters/setters', function() {
   equal(Color({h: 10, s: 20, l: 30}).hue(100).hue(), 100);
   equal(Color({h: 10, w: 20, b: 30}).hue(), 10);
   equal(Color({h: 10, w: 20, b: 30}).hue(100).hue(), 100);
+  equal(Color({h: 10, s: 20, l: 30}).hue(), 10);
+  equal(Color({h: 10, s: 20, l: 30}).hue(460).hue(), 100);
+  equal(Color({h: 10, w: 20, b: 30}).hue(), 10);
+  equal(Color({h: 10, w: 20, b: 30}).hue(-260).hue(), 100);
 });
 
 it('Setting the same value', function () {

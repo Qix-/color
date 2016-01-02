@@ -115,6 +115,10 @@ Color.prototype = {
       return this.setChannel("rgb", 2, val);
    },
    hue: function(val) {
+      if (val) {
+        val = val % 360;
+        val = val < 0 ? 360 + val : val;
+      }
       return this.setChannel("hsl", 0, val);
    },
    saturation: function(val) {
