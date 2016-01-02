@@ -1,3 +1,9 @@
+# 0.11.0 - 2016-01-02
+
+- Fixed: Hue modulo when specifying values < 0 or > 360
+([#76](https://github.com/MoOx/color/pull/76))
+- Corrected some package.json information
+
 # 0.10.1 - 2015-07-02
 
 - Fixed: handling of 0% mix
