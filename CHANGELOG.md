@@ -1,3 +1,8 @@
+# 0.11.1 - 2016-01-03
+
+- Fixed: three tests being ignored `if() -> it()`
+- Changed: moved to XO standard
+
 # 0.11.0 - 2016-01-02
 
 - Fixed: Hue modulo when specifying values < 0 or > 360
