@@ -17,12 +17,19 @@
     "type": "git",
     "url": "http://github.com/MoOx/color.git"
   },
+  "xo": {
+    "rules": {
+      "no-cond-assign": 0,
+      "new-cap": 0
+    }
+  },
   "files": [
     "CHANGELOG.md",
     "LICENSE",
     "index.js"
   ],
   "scripts": {
+    "pretest": "xo",
     "test": "mocha"
   },
   "dependencies": {
@@ -30,6 +37,7 @@
     "color-string": "^0.3.0"
   },
   "devDependencies": {
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "xo": "^0.12.1"
   }
 }
