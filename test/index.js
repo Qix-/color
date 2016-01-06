@@ -14,6 +14,18 @@ it('Color() instance', function () {
 	ok((new Color()) instanceof Color);
 });
 
+it('test', function () {
+	deepEqual(Color({
+		r: 10,
+		g: 30,
+		b: 25
+	}).rgb(), {
+		r: 10,
+		g: 30,
+		b: 25
+	});
+});
+
 it('Color() argument', function () {
 	deepEqual(Color('#0A1E19').rgb(), {
 		r: 10,
@@ -714,4 +726,15 @@ it('Exceptions', function () {
 	throws(function () {
 		Color({});
 	}, /Unable to parse color from object/);
+});
+
+describe('immutable', function () {
+	it('Never mutates old instance', function () {
+		var colorInitial = Color('#7743CE');
+		var result1 = colorInitial.darken(0.2);
+		var result2 = colorInitial.darken(0.2);
+
+		equal(colorInitial.hexString(), '#7743CE');
+		deepEqual(result1, result2);
+	});
 });
