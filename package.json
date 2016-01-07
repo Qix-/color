@@ -13,10 +13,7 @@
     "Josh Junon"
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/MoOx/color.git"
-  },
+  "repository": "Qix-/color",
   "xo": {
     "rules": {
       "no-cond-assign": 0,
