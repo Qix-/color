@@ -2,6 +2,115 @@
 var convert = require('color-convert');
 var string = require('color-string');
 
+var isAnyFieldsNotUndefined = function (obj, fields) {
+	return fields.reduce(function (acc, field) {
+		return acc || field in obj;
+	}, undefined);
+};
+
+var setValuesMap = {
+	rgb: ['r', 'red'],
+	hsl: ['l', 'lightness'],
+	hsv: ['v', 'value'],
+	hwb: ['w', 'whiteness'],
+	cmyk: ['c', 'cyan']
+};
+
+var extractSetValuesParam = function (obj) {
+	return Object.keys(setValuesMap).reduce(function (acc, key) {
+		if (!acc && isAnyFieldsNotUndefined(obj, setValuesMap[key])) {
+			return key;
+		}
+		return acc;
+	}, undefined);
+};
+
+var cloneValues = function (values) {
+	return Object.keys(values).reduce(function (acc, key) {
+		acc[key] = Array.isArray(values[key]) ? values[key].slice(0) : values[key];
+		return acc;
+	}, {});
+};
+
+var spaces = {
+	rgb: ['red', 'green', 'blue'],
+	hsl: ['hue', 'saturation', 'lightness'],
+	hsv: ['hue', 'saturation', 'value'],
+	hwb: ['hue', 'whiteness', 'blackness'],
+	cmyk: ['cyan', 'magenta', 'yellow', 'black']
+};
+
+var maxes = {
+	rgb: [255, 255, 255],
+	hsl: [360, 100, 100],
+	hsv: [360, 100, 100],
+	hwb: [360, 100, 100],
+	cmyk: [100, 100, 100, 100]
+};
+
+var setValues = function (values, space, vals) {
+	var i;
+	var alpha = 1;
+	if (space === 'alpha') {
+		alpha = vals;
+	} else if (vals.length) {
+		// [10, 10, 10]
+		values[space] = vals.slice(0, space.length);
+		alpha = vals[space.length];
+	} else if (vals[space.charAt(0)] !== undefined) {
+		// {r: 10, g: 10, b: 10}
+		for (i = 0; i < space.length; i++) {
+			values[space][i] = vals[space.charAt(i)];
+		}
+
+		alpha = vals.a;
+	} else if (vals[spaces[space][0]] !== undefined) {
+		// {red: 10, green: 10, blue: 10}
+		var chans = spaces[space];
+
+		for (i = 0; i < space.length; i++) {
+			values[space][i] = vals[chans[i]];
+		}
+
+		alpha = vals.alpha;
+	}
+
+	values.alpha = Math.max(0, Math.min(1, (alpha === undefined ? values.alpha : alpha)));
+
+	if (space === 'alpha') {
+		// ?nothing here
+		return values;
+	}
+
+	var capped;
+
+	// cap values of the space prior converting all values
+	for (i = 0; i < space.length; i++) {
+		capped = Math.max(0, Math.min(maxes[space][i], values[space][i]));
+		values[space][i] = Math.round(capped);
+	}
+
+	// convert to all the other color spaces
+	for (var sname in spaces) {
+		if (sname !== space) {
+			values[sname] = convert[space][sname](values[space]);
+		}
+
+		// cap values
+		for (i = 0; i < sname.length; i++) {
+			capped = Math.max(0, Math.min(maxes[sname][i], values[sname][i]));
+			values[sname][i] = Math.round(capped);
+		}
+	}
+
+	return values;
+};
+
+var extractColorString = function (spaceResult, stringFunc, stringFuncArg) {
+	var stringFuncRes = stringFunc.call(string, stringFuncArg);
+	return stringFuncRes ? {space: spaceResult, vals: stringFuncRes} : undefined;
+};
+
 var Color = function (obj) {
 	if (obj instanceof Color) {
 		return obj;
@@ -10,7 +119,7 @@ var Color = function (obj) {
 		return new Color(obj);
 	}
 
-	this.values = {
+	var initialValues = {
 		rgb: [0, 0, 0],
 		hsl: [0, 0, 0],
 		hsv: [0, 0, 0],
@@ -18,37 +127,58 @@ var Color = function (obj) {
 		cmyk: [0, 0, 0, 0],
 		alpha: 1
 	};
-
 	// parse Color() argument
-	var vals;
+	var stringVals;
+	var setValsParam;
+
 	if (typeof obj === 'string') {
-		vals = string.getRgba(obj);
-		if (vals) {
-			this.setValues('rgb', vals);
-		} else if (vals = string.getHsla(obj)) {
-			this.setValues('hsl', vals);
-		} else if (vals = string.getHwb(obj)) {
-			this.setValues('hwb', vals);
-		} else {
+		stringVals = extractColorString('rgb', string.getRgba, obj) ||
+				extractColorString('hsl', string.getHsla, obj) ||
+				extractColorString('hwb', string.getHwb, obj) || undefined;
+		if (!stringVals) {
 			throw new Error('Unable to parse color from string "' + obj + '"');
 		}
+		this.values = setValues(initialValues, stringVals.space, stringVals.vals);
 	} else if (typeof obj === 'object') {
-		vals = obj;
-		if (vals.r !== undefined || vals.red !== undefined) {
-			this.setValues('rgb', vals);
-		} else if (vals.l !== undefined || vals.lightness !== undefined) {
-			this.setValues('hsl', vals);
-		} else if (vals.v !== undefined || vals.value !== undefined) {
-			this.setValues('hsv', vals);
-		} else if (vals.w !== undefined || vals.whiteness !== undefined) {
-			this.setValues('hwb', vals);
-		} else if (vals.c !== undefined || vals.cyan !== undefined) {
-			this.setValues('cmyk', vals);
-		} else {
-			throw new Error('Unable to parse color from object ' + JSON.stringify(obj));
+		setValsParam = extractSetValuesParam(obj);
+		if (!setValsParam) {
+			throw new Error('Unable to parse color from object ' + JSON.stringify(obj) + ' setvals param: ' + setValsParam);
 		}
+		this.values = setValues(initialValues, setValsParam, obj);
+	} else {
+		this.values = initialValues;
 	}
 };
+
+var createNewColorInstance = function (initialValues) {
+	return Object.create(Color.prototype, {
+		values: {
+			get: function () {
+				return initialValues;
+			}
+		}
+	});
+};
+
+var createNewColorInstanceFromValues = function (fromValues, space, vals) {
+	var clonedValues = setValues(cloneValues(fromValues), space, vals);
+	return createNewColorInstance(clonedValues);
+};
+
+var valueSpaceOperator = function (space, index, multiplier) {
+	return function (ratio) {
+		var clonedValues = cloneValues(this.values);
+		clonedValues[space][index] += clonedValues[space][index] * ratio * multiplier;
+		return createNewColorInstance(setValues(clonedValues, space, clonedValues[space]));
+	};
+};
+
+var DARKEN_LIGHTEN_HSL_INDEX = 2;
+var SAT_DESAT_HSL_INDEX = 1;
+var WHITHEN_HWB_INDEX = 1;
+var DARKEN_HWB_INDEX = 2;
+var NEG_MULTIPLIER = -1;
+var POS_MULTIPLIER = 1;
 
 Color.prototype = {
 	rgb: function () {
@@ -97,8 +227,7 @@ Color.prototype = {
 		if (val === undefined) {
 			return this.values.alpha;
 		}
-		this.setValues('alpha', val);
-		return this;
+		return createNewColorInstance(setValues(this.values, 'alpha', val));
 	},
 
 	red: function (val) {
@@ -223,71 +352,46 @@ Color.prototype = {
 		for (var i = 0; i < 3; i++) {
 			rgb[i] = 255 - this.values.rgb[i];
 		}
-		this.setValues('rgb', rgb);
-		return this;
+		return createNewColorInstance(setValues(cloneValues(this.values), 'rgb', rgb));
 	},
 
-	lighten: function (ratio) {
-		this.values.hsl[2] += this.values.hsl[2] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
-	},
+	lighten: valueSpaceOperator('hsl', DARKEN_LIGHTEN_HSL_INDEX, POS_MULTIPLIER),
 
-	darken: function (ratio) {
-		this.values.hsl[2] -= this.values.hsl[2] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
-	},
+	darken: valueSpaceOperator('hsl', DARKEN_LIGHTEN_HSL_INDEX, NEG_MULTIPLIER),
 
-	saturate: function (ratio) {
-		this.values.hsl[1] += this.values.hsl[1] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
-	},
+	saturate: valueSpaceOperator('hsl', SAT_DESAT_HSL_INDEX, POS_MULTIPLIER),
 
-	desaturate: function (ratio) {
-		this.values.hsl[1] -= this.values.hsl[1] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
-	},
+	desaturate: valueSpaceOperator('hsl', SAT_DESAT_HSL_INDEX, NEG_MULTIPLIER),
 
-	whiten: function (ratio) {
-		this.values.hwb[1] += this.values.hwb[1] * ratio;
-		this.setValues('hwb', this.values.hwb);
-		return this;
-	},
+	whiten: valueSpaceOperator('hwb', WHITHEN_HWB_INDEX, POS_MULTIPLIER),
 
-	blacken: function (ratio) {
-		this.values.hwb[2] += this.values.hwb[2] * ratio;
-		this.setValues('hwb', this.values.hwb);
-		return this;
-	},
+	blacken: valueSpaceOperator('hwb', DARKEN_HWB_INDEX, POS_MULTIPLIER),
 
 	greyscale: function () {
-		var rgb = this.values.rgb;
+		var clonedValues = cloneValues(this.values);
+		var rgb = clonedValues.rgb;
 		// http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
 		var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
-		this.setValues('rgb', [val, val, val]);
-		return this;
+		return createNewColorInstance(setValues(clonedValues, 'rgb', [val, val, val]));
 	},
 
 	clearer: function (ratio) {
-		this.setValues('alpha', this.values.alpha - (this.values.alpha * ratio));
-		return this;
+		var clonedValues = cloneValues(this.values);
+		return createNewColorInstance(setValues(clonedValues, 'alpha', this.values.alpha - (this.values.alpha * ratio)));
 	},
 
 	opaquer: function (ratio) {
-		this.setValues('alpha', this.values.alpha + (this.values.alpha * ratio));
-		return this;
+		var clonedValues = cloneValues(this.values);
+		return createNewColorInstance(setValues(clonedValues, 'alpha', this.values.alpha + (this.values.alpha * ratio)));
 	},
 
 	rotate: function (degrees) {
-		var hue = this.values.hsl[0];
+		var clonedValues = cloneValues(this.values);
+		var hue = clonedValues.hsl[0];
 		hue = (hue + degrees) % 360;
 		hue = hue < 0 ? 360 + hue : hue;
-		this.values.hsl[0] = hue;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		clonedValues.hsl[0] = hue;
+		return createNewColorInstance(setValues(clonedValues, 'hsl', clonedValues.hsl));
 	},
 
 	/**
@@ -319,8 +423,25 @@ Color.prototype = {
 	},
 
 	clone: function () {
-		return new Color(this.rgb());
+		return createNewColorInstance(cloneValues(this.values));
 	}
+};
+
+Color.prototype.setChannel = function (space, index, val) {
+	if (val === undefined) {
+		// color.red() , we need to fix this, this is wrong
+		return this.values[space][index];
+	}
+	if (val === this.values[space][index]) {
+		// color.red(color.red())
+		return this;
+	}
+
+	var clonedValues = cloneValues(this.values);
+	// color.red(100)
+	clonedValues[space][index] = val;
+	clonedValues = setValues(clonedValues, space, clonedValues[space]);
+	return createNewColorInstance(clonedValues);
 };
 
 Color.prototype.getValues = function (space) {
@@ -338,82 +459,8 @@ Color.prototype.getValues = function (space) {
 	return vals;
 };
 
-Color.prototype.setValues = function (space, vals) {
-	var spaces = {
-		rgb: ['red', 'green', 'blue'],
-		hsl: ['hue', 'saturation', 'lightness'],
-		hsv: ['hue', 'saturation', 'value'],
-		hwb: ['hue', 'whiteness', 'blackness'],
-		cmyk: ['cyan', 'magenta', 'yellow', 'black']
-	};
-
-	var maxes = {
-		rgb: [255, 255, 255],
-		hsl: [360, 100, 100],
-		hsv: [360, 100, 100],
-		hwb: [360, 100, 100],
-		cmyk: [100, 100, 100, 100]
-	};
-
-	var i;
-	var alpha = 1;
-	if (space === 'alpha') {
-		alpha = vals;
-	} else if (vals.length) {
-		// [10, 10, 10]
-		this.values[space] = vals.slice(0, space.length);
-		alpha = vals[space.length];
-	} else if (vals[space.charAt(0)] !== undefined) {
-		// {r: 10, g: 10, b: 10}
-		for (i = 0; i < space.length; i++) {
-			this.values[space][i] = vals[space.charAt(i)];
-		}
-
-		alpha = vals.a;
-	} else if (vals[spaces[space][0]] !== undefined) {
-		// {red: 10, green: 10, blue: 10}
-		var chans = spaces[space];
-
-		for (i = 0; i < space.length; i++) {
-			this.values[space][i] = vals[chans[i]];
-		}
-
-		alpha = vals.alpha;
-	}
-
-	this.values.alpha = Math.max(0, Math.min(1, (alpha === undefined ? this.values.alpha : alpha)));
-
-	if (space === 'alpha') {
-		return false;
-	}
-
-	var capped;
-
-	// cap values of the space prior converting all values
-	for (i = 0; i < space.length; i++) {
-		capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
-		this.values[space][i] = Math.round(capped);
-	}
-
-	// convert to all the other color spaces
-	for (var sname in spaces) {
-		if (sname !== space) {
-			this.values[sname] = convert[space][sname](this.values[space]);
-		}
-
-		// cap values
-		for (i = 0; i < sname.length; i++) {
-			capped = Math.max(0, Math.min(maxes[sname][i], this.values[sname][i]));
-			this.values[sname][i] = Math.round(capped);
-		}
-	}
-
-	return true;
-};
-
 Color.prototype.setSpace = function (space, args) {
 	var vals = args[0];
-
 	if (vals === undefined) {
 		// color.rgb()
 		return this.getValues(space);
@@ -423,25 +470,11 @@ Color.prototype.setSpace = function (space, args) {
 	if (typeof vals === 'number') {
 		vals = Array.prototype.slice.call(args);
 	}
-
-	this.setValues(space, vals);
-	return this;
+	return createNewColorInstanceFromValues(this.values, space, vals);
 };
 
-Color.prototype.setChannel = function (space, index, val) {
-	if (val === undefined) {
-		// color.red()
-		return this.values[space][index];
-	} else if (val === this.values[space][index]) {
-		// color.red(color.red())
-		return this;
-	}
-
-	// color.red(100)
-	this.values[space][index] = val;
-	this.setValues(space, this.values[space]);
-
-	return this;
+Color.prototype.setValues = function (space, vals) {
+	return createNewColorInstanceFromValues(this.values, space, vals);
 };
 
 module.exports = Color;
