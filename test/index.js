@@ -728,13 +728,50 @@ it('Exceptions', function () {
 	}, /Unable to parse color from object/);
 });
 
-describe('immutable', function () {
-	it('Never mutates old instance', function () {
-		var colorInitial = Color('#7743CE');
+describe('Immutability', function () {
+	var hexString = '#7743CE';
+	var colorInitial = Color(hexString);
+	var colorIdent = Color(hexString);
+	it('darkens without mutating base instance', function () {
 		var result1 = colorInitial.darken(0.2);
 		var result2 = colorInitial.darken(0.2);
 
-		equal(colorInitial.hexString(), '#7743CE');
+		equal(colorInitial.hexString(), hexString);
+		deepEqual(colorInitial, colorIdent);
+		// colorINitial nevermutates so result1 asme as result 2
 		deepEqual(result1, result2);
+	});
+	it('set space without mutating base instance', function () {
+		var spacesResult1;
+		var spacesResult2;
+
+		var spaces = ['rgb', 'hsl', 'hsv', 'hwb', 'cmyk'];
+		spaces.forEach(function (space) {
+			spacesResult1 = colorInitial[space](0, 0, 0);
+			spacesResult2 = colorInitial[space](0, 0, 0);
+			equal(colorInitial.hexString(), hexString);
+			deepEqual(colorInitial, colorIdent);
+			deepEqual(spacesResult1, spacesResult2);
+		});
+	});
+	it('set channel without mutating base instance', function () {
+		var spaces = {
+			rgb: ['red', 'green', 'blue'],
+			hsl: ['hue', 'saturation', 'lightness'],
+			hsv: ['hue', 'saturation', 'value'],
+			hwb: ['hue', 'whiteness', 'blackness'],
+			cmyk: ['cyan', 'magenta', 'yellow', 'black']
+		};
+		var channelResult1;
+		var channelResult2;
+		Object.keys(spaces).forEach(function (space) {
+			var arr = spaces[space];
+			arr.forEach(function (channel, index) {
+				channelResult1 = colorInitial[channel](space, index, 1);
+				channelResult2 = colorInitial[channel](space, index, 1);
+				deepEqual(colorInitial, colorIdent);
+				deepEqual(channelResult1, channelResult2);
+			});
+		});
 	});
 });

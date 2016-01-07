@@ -4,12 +4,10 @@ var string = require('color-string');
 
 var isAnyFieldsNotUndefined = function (obj, fields) {
 	return fields.reduce(function (acc, field) {
-		if (acc !== true) {
-			return obj[field] !== undefined;
-		}
-		return acc;
-	}, false);
+		return acc || field in obj;
+	}, undefined);
 };
+
 var setValuesMap = {
 	rgb: ['r', 'red'],
 	hsl: ['l', 'lightness'],
@@ -20,7 +18,7 @@ var setValuesMap = {
 
 var extractSetValuesParam = function (obj) {
 	return Object.keys(setValuesMap).reduce(function (acc, key) {
-		if (acc === undefined && isAnyFieldsNotUndefined(obj, setValuesMap[key])) {
+		if (!acc && isAnyFieldsNotUndefined(obj, setValuesMap[key])) {
 			return key;
 		}
 		return acc;
@@ -28,26 +26,29 @@ var extractSetValuesParam = function (obj) {
 };
 
 var cloneValues = function (values) {
-	return JSON.parse(JSON.stringify(values));
+	return Object.keys(values).reduce(function (acc, key) {
+		acc[key] = Array.isArray(values[key]) ? values[key].slice(0) : values[key];
+		return acc;
+	}, {});
+};
+
+var spaces = {
+	rgb: ['red', 'green', 'blue'],
+	hsl: ['hue', 'saturation', 'lightness'],
+	hsv: ['hue', 'saturation', 'value'],
+	hwb: ['hue', 'whiteness', 'blackness'],
+	cmyk: ['cyan', 'magenta', 'yellow', 'black']
+};
+
+var maxes = {
+	rgb: [255, 255, 255],
+	hsl: [360, 100, 100],
+	hsv: [360, 100, 100],
+	hwb: [360, 100, 100],
+	cmyk: [100, 100, 100, 100]
 };
 
 var setValues = function (values, space, vals) {
-	var spaces = {
-		rgb: ['red', 'green', 'blue'],
-		hsl: ['hue', 'saturation', 'lightness'],
-		hsv: ['hue', 'saturation', 'value'],
-		hwb: ['hue', 'whiteness', 'blackness'],
-		cmyk: ['cyan', 'magenta', 'yellow', 'black']
-	};
-
-	var maxes = {
-		rgb: [255, 255, 255],
-		hsl: [360, 100, 100],
-		hsv: [360, 100, 100],
-		hwb: [360, 100, 100],
-		cmyk: [100, 100, 100, 100]
-	};
-
 	var i;
 	var alpha = 1;
 	if (space === 'alpha') {
@@ -105,6 +106,11 @@ var setValues = function (values, space, vals) {
 	return values;
 };
 
+var extractColorString = function (spaceResult, stringFunc, stringFuncArg) {
+	var stringFuncRes = stringFunc.call(string, stringFuncArg);
+	return stringFuncRes ? {space: spaceResult, vals: stringFuncRes} : undefined;
+};
+
 var Color = function (obj) {
 	if (obj instanceof Color) {
 		return obj;
@@ -121,28 +127,24 @@ var Color = function (obj) {
 		cmyk: [0, 0, 0, 0],
 		alpha: 1
 	};
-
 	// parse Color() argument
-	var vals;
+	var stringVals;
 	var setValsParam;
+
 	if (typeof obj === 'string') {
-		vals = string.getRgba(obj);
-		if (vals) {
-			this.values = setValues(initialValues, 'rgb', vals);
-		} else if (vals = string.getHsla(obj)) {
-			this.values = setValues(initialValues, 'hsl', vals);
-		} else if (vals = string.getHwb(obj)) {
-			this.values = setValues(initialValues, 'hwb', vals);
-		} else {
+		stringVals = extractColorString('rgb', string.getRgba, obj) ||
+				extractColorString('hsl', string.getHsla, obj) ||
+				extractColorString('hwb', string.getHwb, obj) || undefined;
+		if (!stringVals) {
 			throw new Error('Unable to parse color from string "' + obj + '"');
 		}
+		this.values = setValues(initialValues, stringVals.space, stringVals.vals);
 	} else if (typeof obj === 'object') {
-		vals = obj;
-		setValsParam = extractSetValuesParam(vals);
+		setValsParam = extractSetValuesParam(obj);
 		if (!setValsParam) {
 			throw new Error('Unable to parse color from object ' + JSON.stringify(obj) + ' setvals param: ' + setValsParam);
 		}
-		this.values = setValues(initialValues, setValsParam, vals);
+		this.values = setValues(initialValues, setValsParam, obj);
 	} else {
 		this.values = initialValues;
 	}
@@ -157,6 +159,26 @@ var createNewColorInstance = function (initialValues) {
 		}
 	});
 };
+
+var createNewColorInstanceFromValues = function (fromValues, space, vals) {
+	var clonedValues = setValues(cloneValues(fromValues), space, vals);
+	return createNewColorInstance(clonedValues);
+};
+
+var valueSpaceOperator = function (space, index, multiplier) {
+	return function (ratio) {
+		var clonedValues = cloneValues(this.values);
+		clonedValues[space][index] += clonedValues[space][index] * ratio * multiplier;
+		return createNewColorInstance(setValues(clonedValues, space, clonedValues[space]));
+	};
+};
+
+var DARKEN_LIGHTEN_HSL_INDEX = 2;
+var SAT_DESAT_HSL_INDEX = 1;
+var WHITHEN_HWB_INDEX = 1;
+var DARKEN_HWB_INDEX = 2;
+var NEG_MULTIPLIER = -1;
+var POS_MULTIPLIER = 1;
 
 Color.prototype = {
 	rgb: function () {
@@ -333,41 +355,17 @@ Color.prototype = {
 		return createNewColorInstance(setValues(cloneValues(this.values), 'rgb', rgb));
 	},
 
-	lighten: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hsl[2] += clonedValues.hsl[2] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hsl', clonedValues.hsl));
-	},
+	lighten: valueSpaceOperator('hsl', DARKEN_LIGHTEN_HSL_INDEX, POS_MULTIPLIER),
 
-	darken: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hsl[2] -= clonedValues.hsl[2] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hsl', clonedValues.hsl));
-	},
+	darken: valueSpaceOperator('hsl', DARKEN_LIGHTEN_HSL_INDEX, NEG_MULTIPLIER),
 
-	saturate: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hsl[1] += clonedValues.hsl[1] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hsl', clonedValues.hsl));
-	},
+	saturate: valueSpaceOperator('hsl', SAT_DESAT_HSL_INDEX, POS_MULTIPLIER),
 
-	desaturate: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hsl[1] -= clonedValues.hsl[1] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hsl', clonedValues.hsl));
-	},
+	desaturate: valueSpaceOperator('hsl', SAT_DESAT_HSL_INDEX, NEG_MULTIPLIER),
 
-	whiten: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hwb[1] += clonedValues.hwb[1] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hwb', clonedValues.hwb));
-	},
+	whiten: valueSpaceOperator('hwb', WHITHEN_HWB_INDEX, POS_MULTIPLIER),
 
-	blacken: function (ratio) {
-		var clonedValues = cloneValues(this.values);
-		clonedValues.hwb[2] += clonedValues.hwb[2] * ratio;
-		return createNewColorInstance(setValues(clonedValues, 'hwb', clonedValues.hwb));
-	},
+	blacken: valueSpaceOperator('hwb', DARKEN_HWB_INDEX, POS_MULTIPLIER),
 
 	greyscale: function () {
 		var clonedValues = cloneValues(this.values);
@@ -472,10 +470,11 @@ Color.prototype.setSpace = function (space, args) {
 	if (typeof vals === 'number') {
 		vals = Array.prototype.slice.call(args);
 	}
+	return createNewColorInstanceFromValues(this.values, space, vals);
+};
 
-	var clonedValues = cloneValues(this.values);
-	clonedValues = setValues(clonedValues, space, vals);
-	return createNewColorInstance(clonedValues);
+Color.prototype.setValues = function (space, vals) {
+	return createNewColorInstanceFromValues(this.values, space, vals);
 };
 
 module.exports = Color;
