@@ -713,6 +713,23 @@ it('Clone', function () {
 	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 });
 
+it('Clone: default constructor', function () {
+	var defaultColor = Color();
+	var clonedFromDefault = defaultColor.clone();
+
+	// same tests used in base case 'Clone'
+	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
+	deepEqual(defaultColor.clone().rgb(0, 0, 0).rgbaArray(), [0, 0, 0, 1]);
+	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
+
+	// additional checks
+	deepEqual(clonedFromDefault.rgbaArray(), [0, 0, 0, 1]);
+	equal(
+		defaultColor.hwbString(),
+		clonedFromDefault.hwbString()
+	);
+});
+
 it('Level', function () {
 	equal(Color('white').level(Color('black')), 'AAA');
 	equal(Color('grey').level(Color('black')), 'AA');
