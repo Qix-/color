@@ -7,6 +7,7 @@ var deepEqual = assert.deepEqual;
 var equal = assert.equal;
 var ok = assert.ok;
 var strictEqual = assert.strictEqual;
+var notStrictEqual = assert.notStrictEqual;
 var throws = assert.throws;
 
 it('Color() instance', function () {
@@ -708,6 +709,7 @@ it('Clone', function () {
 		g: 20,
 		b: 30
 	});
+	notStrictEqual(clone, clone.clone());
 	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 	deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
 	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
@@ -718,6 +720,7 @@ it('Clone: default constructor', function () {
 	var clonedFromDefault = defaultColor.clone();
 
 	// same tests used in base case 'Clone'
+	notStrictEqual(defaultColor, clonedFromDefault);
 	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
 	deepEqual(defaultColor.clone().rgb(0, 0, 0).rgbaArray(), [0, 0, 0, 1]);
 	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
