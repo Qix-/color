@@ -26,6 +26,8 @@
     "index.js"
   ],
   "scripts": {
+    "prepublish": "npm run build",
+    "build": "webpack",
     "pretest": "xo",
     "test": "mocha"
   },
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "mocha": "^2.2.5",
+    "webpack": "^1.12.13",
     "xo": "^0.12.1"
   }
 }
