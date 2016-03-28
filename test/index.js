@@ -15,18 +15,6 @@ it('Color() instance', function () {
 	ok((new Color()) instanceof Color);
 });
 
-it('test', function () {
-	deepEqual(Color({
-		r: 10,
-		g: 30,
-		b: 25
-	}).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25
-	});
-});
-
 it('Color() argument', function () {
 	deepEqual(Color('#0A1E19').rgb(), {
 		r: 10,
@@ -746,52 +734,4 @@ it('Exceptions', function () {
 	throws(function () {
 		Color({});
 	}, /Unable to parse color from object/);
-});
-
-describe('Immutability', function () {
-	var hexString = '#7743CE';
-	var colorInitial = Color(hexString);
-	var colorIdent = Color(hexString);
-	it('darkens without mutating base instance', function () {
-		var result1 = colorInitial.darken(0.2);
-		var result2 = colorInitial.darken(0.2);
-
-		equal(colorInitial.hexString(), hexString);
-		deepEqual(colorInitial, colorIdent);
-		// colorINitial nevermutates so result1 asme as result 2
-		deepEqual(result1, result2);
-	});
-	it('set space without mutating base instance', function () {
-		var spacesResult1;
-		var spacesResult2;
-
-		var spaces = ['rgb', 'hsl', 'hsv', 'hwb', 'cmyk'];
-		spaces.forEach(function (space) {
-			spacesResult1 = colorInitial[space](0, 0, 0);
-			spacesResult2 = colorInitial[space](0, 0, 0);
-			equal(colorInitial.hexString(), hexString);
-			deepEqual(colorInitial, colorIdent);
-			deepEqual(spacesResult1, spacesResult2);
-		});
-	});
-	it('set channel without mutating base instance', function () {
-		var spaces = {
-			rgb: ['red', 'green', 'blue'],
-			hsl: ['hue', 'saturation', 'lightness'],
-			hsv: ['hue', 'saturation', 'value'],
-			hwb: ['hue', 'whiteness', 'blackness'],
-			cmyk: ['cyan', 'magenta', 'yellow', 'black']
-		};
-		var channelResult1;
-		var channelResult2;
-		Object.keys(spaces).forEach(function (space) {
-			var arr = spaces[space];
-			arr.forEach(function (channel, index) {
-				channelResult1 = colorInitial[channel](space, index, 1);
-				channelResult2 = colorInitial[channel](space, index, 1);
-				deepEqual(colorInitial, colorIdent);
-				deepEqual(channelResult1, channelResult2);
-			});
-		});
-	});
 });
