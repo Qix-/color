@@ -1,4 +1,5 @@
 /* MIT license */
+var clone = require('clone');
 var convert = require('color-convert');
 var string = require('color-string');
 
@@ -319,7 +320,9 @@ Color.prototype = {
 	},
 
 	clone: function () {
-		return new Color(this.rgb());
+		var col = new Color();
+		col.values = clone(col.values);
+		return col;
 	}
 };
 

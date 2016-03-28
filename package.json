@@ -30,6 +30,7 @@
     "test": "mocha"
   },
   "dependencies": {
+    "clone": "^1.0.2",
     "color-convert": "^0.5.3",
     "color-string": "^0.3.0"
   },
