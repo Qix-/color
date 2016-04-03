@@ -421,6 +421,7 @@ it('Setting the same value', function () {
 	var blue = color.blue();
 	var hue = color.hue();
 	var saturation = color.saturation();
+	var saturationl = color.saturationl();
 	var saturationv = color.saturationv();
 	var lightness = color.lightness();
 	var whiteness = color.whiteness();
@@ -450,6 +451,10 @@ it('Setting the same value', function () {
 
 	color.hue(hue);
 	equal(color.hue(), hue);
+	equal(color.hexString(), colorString);
+
+	color.saturationl(saturationl);
+	equal(color.saturationl(), saturationl);
 	equal(color.hexString(), colorString);
 
 	color.saturation(saturation);
@@ -608,6 +613,15 @@ it('Manipulators wo/ mix', function () {
 		r: 67,
 		g: 122,
 		b: 134
+	}).grayscale().rgb(), {
+		r: 107,
+		g: 107,
+		b: 107
+	});
+	deepEqual(Color({
+		r: 67,
+		g: 122,
+		b: 134
 	}).negate().rgb(), {
 		r: 188,
 		g: 133,
@@ -643,6 +657,22 @@ it('Manipulators wo/ mix', function () {
 		s: 80,
 		l: 60
 	}).desaturate(0.5).saturation(), 40);
+	equal(Color({
+		r: 10,
+		g: 10,
+		b: 10,
+		a: 0.8
+	}).clearer(0.5).alpha(), 0.4);
+	equal(Color({
+		h: 100,
+		s: 40,
+		l: 50
+	}).saturate(0.5).saturationl(), 60);
+	equal(Color({
+		h: 100,
+		s: 80,
+		l: 60
+	}).desaturate(0.5).saturationl(), 40);
 	equal(Color({
 		r: 10,
 		g: 10,

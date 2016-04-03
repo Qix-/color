@@ -118,8 +118,11 @@ Color.prototype = {
 		}
 		return this.setChannel('hsl', 0, val);
 	},
-	saturation: function (val) {
+	saturationl: function (val) {
 		return this.setChannel('hsl', 1, val);
+	},
+	saturation: function (val) {
+		return this.saturationl(val);
 	},
 	lightness: function (val) {
 		return this.setChannel('hsl', 2, val);
@@ -270,6 +273,9 @@ Color.prototype = {
 		var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
 		this.setValues('rgb', [val, val, val]);
 		return this;
+	},
+	grayscale: function () {
+		return this.greyscale();
 	},
 
 	clearer: function (ratio) {
