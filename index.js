@@ -173,6 +173,9 @@ Color.prototype = {
 	keyword: function () {
 		return string.keyword(this.values.rgb, this.values.alpha);
 	},
+	toString: function () {
+		return this.rgbaString();
+	},
 
 	rgbNumber: function () {
 		return (this.values.rgb[0] << 16) | (this.values.rgb[1] << 8) | this.values.rgb[2];
