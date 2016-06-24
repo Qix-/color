@@ -321,7 +321,7 @@ Color.prototype = {
 
 	clone: function () {
 		var col = new Color();
-		col.values = clone(col.values);
+		col.values = clone(this.values);
 		return col;
 	}
 };

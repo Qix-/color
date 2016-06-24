@@ -699,6 +699,7 @@ it('Clone', function () {
 	});
 	notStrictEqual(clone, clone.clone());
 	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
+	deepEqual(clone.clone().rgbaArray(), [10, 20, 30, 1]);
 	deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
 	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
 });
@@ -710,6 +711,7 @@ it('Clone: default constructor', function () {
 	// same tests used in base case 'Clone'
 	notStrictEqual(defaultColor, clonedFromDefault);
 	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
+	deepEqual(defaultColor.clone().rgbaArray(), [0, 0, 0, 1]);
 	deepEqual(defaultColor.clone().rgb(0, 0, 0).rgbaArray(), [0, 0, 0, 1]);
 	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
 
