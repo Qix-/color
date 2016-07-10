@@ -229,13 +229,13 @@ Color.prototype = {
 	},
 
 	lighten: function (ratio) {
-		this.values.hsl[2] += this.values.hsl[2] * ratio;
+		this.values.hsl[2] += ratio * 100;
 		this.setValues('hsl', this.values.hsl);
 		return this;
 	},
 
 	darken: function (ratio) {
-		this.values.hsl[2] -= this.values.hsl[2] * ratio;
+		this.values.hsl[2] -= ratio * 100;
 		this.setValues('hsl', this.values.hsl);
 		return this;
 	},

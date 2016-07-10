@@ -617,12 +617,17 @@ it('Manipulators wo/ mix', function () {
 		h: 100,
 		s: 50,
 		l: 60
-	}).lighten(0.5).lightness(), 90);
+	}).lighten(0.5).lightness(), 100);
 	equal(Color({
 		h: 100,
 		s: 50,
 		l: 60
-	}).darken(0.5).lightness(), 30);
+	}).darken(0.5).lightness(), 10);
+	equal(Color({
+		h: 100,
+		s: 50,
+		l: 30
+	}).darken(0.5).lightness(), 0);
 	equal(Color({
 		h: 100,
 		w: 50,
