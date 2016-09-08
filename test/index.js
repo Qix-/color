@@ -647,6 +647,12 @@ it('Manipulators wo/ mix', function () {
 		r: 10,
 		g: 10,
 		b: 10,
+		a: 1
+	}).clearer(0.8).rgbaString(), 'rgba(10, 10, 10, 0.2)');
+	equal(Color({
+		r: 10,
+		g: 10,
+		b: 10,
 		a: 0.8
 	}).clearer(0.5).alpha(), 0.4);
 	equal(Color({
