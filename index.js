@@ -91,12 +91,13 @@ Color.prototype = {
 		return rgb.concat([this.values.alpha]);
 	},
 	glRgbaArray: function () {
-		var rgb = this.values.rgb,
-			glRgba = [];
+		var rgb = this.values.rgb;
+		var glRgba = [];
 		for (var i = 0; i < 3; i++) {
-			glRgb[i] = rgb[i] / 255;
+			glRgba[i] = rgb[i] / 255;
 		}
-		return glRgba.concat([this.values.alpha]);
+		glRgba.push(this.values.alpha);
+		return glRgba;
 	},
 	hslaArray: function () {
 		var hsl = this.values.hsl;
