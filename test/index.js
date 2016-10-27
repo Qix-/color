@@ -295,6 +295,17 @@ it('Array getters', function () {
 		b: 30
 	}).rgbArray(), [10, 20, 30]);
 	deepEqual(Color({
+		r: 10,
+		g: 20,
+		b: 30
+	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 1]);
+	deepEqual(Color({
+		r: 10,
+		g: 20,
+		b: 30,
+		a: 0.5
+	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 0.5]);
+	deepEqual(Color({
 		h: 10,
 		s: 20,
 		l: 30
