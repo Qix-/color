@@ -90,7 +90,7 @@ Color.prototype = {
 		var rgb = this.values.rgb;
 		return rgb.concat([this.values.alpha]);
 	},
-	glRgbaArray: function () {
+	rgbaArrayNormalized: function () {
 		var rgb = this.values.rgb;
 		var glRgba = [];
 		for (var i = 0; i < 3; i++) {
