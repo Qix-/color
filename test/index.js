@@ -298,13 +298,13 @@ it('Array getters', function () {
 		r: 10,
 		g: 20,
 		b: 30
-	}).glRgbaArray(), [10 / 255, 20 / 255, 30 / 255, 1]);
+	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 1]);
 	deepEqual(Color({
 		r: 10,
 		g: 20,
 		b: 30,
 		a: 0.5
-	}).glRgbaArray(), [10 / 255, 20 / 255, 30 / 255, 0.5]);
+	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 0.5]);
 	deepEqual(Color({
 		h: 10,
 		s: 20,
