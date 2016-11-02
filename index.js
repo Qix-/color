@@ -3,6 +3,10 @@ var clone = require('clone');
 var convert = require('color-convert');
 var string = require('color-string');
 
+function fixFloatPrecision(number) {
+	return parseFloat(number.toFixed(8));
+}
+
 var Color = function (obj) {
 	if (obj instanceof Color) {
 		return obj;
@@ -162,25 +166,25 @@ Color.prototype = {
 		return string.hexString(this.values.rgb);
 	},
 	rgbString: function () {
-		return string.rgbString(this.values.rgb, this.values.alpha);
+		return string.rgbString(this.values.rgb, fixFloatPrecision(this.values.alpha));
 	},
 	rgbaString: function () {
-		return string.rgbaString(this.values.rgb, this.values.alpha);
+		return string.rgbaString(this.values.rgb, fixFloatPrecision(this.values.alpha));
 	},
 	percentString: function () {
-		return string.percentString(this.values.rgb, this.values.alpha);
+		return string.percentString(this.values.rgb, fixFloatPrecision(this.values.alpha));
 	},
 	hslString: function () {
-		return string.hslString(this.values.hsl, this.values.alpha);
+		return string.hslString(this.values.hsl, fixFloatPrecision(this.values.alpha));
 	},
 	hslaString: function () {
-		return string.hslaString(this.values.hsl, this.values.alpha);
+		return string.hslaString(this.values.hsl, fixFloatPrecision(this.values.alpha));
 	},
 	hwbString: function () {
-		return string.hwbString(this.values.hwb, this.values.alpha);
+		return string.hwbString(this.values.hwb, fixFloatPrecision(this.values.alpha));
 	},
 	keyword: function () {
-		return string.keyword(this.values.rgb, this.values.alpha);
+		return string.keyword(this.values.rgb, fixFloatPrecision(this.values.alpha));
 	},
 
 	rgbNumber: function () {
