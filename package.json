@@ -23,7 +23,8 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
     "pretest": "xo",
