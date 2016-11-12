@@ -55,8 +55,8 @@ declare module "color" {
         dark(): boolean;
         light(): boolean;
         negate(): IColor;
-        lighten(): IColor;
-        darken(): IColor;
+        lighten(ratio: number): IColor;
+        darken(ratio: number): IColor;
         saturate(ratio: number): IColor;
         desaturate(ratio: number): IColor;
         whiten(ratio: number): IColor;
