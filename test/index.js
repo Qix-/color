@@ -6,76 +6,83 @@ var Color = require('..');
 var deepEqual = assert.deepEqual;
 var equal = assert.equal;
 var ok = assert.ok;
-var strictEqual = assert.strictEqual;
 var notStrictEqual = assert.notStrictEqual;
 var throws = assert.throws;
 
 it('Color() instance', function () {
 	equal(new Color('red').red(), 255);
 	ok((new Color()) instanceof Color);
+	var c = Color();
+	notStrictEqual(c.rgb(), c.rgb());
+});
+
+it('Immutability', function () {
+	var c = Color(0xFF0000);
+	ok(c !== c.rgb());
+	ok(c != c.rgb()); // eslint-disable-line eqeqeq
 });
 
 it('Color() argument', function () {
-	deepEqual(Color('#0A1E19').rgb(), {
+	deepEqual(Color('#0A1E19').rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25
 	});
-	deepEqual(Color('rgb(10, 30, 25)').rgb(), {
+	deepEqual(Color('rgb(10, 30, 25)').rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25
 	});
-	deepEqual(Color('rgba(10, 30, 25, 0.4)').rgb(), {
+	deepEqual(Color('rgba(10, 30, 25, 0.4)').rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25,
-		a: 0.4
+		alpha: 0.4
 	});
-	deepEqual(Color('rgb(4%, 12%, 10%)').rgb(), {
+	deepEqual(Color('rgb(4%, 12%, 10%)').rgb().object(), {
 		r: 10,
 		g: 31,
 		b: 26
 	});
-	deepEqual(Color('rgba(4%, 12%, 10%, 0.4)').rgb(), {
+	deepEqual(Color('rgba(4%, 12%, 10%, 0.4)').rgb().object(), {
 		r: 10,
 		g: 31,
 		b: 26,
-		a: 0.4
+		alpha: 0.4
 	});
-	deepEqual(Color('blue').rgb(), {
+	deepEqual(Color('blue').rgb().object(), {
 		r: 0,
 		g: 0,
 		b: 255
 	});
-	deepEqual(Color('hsl(120, 50%, 60%)').hsl(), {
+	deepEqual(Color('hsl(120, 50%, 60%)').hsl().object(), {
 		h: 120,
 		s: 50,
 		l: 60
 	});
-	deepEqual(Color('hsla(120, 50%, 60%, 0.4)').hsl(), {
+	deepEqual(Color('hsla(120, 50%, 60%, 0.4)').hsl().object(), {
 		h: 120,
 		s: 50,
 		l: 60,
-		a: 0.4
+		alpha: 0.4
 	});
-	deepEqual(Color('hwb(120, 50%, 60%)').hwb(), {
+	deepEqual(Color('hwb(120, 50%, 60%)').hwb().object(), {
 		h: 120,
 		w: 50,
 		b: 60
 	});
-	deepEqual(Color('hwb(120, 50%, 60%, 0.4)').hwb(), {
+	deepEqual(Color('hwb(120, 50%, 60%, 0.4)').hwb().object(), {
 		h: 120,
 		w: 50,
 		b: 60,
-		a: 0.4
+		alpha: 0.4
 	});
 
 	deepEqual(Color({
 		r: 10,
 		g: 30,
 		b: 25
-	}).rgb(), {
+	}).rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25
@@ -84,7 +91,7 @@ it('Color() argument', function () {
 		h: 10,
 		s: 30,
 		l: 25
-	}).hsl(), {
+	}).hsl().object(), {
 		h: 10,
 		s: 30,
 		l: 25
@@ -93,7 +100,7 @@ it('Color() argument', function () {
 		h: 10,
 		s: 30,
 		v: 25
-	}).hsv(), {
+	}).hsv().object(), {
 		h: 10,
 		s: 30,
 		v: 25
@@ -102,7 +109,7 @@ it('Color() argument', function () {
 		h: 10,
 		w: 30,
 		b: 25
-	}).hwb(), {
+	}).hwb().object(), {
 		h: 10,
 		w: 30,
 		b: 25
@@ -112,55 +119,7 @@ it('Color() argument', function () {
 		m: 30,
 		y: 25,
 		k: 10
-	}).cmyk(), {
-		c: 10,
-		m: 30,
-		y: 25,
-		k: 10
-	});
-
-	deepEqual(Color({
-		red: 10,
-		green: 30,
-		blue: 25
-	}).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25
-	});
-	deepEqual(Color({
-		hue: 10,
-		saturation: 30,
-		lightness: 25
-	}).hsl(), {
-		h: 10,
-		s: 30,
-		l: 25
-	});
-	deepEqual(Color({
-		hue: 10,
-		saturation: 30,
-		value: 25
-	}).hsv(), {
-		h: 10,
-		s: 30,
-		v: 25
-	});
-	deepEqual(Color({
-		hue: 10,
-		whiteness: 30,
-		blackness: 25
-	}).hwb(), {
-		h: 10,
-		w: 30,
-		b: 25
-	});
-	deepEqual(Color({
-		cyan: 10,
-		magenta: 30,
-		yellow: 25,
-		black: 10
-	}).cmyk(), {
+	}).cmyk().object(), {
 		c: 10,
 		m: 30,
 		y: 25,
@@ -169,85 +128,65 @@ it('Color() argument', function () {
 });
 
 it('Setters', function () {
-	deepEqual(Color().rgb(10, 30, 25).rgb(), {
+	deepEqual(Color.rgb(10, 30, 25).rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25
 	});
-	deepEqual(Color().rgb(10, 30, 25, 0.4).rgb(), {
+	deepEqual(Color.rgb(10, 30, 25, 0.4).rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25,
-		a: 0.4
-	});
-	deepEqual(Color().rgb([10, 30, 25]).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25
-	});
-	deepEqual(Color().rgb([10, 30, 25, 0.4]).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25,
-		a: 0.4
-	});
-	deepEqual(Color().rgb({
-		r: 10,
-		g: 30,
-		b: 25
-	}).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25
-	});
-	deepEqual(Color().rgb({
-		r: 10,
-		g: 30,
-		b: 25,
-		a: 0.4
-	}).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25,
-		a: 0.4
-	});
-	deepEqual(Color().rgb({
-		red: 10,
-		green: 30,
-		blue: 25
-	}).rgb(), {
-		r: 10,
-		g: 30,
-		b: 25
-	});
-	deepEqual(Color().rgb({
-		red: 10,
-		green: 30,
-		blue: 25,
 		alpha: 0.4
-	}).rgb(), {
+	});
+	deepEqual(Color.rgb([10, 30, 25]).rgb().object(), {
+		r: 10,
+		g: 30,
+		b: 25
+	});
+	deepEqual(Color.rgb([10, 30, 25, 0.4]).rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25,
-		a: 0.4
+		alpha: 0.4
+	});
+	deepEqual(Color.rgb({
+		r: 10,
+		g: 30,
+		b: 25
+	}).rgb().object(), {
+		r: 10,
+		g: 30,
+		b: 25
+	});
+	deepEqual(Color.rgb({
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4
+	}).rgb().object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4
 	});
 
-	deepEqual(Color().hsl([260, 10, 10]).hsl(), {
+	deepEqual(Color.hsl([260, 10, 10]).hsl().object(), {
 		h: 260,
 		s: 10,
 		l: 10
 	});
-	deepEqual(Color().hsv([260, 10, 10]).hsv(), {
+	deepEqual(Color.hsv([260, 10, 10]).hsv().object(), {
 		h: 260,
 		s: 10,
 		v: 10
 	});
-	deepEqual(Color().hwb([260, 10, 10]).hwb(), {
+	deepEqual(Color.hwb([260, 10, 10]).hwb().object(), {
 		h: 260,
 		w: 10,
 		b: 10
 	});
-	deepEqual(Color().cmyk([10, 10, 10, 10]).cmyk(), {
+	deepEqual(Color.cmyk([10, 10, 10, 10]).cmyk().object(), {
 		c: 10,
 		m: 10,
 		y: 10,
@@ -255,32 +194,32 @@ it('Setters', function () {
 	});
 });
 
-it('retain alpha', function () {
-	equal(Color().rgb([10, 30, 25, 0.4]).rgb([10, 30, 25]).alpha(), 0.4);
+it('Retain Alpha', function () {
+	equal(Color.rgb(1, 2, 3, 0.4).ansi256().rgb().alpha(), 0.4);
 });
 
 it('Translations', function () {
-	deepEqual(Color().rgb(10, 30, 25).rgb(), {
+	deepEqual(Color.rgb(10, 30, 25).rgb().round().object(), {
 		r: 10,
 		g: 30,
 		b: 25
 	});
-	deepEqual(Color().rgb(10, 30, 25).hsl(), {
+	deepEqual(Color.rgb(10, 30, 25).hsl().round().object(), {
 		h: 165,
 		s: 50,
 		l: 8
 	});
-	deepEqual(Color().rgb(10, 30, 25).hsv(), {
+	deepEqual(Color.rgb(10, 30, 25).hsv().round().object(), {
 		h: 165,
 		s: 67,
 		v: 12
 	});
-	deepEqual(Color().rgb(10, 30, 25).hwb(), {
+	deepEqual(Color.rgb(10, 30, 25).hwb().round().object(), {
 		h: 165,
 		w: 4,
 		b: 88
 	});
-	deepEqual(Color().rgb(10, 30, 25).cmyk(), {
+	deepEqual(Color.rgb(10, 30, 25).cmyk().round().object(), {
 		c: 67,
 		m: 0,
 		y: 17,
@@ -293,39 +232,39 @@ it('Array getters', function () {
 		r: 10,
 		g: 20,
 		b: 30
-	}).rgbArray(), [10, 20, 30]);
+	}).rgb().array(), [10, 20, 30]);
 	deepEqual(Color({
 		r: 10,
 		g: 20,
 		b: 30
-	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 1]);
+	}).unitArray(), [10 / 255, 20 / 255, 30 / 255]);
 	deepEqual(Color({
 		r: 10,
 		g: 20,
 		b: 30,
-		a: 0.5
-	}).rgbaArrayNormalized(), [10 / 255, 20 / 255, 30 / 255, 0.5]);
+		alpha: 0.5
+	}).unitArray(), [10 / 255, 20 / 255, 30 / 255, 0.5]);
 	deepEqual(Color({
 		h: 10,
 		s: 20,
 		l: 30
-	}).hslArray(), [10, 20, 30]);
+	}).hsl().array(), [10, 20, 30]);
 	deepEqual(Color({
 		h: 10,
 		s: 20,
 		v: 30
-	}).hsvArray(), [10, 20, 30]);
+	}).hsv().array(), [10, 20, 30]);
 	deepEqual(Color({
 		h: 10,
 		w: 20,
 		b: 30
-	}).hwbArray(), [10, 20, 30]);
+	}).hwb().array(), [10, 20, 30]);
 	deepEqual(Color({
 		c: 10,
 		m: 20,
 		y: 30,
 		k: 40
-	}).cmykArray(), [10, 20, 30, 40]);
+	}).cmyk().array(), [10, 20, 30, 40]);
 });
 
 it('Multiple times', function () {
@@ -334,8 +273,8 @@ it('Multiple times', function () {
 		g: 20,
 		b: 30
 	});
-	deepEqual(color.rgbaArray(), [10, 20, 30, 1]);
-	deepEqual(color.rgbaArray(), [10, 20, 30, 1]);
+	deepEqual(color.rgb().array(), [10, 20, 30]);
+	deepEqual(color.rgb().array(), [10, 20, 30]);
 });
 
 it('Channel getters/setters', function () {
@@ -343,13 +282,13 @@ it('Channel getters/setters', function () {
 		r: 10,
 		g: 20,
 		b: 30,
-		a: 0.4
+		alpha: 0.4
 	}).alpha(), 0.4);
 	equal(Color({
 		r: 10,
 		g: 20,
 		b: 30,
-		a: 0.4
+		alpha: 0.4
 	}).alpha(0.7).alpha(), 0.7);
 	equal(Color({
 		r: 10,
@@ -431,73 +370,73 @@ it('Setting the same value', function () {
 	var green = color.green();
 	var blue = color.blue();
 	var hue = color.hue();
-	var saturation = color.saturation();
+	var saturation = color.saturationl();
 	var saturationv = color.saturationv();
 	var lightness = color.lightness();
-	var whiteness = color.whiteness();
-	var blackness = color.blackness();
+	var whiteness = color.white();
+	var blackness = color.wblack();
 	var cyan = color.cyan();
 	var magenta = color.magenta();
 	var yellow = color.yellow();
 	var black = color.black();
 
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.alpha(alpha);
 	equal(color.alpha(), alpha);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.red(red);
 	equal(color.red(), red);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.green(green);
 	equal(color.green(), green);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.blue(blue);
 	equal(color.blue(), blue);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.hue(hue);
 	equal(color.hue(), hue);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
-	color.saturation(saturation);
-	equal(color.saturation(), saturation);
-	equal(color.hexString(), colorString);
+	color.saturationl(saturation);
+	equal(color.saturationl(), saturation);
+	equal(color.hex(), colorString);
 
 	color.saturationv(saturationv);
 	equal(color.saturationv(), saturationv);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.lightness(lightness);
 	equal(color.lightness(), lightness);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
-	color.whiteness(whiteness);
-	equal(color.whiteness(), whiteness);
-	equal(color.hexString(), colorString);
+	color.white(whiteness);
+	equal(color.white(), whiteness);
+	equal(color.hex(), colorString);
 
-	color.blackness(blackness);
-	equal(color.blackness(), blackness);
-	equal(color.hexString(), colorString);
+	color.wblack(blackness);
+	equal(color.wblack(), blackness);
+	equal(color.hex(), colorString);
 
 	color.cyan(cyan);
 	equal(color.cyan(), cyan);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.magenta(magenta);
 	equal(color.magenta(), magenta);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.yellow(yellow);
 	equal(color.yellow(), yellow);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 
 	color.black(black);
 	equal(color.black(), black);
-	equal(color.hexString(), colorString);
+	equal(color.hex(), colorString);
 });
 
 it('Capping values', function () {
@@ -505,7 +444,7 @@ it('Capping values', function () {
 		h: 400,
 		s: 50,
 		l: 10
-	}).hue(), 360);
+	}).hue(), 40);
 	equal(Color({
 		h: 100,
 		s: 50,
@@ -515,29 +454,29 @@ it('Capping values', function () {
 		h: -400,
 		s: 50,
 		l: 10
-	}).hue(), 0);
+	}).hue(), 320);
 
 	// 0 == 360
 	equal(Color({
 		h: 400,
 		w: 50,
 		b: 10
-	}).hue(), 0);
+	}).hue(), 40);
 	equal(Color({
 		h: 100,
 		w: 50,
 		b: 80
-	}).blacken(0.5).blackness(), 100);
+	}).blacken(0.5).wblack(), 100);
 	equal(Color({
 		h: -400,
 		w: 50,
 		b: 10
-	}).hue(), 0);
+	}).hue(), 320);
 
 	equal(Color().red(400).red(), 255);
 	equal(Color().red(-400).red(), 0);
-	equal(Color().rgb(10, 10, 10, 12).alpha(), 1);
-	equal(Color().rgb(10, 10, 10, -200).alpha(), 0);
+	equal(Color.rgb(10, 10, 10, 12).alpha(), 1);
+	equal(Color.rgb(10, 10, 10, -200).alpha(), 0);
 	equal(Color().alpha(-12).alpha(), 0);
 	equal(Color().alpha(3).alpha(), 1);
 });
@@ -547,7 +486,7 @@ it('Translate with channel setters', function () {
 		r: 0,
 		g: 0,
 		b: 0
-	}).lightness(50).hsl(), {
+	}).lightness(50).hsl().object(), {
 		h: 0,
 		s: 0,
 		l: 50
@@ -556,7 +495,7 @@ it('Translate with channel setters', function () {
 		r: 0,
 		g: 0,
 		b: 0
-	}).red(50).green(50).hsv(), {
+	}).red(50).green(50).hsv().round().object(), {
 		h: 60,
 		s: 100,
 		v: 20
@@ -564,22 +503,21 @@ it('Translate with channel setters', function () {
 });
 
 it('CSS String getters', function () {
-	equal(Color('rgb(10, 30, 25)').hexString(), '#0A1E19');
-	equal(Color('rgb(10, 30, 25)').rgbString(), 'rgb(10, 30, 25)');
-	equal(Color('rgb(10, 30, 25, 0.4)').rgbString(), 'rgba(10, 30, 25, 0.4)');
+	equal(Color('rgb(10, 30, 25)').hex(), '#0A1E19');
+	equal(Color('rgb(10, 30, 25)').rgb().string(), 'rgb(10, 30, 25)');
+	equal(Color('rgb(10, 30, 25, 0.4)').rgb().string(), 'rgba(10, 30, 25, 0.4)');
 	equal(Color('rgb(10, 30, 25)').percentString(), 'rgb(4%, 12%, 10%)');
 	equal(Color('rgb(10, 30, 25, 0.3)').percentString(), 'rgba(4%, 12%, 10%, 0.3)');
-	equal(Color('rgb(10, 30, 25)').hslString(), 'hsl(165, 50%, 8%)');
-	equal(Color('rgb(10, 30, 25, 0.3)').hslString(), 'hsla(165, 50%, 8%, 0.3)');
+	equal(Color('rgb(10, 30, 25)').hsl().string(), 'hsl(165, 50%, 7.8%)');
+	equal(Color('rgb(10, 30, 25, 0.3)').hsl().string(), 'hsla(165, 50%, 7.8%, 0.3)');
 	equal(Color({
 		h: 0,
 		s: 0,
 		v: 100
-	}).hslString(), 'hsl(0, 0%, 100%)');
-	equal(Color('rgb(10, 30, 25)').hwbString(), 'hwb(165, 4%, 88%)');
-	equal(Color('rgb(10, 30, 25, 0.3)').hwbString(), 'hwb(165, 4%, 88%, 0.3)');
+	}).hsl().string(), 'hsl(0, 0%, 100%)');
+	equal(Color('rgb(10, 30, 25)').hwb().string(0), 'hwb(165, 4%, 88%)');
+	equal(Color('rgb(10, 30, 25, 0.3)').hwb().string(0), 'hwb(165, 4%, 88%, 0.3)');
 	equal(Color('rgb(0, 0, 255)').keyword(), 'blue');
-	strictEqual(Color('rgb(10, 30, 25)').keyword(), undefined);
 });
 
 it('Number getters', function () {
@@ -610,7 +548,7 @@ it('Manipulators wo/ mix', function () {
 		r: 67,
 		g: 122,
 		b: 134
-	}).greyscale().rgb(), {
+	}).grayscale().rgb().round().object(), {
 		r: 107,
 		g: 107,
 		b: 107
@@ -619,7 +557,7 @@ it('Manipulators wo/ mix', function () {
 		r: 67,
 		g: 122,
 		b: 134
-	}).negate().rgb(), {
+	}).negate().rgb().round().object(), {
 		r: 188,
 		g: 133,
 		b: 121
@@ -638,33 +576,33 @@ it('Manipulators wo/ mix', function () {
 		h: 100,
 		w: 50,
 		b: 60
-	}).whiten(0.5).whiteness(), 75);
+	}).whiten(0.5).white(), 75);
 	equal(Color({
 		h: 100,
 		w: 50,
 		b: 60
-	}).blacken(0.5).blackness(), 90);
+	}).blacken(0.5).wblack(), 90);
 	equal(Color({
 		h: 100,
 		s: 40,
 		l: 50
-	}).saturate(0.5).saturation(), 60);
+	}).saturate(0.5).saturationl(), 60);
 	equal(Color({
 		h: 100,
 		s: 80,
 		l: 60
-	}).desaturate(0.5).saturation(), 40);
+	}).desaturate(0.5).saturationl(), 40);
 	equal(Color({
 		r: 10,
 		g: 10,
 		b: 10,
-		a: 0.8
-	}).clearer(0.5).alpha(), 0.4);
+		alpha: 0.8
+	}).fade(0.5).alpha(), 0.4);
 	equal(Color({
 		r: 10,
 		g: 10,
 		b: 10,
-		a: 0.5
+		alpha: 0.5
 	}).opaquer(0.5).alpha(), 0.75);
 	equal(Color({
 		h: 60,
@@ -679,59 +617,27 @@ it('Manipulators wo/ mix', function () {
 });
 
 it('Mix: basic', function () {
-	equal(Color('#f00').mix(Color('#00f')).hexString(), '#800080');
+	equal(Color('#f00').mix(Color('#00f')).hex(), '#800080');
 });
 
 it('Mix: weight', function () {
-	equal(Color('#f00').mix(Color('#00f'), 0.25).hexString(), '#4000BF');
+	equal(Color('#f00').mix(Color('#00f'), 0.25).hex(), '#4000BF');
 });
 
 it('Mix: alpha', function () {
-	equal(Color('rgba(255, 0, 0, 0.5)').mix(Color('#00f')).rgbaString(), 'rgba(64, 0, 191, 0.75)');
+	equal(Color('rgba(255, 0, 0, 0.5)').mix(Color('#00f')).rgb().string(0), 'rgba(64, 0, 191, 0.75)');
 });
 
 it('Mix: 50%', function () {
-	equal(Color('#f00').mix(Color('#00f'), 0.5).hexString(), '#800080');
+	equal(Color('#f00').mix(Color('#00f'), 0.5).hex(), '#800080');
 });
 
 it('Mix: 0%', function () {
-	equal(Color('#f00').mix(Color('#00f'), 0).hexString(), '#0000FF');
+	equal(Color('#f00').mix(Color('#00f'), 0).hex(), '#0000FF');
 });
 
 it('Mix: 100%', function () {
-	equal(Color('#f00').mix(Color('#00f'), 1.0).hexString(), '#FF0000');
-});
-
-it('Clone', function () {
-	var clone = Color({
-		r: 10,
-		g: 20,
-		b: 30
-	});
-	notStrictEqual(clone, clone.clone());
-	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
-	deepEqual(clone.clone().rgbaArray(), [10, 20, 30, 1]);
-	deepEqual(clone.clone().rgb(50, 40, 30).rgbaArray(), [50, 40, 30, 1]);
-	deepEqual(clone.rgbaArray(), [10, 20, 30, 1]);
-});
-
-it('Clone: default constructor', function () {
-	var defaultColor = Color();
-	var clonedFromDefault = defaultColor.clone();
-
-	// same tests used in base case 'Clone'
-	notStrictEqual(defaultColor, clonedFromDefault);
-	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
-	deepEqual(defaultColor.clone().rgbaArray(), [0, 0, 0, 1]);
-	deepEqual(defaultColor.clone().rgb(0, 0, 0).rgbaArray(), [0, 0, 0, 1]);
-	deepEqual(defaultColor.rgbaArray(), [0, 0, 0, 1]);
-
-	// additional checks
-	deepEqual(clonedFromDefault.rgbaArray(), [0, 0, 0, 1]);
-	equal(
-		defaultColor.hwbString(),
-		clonedFromDefault.hwbString()
-	);
+	equal(Color('#f00').mix(Color('#00f'), 1.0).hex(), '#FF0000');
 });
 
 it('Level', function () {
