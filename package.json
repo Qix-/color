@@ -1,6 +1,6 @@
 {
   "name": "color",
-  "version": "0.11.4",
+  "version": "1.0.0",
   "description": "Color conversion and manipulation with CSS string support",
   "keywords": [
     "color",
@@ -8,9 +8,9 @@
     "css"
   ],
   "authors": [
+    "Josh Junon <i.am.qix@gmail.com>",
     "Heather Arthur <fayearthur@gmail.com>",
-    "Maxime Thirouin",
-    "Josh Junon"
+    "Maxime Thirouin"
   ],
   "license": "MIT",
   "repository": "Qix-/color",
