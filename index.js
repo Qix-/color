@@ -1,200 +1,265 @@
-/* MIT license */
-var clone = require('clone');
+'use strict';
+
+var colorString = require('color-string');
 var convert = require('color-convert');
-var string = require('color-string');
 
-var Color = function (obj) {
-	if (obj instanceof Color) {
-		return obj;
-	}
+var _slice = [].slice;
+
+var skippedModels = [
+	// to be honest, I don't really feel like keyword belongs in color convert, but eh.
+	'keyword',
+
+	// gray conflicts with some method names, and has its own method defined.
+	'gray',
+
+	// shouldn't really be in color-convert either...
+	'hex'
+];
+
+var hashedModelKeys = {};
+Object.keys(convert).forEach(function (model) {
+	hashedModelKeys[_slice.call(convert[model].labels).sort().join('')] = model;
+});
+
+var limiters = {};
+
+function Color(obj, model) {
 	if (!(this instanceof Color)) {
-		return new Color(obj);
+		return new Color(obj, model);
 	}
 
-	this.values = {
-		rgb: [0, 0, 0],
-		hsl: [0, 0, 0],
-		hsv: [0, 0, 0],
-		hwb: [0, 0, 0],
-		cmyk: [0, 0, 0, 0],
-		alpha: 1
-	};
+	if (model && model in skippedModels) {
+		model = null;
+	}
 
-	// parse Color() argument
-	var vals;
-	if (typeof obj === 'string') {
-		vals = string.getRgba(obj);
-		if (vals) {
-			this.setValues('rgb', vals);
-		} else if (vals = string.getHsla(obj)) {
-			this.setValues('hsl', vals);
-		} else if (vals = string.getHwb(obj)) {
-			this.setValues('hwb', vals);
-		} else {
-			throw new Error('Unable to parse color from string "' + obj + '"');
+	if (model && !(model in convert)) {
+		throw new Error('Unknown model: ' + model);
+	}
+
+	var i;
+	var channels;
+
+	if (!obj) {
+		this.model = 'rgb';
+		this.color = [0, 0, 0];
+		this.valpha = 1;
+	} else if (obj instanceof Color) {
+		this.model = obj.model;
+		this.color = obj.color.slice();
+		this.valpha = obj.valpha;
+	} else if (typeof obj === 'string') {
+		var result = colorString.get(obj);
+		if (result === null) {
+			throw new Error('Unable to parse color from string: ' + obj);
 		}
-	} else if (typeof obj === 'object') {
-		vals = obj;
-		if (vals.r !== undefined || vals.red !== undefined) {
-			this.setValues('rgb', vals);
-		} else if (vals.l !== undefined || vals.lightness !== undefined) {
-			this.setValues('hsl', vals);
-		} else if (vals.v !== undefined || vals.value !== undefined) {
-			this.setValues('hsv', vals);
-		} else if (vals.w !== undefined || vals.whiteness !== undefined) {
-			this.setValues('hwb', vals);
-		} else if (vals.c !== undefined || vals.cyan !== undefined) {
-			this.setValues('cmyk', vals);
-		} else {
-			throw new Error('Unable to parse color from object ' + JSON.stringify(obj));
+
+		this.model = result.model;
+		channels = convert[this.model].channels;
+		this.color = result.value.slice(0, channels);
+		this.valpha = typeof result.value[channels] === 'number' ? result.value[channels] : 1;
+	} else if (obj.length) {
+		this.model = model || 'rgb';
+		channels = convert[this.model].channels;
+		var newArr = _slice.call(obj, 0, channels);
+		this.color = zeroArray(newArr, channels);
+		this.valpha = typeof obj[channels] === 'number' ? obj[channels] : 1;
+	} else if (typeof obj === 'number') {
+		// this is always RGB - can be converted later on.
+		obj &= 0xFFFFFF;
+		this.model = 'rgb';
+		this.color = [
+			(obj >> 16) & 0xFF,
+			(obj >> 8) & 0xFF,
+			obj & 0xFF
+		];
+		this.valpha = 1;
+	} else {
+		this.valpha = 1;
+
+		var keys = Object.keys(obj);
+		if ('alpha' in obj) {
+			keys.splice(keys.indexOf('alpha'), 1);
+			this.valpha = typeof obj.alpha === 'number' ? obj.alpha : 0;
+		}
+
+		var hashedKeys = keys.sort().join('');
+		if (!(hashedKeys in hashedModelKeys)) {
+			throw new Error('Unable to parse color from object: ' + JSON.stringify(obj));
+		}
+
+		this.model = hashedModelKeys[hashedKeys];
+
+		var labels = convert[this.model].labels;
+		var color = [];
+		for (i = 0; i < labels.length; i++) {
+			color.push(obj[labels[i]]);
+		}
+
+		this.color = zeroArray(color);
+	}
+
+	// perform limitations (clamping, etc.)
+	if (limiters[this.model]) {
+		channels = convert[this.model].channels;
+		for (i = 0; i < channels; i++) {
+			var limit = limiters[this.model][i];
+			if (limit) {
+				this.color[i] = limit(this.color[i]);
+			}
 		}
 	}
-};
+
+	this.valpha = Math.max(0, Math.min(1, this.valpha));
+
+	if (Object.freeze) {
+		Object.freeze(this);
+	}
+}
 
 Color.prototype = {
-	rgb: function () {
-		return this.setSpace('rgb', arguments);
-	},
-	hsl: function () {
-		return this.setSpace('hsl', arguments);
-	},
-	hsv: function () {
-		return this.setSpace('hsv', arguments);
-	},
-	hwb: function () {
-		return this.setSpace('hwb', arguments);
-	},
-	cmyk: function () {
-		return this.setSpace('cmyk', arguments);
+	toString: function () {
+		return this.string();
 	},
 
-	rgbArray: function () {
-		return this.values.rgb;
+	toJSON: function () {
+		return this[this.model]();
 	},
-	hslArray: function () {
-		return this.values.hsl;
+
+	string: function (places) {
+		var self = this.model in colorString.to ? this : this.rgb();
+		self = self.round(typeof places === 'number' ? places : 1);
+		var args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+		return colorString.to[self.model](args);
 	},
-	hsvArray: function () {
-		return this.values.hsv;
+
+	percentString: function (places) {
+		var self = this.rgb().round(typeof places === 'number' ? places : 1);
+		var args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+		return colorString.to.rgb.percent(args);
 	},
-	hwbArray: function () {
-		if (this.values.alpha !== 1) {
-			return this.values.hwb.concat([this.values.alpha]);
+
+	array: function () {
+		return this.valpha === 1 ? this.color.slice() : this.color.concat(this.valpha);
+	},
+
+	object: function () {
+		var result = {};
+		var channels = convert[this.model].channels;
+		var labels = convert[this.model].labels;
+
+		for (var i = 0; i < channels; i++) {
+			result[labels[i]] = this.color[i];
 		}
-		return this.values.hwb;
-	},
-	cmykArray: function () {
-		return this.values.cmyk;
-	},
-	rgbaArray: function () {
-		var rgb = this.values.rgb;
-		return rgb.concat([this.values.alpha]);
-	},
-	rgbaArrayNormalized: function () {
-		var rgb = this.values.rgb;
-		var glRgba = [];
-		for (var i = 0; i < 3; i++) {
-			glRgba[i] = rgb[i] / 255;
+
+		if (this.valpha !== 1) {
+			result.alpha = this.valpha;
 		}
-		glRgba.push(this.values.alpha);
-		return glRgba;
+
+		return result;
 	},
-	hslaArray: function () {
-		var hsl = this.values.hsl;
-		return hsl.concat([this.values.alpha]);
+
+	unitArray: function () {
+		var rgb = this.rgb().color;
+		rgb[0] /= 255;
+		rgb[1] /= 255;
+		rgb[2] /= 255;
+
+		if (this.valpha !== 1) {
+			rgb.push(this.valpha);
+		}
+
+		return rgb;
 	},
+
+	unitObject: function () {
+		var rgb = this.rgb().object();
+		rgb.r /= 255;
+		rgb.g /= 255;
+		rgb.b /= 255;
+
+		if (this.valpha !== 1) {
+			rgb.alpha = this.valpha;
+		}
+
+		return rgb;
+	},
+
+	round: function (places) {
+		places = Math.max(places || 0, 0);
+		return new Color(this.color.map(roundToPlace(places)).concat(this.valpha), this.model);
+	},
+
 	alpha: function (val) {
-		if (val === undefined) {
-			return this.values.alpha;
+		if (arguments.length) {
+			return new Color(this.color.concat(Math.max(0, Math.min(1, val))), this.model);
 		}
-		this.setValues('alpha', val);
-		return this;
+
+		return this.valpha;
 	},
 
-	red: function (val) {
-		return this.setChannel('rgb', 0, val);
-	},
-	green: function (val) {
-		return this.setChannel('rgb', 1, val);
-	},
-	blue: function (val) {
-		return this.setChannel('rgb', 2, val);
-	},
-	hue: function (val) {
-		if (val) {
-			val %= 360;
-			val = val < 0 ? 360 + val : val;
+	// rgb
+	red: getset('rgb', 0, maxfn(255)),
+	green: getset('rgb', 1, maxfn(255)),
+	blue: getset('rgb', 2, maxfn(255)),
+
+	hue: getset(['hsl', 'hsv', 'hsl', 'hwb', 'hcg'], 0, function (val) { return ((val % 360) + 360) % 360; }), // eslint-disable-line brace-style
+
+	saturationl: getset('hsl', 1, maxfn(100)),
+	lightness: getset('hsl', 2, maxfn(100)),
+
+	saturationv: getset('hsv', 1, maxfn(100)),
+	value: getset('hsv', 2, maxfn(100)),
+
+	chroma: getset('hcg', 1, maxfn(100)),
+	gray: getset('hcg', 2, maxfn(100)),
+
+	white: getset('hwb', 1, maxfn(100)),
+	wblack: getset('hwb', 2, maxfn(100)),
+
+	cyan: getset('cmyk', 0, maxfn(100)),
+	magenta: getset('cmyk', 1, maxfn(100)),
+	yellow: getset('cmyk', 2, maxfn(100)),
+	black: getset('cmyk', 3, maxfn(100)),
+
+	x: getset('xyz', 0, maxfn(100)),
+	y: getset('xyz', 1, maxfn(100)),
+	z: getset('xyz', 2, maxfn(100)),
+
+	l: getset('lab', 0, maxfn(100)),
+	a: getset('lab', 1),
+	b: getset('lab', 2),
+
+	keyword: function (val) {
+		if (arguments.length) {
+			return new Color(val);
 		}
-		return this.setChannel('hsl', 0, val);
-	},
-	saturation: function (val) {
-		return this.setChannel('hsl', 1, val);
-	},
-	lightness: function (val) {
-		return this.setChannel('hsl', 2, val);
-	},
-	saturationv: function (val) {
-		return this.setChannel('hsv', 1, val);
-	},
-	whiteness: function (val) {
-		return this.setChannel('hwb', 1, val);
-	},
-	blackness: function (val) {
-		return this.setChannel('hwb', 2, val);
-	},
-	value: function (val) {
-		return this.setChannel('hsv', 2, val);
-	},
-	cyan: function (val) {
-		return this.setChannel('cmyk', 0, val);
-	},
-	magenta: function (val) {
-		return this.setChannel('cmyk', 1, val);
-	},
-	yellow: function (val) {
-		return this.setChannel('cmyk', 2, val);
-	},
-	black: function (val) {
-		return this.setChannel('cmyk', 3, val);
+
+		return convert[this.model].keyword(this.color);
 	},
 
-	hexString: function () {
-		return string.hexString(this.values.rgb);
-	},
-	rgbString: function () {
-		return string.rgbString(this.values.rgb, this.values.alpha);
-	},
-	rgbaString: function () {
-		return string.rgbaString(this.values.rgb, this.values.alpha);
-	},
-	percentString: function () {
-		return string.percentString(this.values.rgb, this.values.alpha);
-	},
-	hslString: function () {
-		return string.hslString(this.values.hsl, this.values.alpha);
-	},
-	hslaString: function () {
-		return string.hslaString(this.values.hsl, this.values.alpha);
-	},
-	hwbString: function () {
-		return string.hwbString(this.values.hwb, this.values.alpha);
-	},
-	keyword: function () {
-		return string.keyword(this.values.rgb, this.values.alpha);
+	hex: function (val) {
+		if (arguments.length) {
+			return new Color(val);
+		}
+
+		return colorString.to.hex(this.rgb().round().color);
 	},
 
 	rgbNumber: function () {
-		return (this.values.rgb[0] << 16) | (this.values.rgb[1] << 8) | this.values.rgb[2];
+		var rgb = this.rgb().color;
+		return ((rgb[0] & 0xFF) << 16) | ((rgb[1] & 0xFF) << 8) | (rgb[2] & 0xFF);
 	},
 
 	luminosity: function () {
 		// http://www.w3.org/TR/WCAG20/#relativeluminancedef
-		var rgb = this.values.rgb;
+		var rgb = this.rgb().color;
+
 		var lum = [];
 		for (var i = 0; i < rgb.length; i++) {
 			var chan = rgb[i] / 255;
 			lum[i] = (chan <= 0.03928) ? chan / 12.92 : Math.pow(((chan + 0.055) / 1.055), 2.4);
 		}
+
 		return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
 	},
 
@@ -202,9 +267,11 @@ Color.prototype = {
 		// http://www.w3.org/TR/WCAG20/#contrast-ratiodef
 		var lum1 = this.luminosity();
 		var lum2 = color2.luminosity();
+
 		if (lum1 > lum2) {
 			return (lum1 + 0.05) / (lum2 + 0.05);
 		}
+
 		return (lum2 + 0.05) / (lum1 + 0.05);
 	},
 
@@ -219,7 +286,7 @@ Color.prototype = {
 
 	dark: function () {
 		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
-		var rgb = this.values.rgb;
+		var rgb = this.rgb().color;
 		var yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
 		return yiq < 128;
 	},
@@ -229,84 +296,78 @@ Color.prototype = {
 	},
 
 	negate: function () {
-		var rgb = [];
+		var rgb = this.rgb();
 		for (var i = 0; i < 3; i++) {
-			rgb[i] = 255 - this.values.rgb[i];
+			rgb.color[i] = 255 - rgb.color[i];
 		}
-		this.setValues('rgb', rgb);
-		return this;
+		return rgb;
 	},
 
 	lighten: function (ratio) {
-		this.values.hsl[2] += this.values.hsl[2] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		var hsl = this.hsl();
+		hsl.color[2] += hsl.color[2] * ratio;
+		return hsl;
 	},
 
 	darken: function (ratio) {
-		this.values.hsl[2] -= this.values.hsl[2] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		var hsl = this.hsl();
+		hsl.color[2] -= hsl.color[2] * ratio;
+		return hsl;
 	},
 
 	saturate: function (ratio) {
-		this.values.hsl[1] += this.values.hsl[1] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		var hsl = this.hsl();
+		hsl.color[1] += hsl.color[1] * ratio;
+		return hsl;
 	},
 
 	desaturate: function (ratio) {
-		this.values.hsl[1] -= this.values.hsl[1] * ratio;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		var hsl = this.hsl();
+		hsl.color[1] -= hsl.color[1] * ratio;
+		return hsl;
 	},
 
 	whiten: function (ratio) {
-		this.values.hwb[1] += this.values.hwb[1] * ratio;
-		this.setValues('hwb', this.values.hwb);
-		return this;
+		var hwb = this.hwb();
+		hwb.color[1] += hwb.color[1] * ratio;
+		return hwb;
 	},
 
 	blacken: function (ratio) {
-		this.values.hwb[2] += this.values.hwb[2] * ratio;
-		this.setValues('hwb', this.values.hwb);
-		return this;
+		var hwb = this.hwb();
+		hwb.color[2] += hwb.color[2] * ratio;
+		return hwb;
 	},
 
-	greyscale: function () {
-		var rgb = this.values.rgb;
+	grayscale: function () {
 		// http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+		var rgb = this.rgb().color;
 		var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
-		this.setValues('rgb', [val, val, val]);
-		return this;
+		return Color.rgb(val, val, val);
 	},
 
-	clearer: function (ratio) {
-		this.setValues('alpha', this.values.alpha - (this.values.alpha * ratio));
-		return this;
+	fade: function (ratio) {
+		return this.alpha(this.valpha - (this.valpha * ratio));
 	},
 
 	opaquer: function (ratio) {
-		this.setValues('alpha', this.values.alpha + (this.values.alpha * ratio));
-		return this;
+		return this.alpha(this.valpha + (this.valpha * ratio));
 	},
 
 	rotate: function (degrees) {
-		var hue = this.values.hsl[0];
+		var hsl = this.hsl();
+		var hue = hsl.color[0];
 		hue = (hue + degrees) % 360;
 		hue = hue < 0 ? 360 + hue : hue;
-		this.values.hsl[0] = hue;
-		this.setValues('hsl', this.values.hsl);
-		return this;
+		hsl.color[0] = hue;
+		return hsl;
 	},
 
-	/**
-	 * Ported from sass implementation in C
-	 * https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
-	 */
 	mix: function (mixinColor, weight) {
-		var color1 = this;
-		var color2 = mixinColor;
+		// ported from sass implementation in C
+		// https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
+		var color1 = this.rgb();
+		var color2 = mixinColor.rgb();
 		var p = weight === undefined ? 0.5 : weight;
 
 		var w = 2 * p - 1;
@@ -315,145 +376,104 @@ Color.prototype = {
 		var w1 = (((w * a === -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
 		var w2 = 1 - w1;
 
-		return this
-			.rgb(
+		return Color.rgb(
 				w1 * color1.red() + w2 * color2.red(),
 				w1 * color1.green() + w2 * color2.green(),
-				w1 * color1.blue() + w2 * color2.blue()
-			)
-			.alpha(color1.alpha() * p + color2.alpha() * (1 - p));
-	},
-
-	toJSON: function () {
-		return this.rgb();
-	},
-
-	clone: function () {
-		var col = new Color();
-		col.values = clone(this.values);
-		return col;
+				w1 * color1.blue() + w2 * color2.blue(),
+				color1.alpha() * p + color2.alpha() * (1 - p));
 	}
 };
 
-Color.prototype.getValues = function (space) {
-	var vals = {};
-
-	for (var i = 0; i < space.length; i++) {
-		vals[space.charAt(i)] = this.values[space][i];
+// model conversion methods and static constructors
+Object.keys(convert).forEach(function (model) {
+	if (skippedModels.indexOf(model) !== -1) {
+		return;
 	}
 
-	if (this.values.alpha !== 1) {
-		vals.a = this.values.alpha;
-	}
+	var channels = convert[model].channels;
 
-	// {r: 255, g: 255, b: 255, a: 0.4}
-	return vals;
-};
+	// conversion methods
+	Color.prototype[model] = function () {
+		if (this.model === model) {
+			return new Color(this);
+		}
 
-Color.prototype.setValues = function (space, vals) {
-	var spaces = {
-		rgb: ['red', 'green', 'blue'],
-		hsl: ['hue', 'saturation', 'lightness'],
-		hsv: ['hue', 'saturation', 'value'],
-		hwb: ['hue', 'whiteness', 'blackness'],
-		cmyk: ['cyan', 'magenta', 'yellow', 'black']
+		if (arguments.length) {
+			return new Color(arguments, model);
+		}
+
+		var newAlpha = typeof arguments[channels] === 'number' ? channels : this.valpha;
+		return new Color(assertArray(convert[this.model][model].raw(this.color)).concat(newAlpha), model);
 	};
 
-	var maxes = {
-		rgb: [255, 255, 255],
-		hsl: [360, 100, 100],
-		hsv: [360, 100, 100],
-		hwb: [360, 100, 100],
-		cmyk: [100, 100, 100, 100]
+	// 'static' construction methods
+	Color[model] = function (color) {
+		if (typeof color === 'number') {
+			color = zeroArray(_slice.call(arguments), channels);
+		}
+		return new Color(color, model);
 	};
+});
 
-	var i;
-	var alpha = 1;
-	if (space === 'alpha') {
-		alpha = vals;
-	} else if (vals.length) {
-		// [10, 10, 10]
-		this.values[space] = vals.slice(0, space.length);
-		alpha = vals[space.length];
-	} else if (vals[space.charAt(0)] !== undefined) {
-		// {r: 10, g: 10, b: 10}
-		for (i = 0; i < space.length; i++) {
-			this.values[space][i] = vals[space.charAt(i)];
+function roundTo(num, places) {
+	return Number(num.toFixed(places));
+}
+
+function roundToPlace(places) {
+	return function (num) {
+		return roundTo(num, places);
+	};
+}
+
+function getset(model, channel, modifier) {
+	model = Array.isArray(model) ? model : [model];
+
+	model.forEach(function (m) {
+		(limiters[m] || (limiters[m] = []))[channel] = modifier;
+	});
+
+	model = model[0];
+
+	return function (val) {
+		var result;
+
+		if (arguments.length) {
+			if (modifier) {
+				val = modifier(val);
+			}
+
+			result = this[model]();
+			result.color[channel] = val;
+			return result;
 		}
 
-		alpha = vals.a;
-	} else if (vals[spaces[space][0]] !== undefined) {
-		// {red: 10, green: 10, blue: 10}
-		var chans = spaces[space];
-
-		for (i = 0; i < space.length; i++) {
-			this.values[space][i] = vals[chans[i]];
+		result = this[model]().color[channel];
+		if (modifier) {
+			result = modifier(result);
 		}
 
-		alpha = vals.alpha;
-	}
+		return result;
+	};
+}
 
-	this.values.alpha = Math.max(0, Math.min(1, (alpha === undefined ? this.values.alpha : alpha)));
+function maxfn(max) {
+	return function (v) {
+		return Math.max(0, Math.min(max, v));
+	};
+}
 
-	if (space === 'alpha') {
-		return false;
-	}
+function assertArray(val) {
+	return Array.isArray(val) ? val : [val];
+}
 
-	var capped;
-
-	// cap values of the space prior converting all values
-	for (i = 0; i < space.length; i++) {
-		capped = Math.max(0, Math.min(maxes[space][i], this.values[space][i]));
-		this.values[space][i] = Math.round(capped);
-	}
-
-	// convert to all the other color spaces
-	for (var sname in spaces) {
-		if (sname !== space) {
-			this.values[sname] = convert[space][sname](this.values[space]);
-		}
-
-		// cap values
-		for (i = 0; i < sname.length; i++) {
-			capped = Math.max(0, Math.min(maxes[sname][i], this.values[sname][i]));
-			this.values[sname][i] = Math.round(capped);
+function zeroArray(arr, length) {
+	for (var i = 0; i < length; i++) {
+		if (typeof arr[i] !== 'number') {
+			arr[i] = 0;
 		}
 	}
 
-	return true;
-};
-
-Color.prototype.setSpace = function (space, args) {
-	var vals = args[0];
-
-	if (vals === undefined) {
-		// color.rgb()
-		return this.getValues(space);
-	}
-
-	// color.rgb(10, 10, 10)
-	if (typeof vals === 'number') {
-		vals = Array.prototype.slice.call(args);
-	}
-
-	this.setValues(space, vals);
-	return this;
-};
-
-Color.prototype.setChannel = function (space, index, val) {
-	if (val === undefined) {
-		// color.red()
-		return this.values[space][index];
-	} else if (val === this.values[space][index]) {
-		// color.red(color.red())
-		return this;
-	}
-
-	// color.red(100)
-	this.values[space][index] = val;
-	this.setValues(space, this.values[space]);
-
-	return this;
-};
+	return arr;
+}
 
 module.exports = Color;
