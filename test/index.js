@@ -518,6 +518,7 @@ it('CSS String getters', function () {
 	equal(Color('rgb(10, 30, 25)').hwb().string(0), 'hwb(165, 4%, 88%)');
 	equal(Color('rgb(10, 30, 25, 0.3)').hwb().string(0), 'hwb(165, 4%, 88%, 0.3)');
 	equal(Color('rgb(0, 0, 255)').keyword(), 'blue');
+	equal(Color.rgb(155.5, 243.1555, 88.1999).string(), 'rgb(156, 243, 88)');
 });
 
 it('Number getters', function () {
