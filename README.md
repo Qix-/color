@@ -33,14 +33,19 @@ Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hu
 
 ### Getters
 ```js
-color.rgb()       // {r: 255, g: 255, b: 255}
+color.hsl();
 ```
-Get a hash of the rgb values with `rgb()`, similarly for `hsl()`, `hsv()`, and `cmyk()`
+Convert a color to a different space (`hsl()`, `cmyk()`, etc.).
+
+```js
+color.object(); // {r: 255, g: 255, b: 255}
+```
+Get a hash of the color value. Reflects the color's current model (see above).
 
 ```js
 color.rgb().array()  // [255, 255, 255]
 ```
-Get an array of the values with `rgbArray()`, `hslArray()`, `hsvArray()`, and `cmykArray()`.
+Get an array of the values with `array()`. Reflects the color's current model (see above).
 
 ```js
 color.red()       // 255
