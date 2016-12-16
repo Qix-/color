@@ -533,15 +533,15 @@ it('luminosity, etc.', function () {
 	equal(Math.round(Color('white').contrast(Color('red'))), 4);
 	equal(Math.round(Color('red').contrast(Color('white'))), 4);
 	equal(Color('blue').contrast(Color('blue')), 1);
-	ok(Color('black').dark());
-	ok(!Color('black').light());
-	ok(Color('white').light());
-	ok(!Color('white').dark());
-	ok(Color('blue').dark());
-	ok(Color('darkgreen').dark());
-	ok(Color('pink').light());
-	ok(Color('goldenrod').light());
-	ok(Color('red').dark());
+	ok(Color('black').isDark());
+	ok(!Color('black').isLight());
+	ok(Color('white').isLight());
+	ok(!Color('white').isDark());
+	ok(Color('blue').isDark());
+	ok(Color('darkgreen').isDark());
+	ok(Color('pink').isLight());
+	ok(Color('goldenrod').isLight());
+	ok(Color('red').isDark());
 });
 
 it('Manipulators wo/ mix', function () {
