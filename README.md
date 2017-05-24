@@ -48,6 +48,11 @@ color.rgb().array()  // [255, 255, 255]
 Get an array of the values with `array()`. Reflects the color's current model (see above).
 
 ```js
+color.rgbNumber() // 16777215 (0xffffff)
+```
+Get the rgb number value.
+
+```js
 color.red()       // 255
 ```
 Get the value for an individual channel.
