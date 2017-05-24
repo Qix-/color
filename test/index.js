@@ -629,6 +629,11 @@ it('Mix: alpha', function () {
 	equal(Color('rgba(255, 0, 0, 0.5)').mix(Color('#00f')).rgb().string(0), 'rgba(64, 0, 191, 0.75)');
 });
 
+it('toString() is alias for rgbaString()', function () {
+	var color = Color('red').lighten('20%');
+	equal(color.clone().toString(), color.clone().rgbaString());
+});
+
 it('Mix: 50%', function () {
 	equal(Color('#f00').mix(Color('#00f'), 0.5).hex(), '#800080');
 });

@@ -244,6 +244,9 @@ Color.prototype = {
 
 		return colorString.to.hex(this.rgb().round().color);
 	},
+	toString: function () {
+		return this.rgbaString();
+	},
 
 	rgbNumber: function () {
 		var rgb = this.rgb().color;
