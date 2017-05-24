@@ -2,6 +2,7 @@
 
 var colorString = require('color-string');
 var convert = require('color-convert');
+delete convert.default;
 
 var _slice = [].slice;
 
