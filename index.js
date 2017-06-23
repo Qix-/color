@@ -305,13 +305,13 @@ Color.prototype = {
 
 	lighten: function (ratio) {
 		var hsl = this.hsl();
-		hsl.color[2] = hsl.color[2] + ((100 - hsl.color[2]) * ratio)
+		hsl.color[2] = hsl.color[2] + ((100 - hsl.color[2]) * ratio);
 		return hsl;
 	},
 
 	darken: function (ratio) {
 		var hsl = this.hsl();
-		hsl.color[2] = hsl.color[2] - (hsl.color[2] * ratio)
+		hsl.color[2] = hsl.color[2] - (hsl.color[2] * ratio);
 		return hsl;
 	},
 
