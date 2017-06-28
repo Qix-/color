@@ -622,23 +622,31 @@ it('Mix: basic', function () {
 });
 
 it('Mix: weight', function () {
-	equal(Color('#f00').mix(Color('#00f'), 0.25).hex(), '#4000BF');
+	equal(Color('#f00').mix(Color('#00f'), 0.25).hex(), '#BF0040');
 });
 
 it('Mix: alpha', function () {
 	equal(Color('rgba(255, 0, 0, 0.5)').mix(Color('#00f')).rgb().string(0), 'rgba(64, 0, 191, 0.75)');
 });
 
+it('Mix: 0%', function () {
+	equal(Color('#f00').mix(Color('#00f'), 0).hex(), '#FF0000');
+});
+
+it('Mix: 25%', function () {
+	equal(Color('#f00').mix(Color('#00f'), 0.25).hex(), '#BF0040');
+});
+
 it('Mix: 50%', function () {
 	equal(Color('#f00').mix(Color('#00f'), 0.5).hex(), '#800080');
 });
 
-it('Mix: 0%', function () {
-	equal(Color('#f00').mix(Color('#00f'), 0).hex(), '#0000FF');
+it('Mix: 75%', function () {
+	equal(Color('#f00').mix(Color('#00f'), 0.75).hex(), '#4000BF');
 });
 
 it('Mix: 100%', function () {
-	equal(Color('#f00').mix(Color('#00f'), 1.0).hex(), '#FF0000');
+	equal(Color('#f00').mix(Color('#00f'), 1.0).hex(), '#0000FF');
 });
 
 it('Level', function () {
