@@ -366,8 +366,8 @@ Color.prototype = {
 	mix: function (mixinColor, weight) {
 		// ported from sass implementation in C
 		// https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
-		var color1 = this.rgb();
-		var color2 = mixinColor.rgb();
+		var color1 = mixinColor.rgb();
+		var color2 = this.rgb();
 		var p = weight === undefined ? 0.5 : weight;
 
 		var w = 2 * p - 1;
