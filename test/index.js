@@ -196,6 +196,8 @@ it('Setters', function () {
 
 it('Retain Alpha', function () {
 	equal(Color.rgb(1, 2, 3, 0.4).ansi256().rgb().alpha(), 0.4);
+	equal(Color('#ffffff80').hex(), '#FFFFFF80');
+	equal(Color('#ccc').hex(), '#CCCCCC');
 });
 
 it('Translations', function () {

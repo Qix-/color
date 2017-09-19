@@ -242,6 +242,10 @@ Color.prototype = {
 			return new Color(val);
 		}
 
+		if (this.valpha < 1) {
+			return colorString.to.hex(this.rgb().round().color, this.valpha);
+		}
+
 		return colorString.to.hex(this.rgb().round().color);
 	},
 
