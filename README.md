@@ -31,6 +31,8 @@ var color = Color.rgb([255, 255, 255])
 
 Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturation` (hsl), `saturationv` (hsv), `lightness`, `whiteness`, `blackness`, `cyan`, `magenta`, `yellow`, `black`
 
+String constructors are handled by [color-string](https://www.npmjs.com/package/color-string)
+
 ### Getters
 ```js
 color.hsl();
