@@ -381,6 +381,17 @@ Color.prototype = {
 				w1 * color1.green() + w2 * color2.green(),
 				w1 * color1.blue() + w2 * color2.blue(),
 				color1.alpha() * p + color2.alpha() * (1 - p));
+	},
+
+	random: function () {
+		var alphanumeric = '0123456789ABCDEF';
+		var hex = '#';
+
+		for (var i = 0; i < 6; i++) {
+			hex += alphanumeric[Math.floor(Math.random() * 16)];
+		}
+
+		return hex;
 	}
 };
 
