@@ -122,7 +122,8 @@ Color.prototype = {
 	},
 
 	toJSON: function () {
-		return this[this.model]();
+		var color = Object.assign({}, this[this.model]());
+		return JSON.stringify(color);
 	},
 
 	string: function (places) {
