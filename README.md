@@ -78,8 +78,8 @@ color.contrast(Color("blue"))  // 12
 The [WCAG contrast ratio](http://www.w3.org/TR/WCAG20/#contrast-ratiodef) to another color, from 1 (same color) to 21 (contrast b/w white and black).
 
 ```js
-color.light();  // true
-color.dark();   // false
+color.isLight();  // true
+color.isDark();   // false
 ```
 Get whether the color is "light" or "dark", useful for deciding text color.
 
