@@ -572,7 +572,7 @@ it('Manipulators wo/ mix', function () {
 		h: 100,
 		s: 50,
 		l: 60
-	}).darken(0.5).lightness(), 30);
+	}).darken(0.5).lightness(), 10);
 	equal(Color({
 		h: 100,
 		w: 50,
@@ -587,12 +587,12 @@ it('Manipulators wo/ mix', function () {
 		h: 100,
 		s: 40,
 		l: 50
-	}).saturate(0.5).saturationl(), 60);
+	}).saturate(0.5).saturationl(), 90);
 	equal(Color({
 		h: 100,
 		s: 80,
 		l: 60
-	}).desaturate(0.5).saturationl(), 40);
+	}).desaturate(0.5).saturationl(), 30);
 	equal(Color({
 		r: 10,
 		g: 10,
