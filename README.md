@@ -55,6 +55,11 @@ color.rgbNumber() // 16777215 (0xffffff)
 Get the rgb number value.
 
 ```js
+color.hex() // 0xffffff
+```
+Get the hex value.
+
+```js
 color.red()       // 255
 ```
 Get the value for an individual channel.
