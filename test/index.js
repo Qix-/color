@@ -662,4 +662,8 @@ it('Exceptions', function () {
 	throws(function () {
 		Color({});
 	}, /Unable to parse color from object/);
+
+	throws(function () {
+		Color('');
+	}, /Unable to parse color from string/);
 });
