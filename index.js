@@ -39,7 +39,7 @@ function Color(obj, model) {
 	var i;
 	var channels;
 
-	if (!obj) {
+	if (typeof obj === 'undefined') {
 		this.model = 'rgb';
 		this.color = [0, 0, 0];
 		this.valpha = 1;
