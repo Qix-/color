@@ -23,6 +23,11 @@ it('Immutability', function () {
 });
 
 it('Color() argument', function () {
+	deepEqual(Color(null).rgb().object(), {
+		r: 0,
+		g: 0,
+		b: 0
+	});
 	deepEqual(Color('#0A1E19').rgb().object(), {
 		r: 10,
 		g: 30,
