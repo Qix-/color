@@ -34,7 +34,7 @@
     "color-string": "^1.5.2"
   },
   "devDependencies": {
-    "mocha": "^2.2.5",
-    "xo": "^0.12.1"
+    "mocha": "^6.1.4",
+    "xo": "0.12.1"
   }
 }
