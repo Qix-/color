@@ -366,6 +366,9 @@ Color.prototype = {
 	mix: function (mixinColor, weight) {
 		// ported from sass implementation in C
 		// https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
+		if (!mixinColor || !mixinColor.rgb) {
+			throw new Error('Argument to "mix" was not a Color instance, but rather an instance of ' + typeof mixinColor);
+		}
 		var color1 = mixinColor.rgb();
 		var color2 = this.rgb();
 		var p = weight === undefined ? 0.5 : weight;
