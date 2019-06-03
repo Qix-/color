@@ -16,6 +16,14 @@ it('Color() instance', function () {
 	notStrictEqual(c.rgb(), c.rgb());
 });
 
+it('Color() instance (null)', function () {
+	ok((new Color(null)) instanceof Color);
+});
+
+it('Color() instance (undefined)', function () {
+	ok((new Color(undefined)) instanceof Color);
+});
+
 it('Immutability', function () {
 	var c = Color(0xFF0000);
 	ok(c !== c.rgb());

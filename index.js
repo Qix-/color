@@ -39,7 +39,7 @@ function Color(obj, model) {
 	var i;
 	var channels;
 
-	if (typeof obj === 'undefined') {
+	if (obj == null) { // eslint-disable-line no-eq-null,eqeqeq
 		this.model = 'rgb';
 		this.color = [0, 0, 0];
 		this.valpha = 1;
