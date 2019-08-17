@@ -249,7 +249,15 @@ Color.prototype = {
 			return new Color(val);
 		}
 		return colorString.to.hex(this.rgb().round().color, this.valpha);
-  },
+	},
+	ahex: function (val) {
+		if (arguments.length) {
+			return new Color(val);
+		}
+		const hexa = colorString.to.hex(this.rgb().round().color, this.valpha)
+		const Alpha = (hexa[7] == undefined ? 'f': hexa[7]) + (hexa[8] == undefined ? 'f': hexa[8])
+		return '#' + Alpha + colorString.to.hex(this.rgb().round().color).replace('#', '');
+	},
 
 	rgbNumber: function () {
 		var rgb = this.rgb().color;
