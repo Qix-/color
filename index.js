@@ -248,14 +248,15 @@ Color.prototype = {
 		if (arguments.length) {
 			return new Color(val);
 		}
-		return colorString.to.hex(this.rgb().round().color, this.valpha);
+		const hexa = colorString.to.hex(this.rgb().round().color, this.valpha)
+		return hexa.length == 9 ? hexa : hexa + 'FF';
 	},
 	ahex: function (val) {
 		if (arguments.length) {
 			return new Color(val);
 		}
 		const hexa = colorString.to.hex(this.rgb().round().color, this.valpha)
-		const Alpha = (hexa[7] == undefined ? 'f': hexa[7]) + (hexa[8] == undefined ? 'f': hexa[8])
+		const Alpha = (hexa[7] == undefined ? 'F': hexa[7]) + (hexa[8] == undefined ? 'F': hexa[8])
 		return '#' + Alpha + colorString.to.hex(this.rgb().round().color).replace('#', '');
 	},
 
