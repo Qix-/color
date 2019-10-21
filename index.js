@@ -393,11 +393,12 @@ Color.prototype = {
 		if (steps < 2) {
 			throw new Error('Argument "steps" must to be bigger or equal to 2.');
 		}
+		toColor = toColor.rgb();
 		var fromColor = this.rgb();
-		var toColor = toColor.rgb();
 		var [fR, fG, fB] = fromColor.color;
 		var [tR, tG, tB] = toColor.color;
-		var fA = fromColor.alpha(), tA = toColor.alpha();
+		var fA = fromColor.alpha();
+		var tA = toColor.alpha();
 		var incR = (tR - fR) / (steps - 1);
 		var incG = (tG - fG) / (steps - 1);
 		var incB = (tB - fB) / (steps - 1);
@@ -405,10 +406,10 @@ Color.prototype = {
 		var gradient = [fromColor];
 		for (var i = 1; i < steps; i++) {
 			gradient.push(Color({
-				r: Math.round(fR + incR*i),
-				g: Math.round(fG + incG*i),
-				b: Math.round(fB + incB*i),
-				alpha: fA + incA*i
+				r: Math.round(fR + incR * i),
+				g: Math.round(fG + incG * i),
+				b: Math.round(fB + incB * i),
+				alpha: fA + incA * i
 			}));
 		}
 		return gradient;
@@ -421,17 +422,24 @@ Color.prototype = {
 		if (steps < 2) {
 			throw new Error('Argument "steps" must to be bigger or equal to 2.');
 		}
-		if (!rotationWay) rotationWay = 1;
-		if (rotationWay.constructor != Number || isNaN(rotationWay) || rotationWay === 0) {
+		if (!rotationWay) {
+			rotationWay = 1;
+		}
+		if (rotationWay.constructor !== Number || isNaN(rotationWay) || rotationWay === 0) {
 			throw new Error('Argument "rotationWay" must to be a non zero number.');
 		}
+		toColor = toColor.hsl();
 		var fromColor = this.hsl();
-		var toColor = toColor.hsl();
 		var [fH, fS, fL] = fromColor.color;
 		var [tH, tS, tL] = toColor.color;
-		var fA = fromColor.alpha(), tA = toColor.alpha();
-		if (rotationWay > 0 &&  fH > tH) tH += 360;
-		if (rotationWay < 0 &&  fH < tH) tH -= 360;
+		var fA = fromColor.alpha();
+		var tA = toColor.alpha();
+		if (rotationWay > 0 && fH > tH) {
+			tH += 360;
+		}
+		if (rotationWay < 0 && fH < tH) {
+			tH -= 360;
+		}
 		var incH = (tH - fH) / (steps - 1);
 		var incS = (tS - fS) / (steps - 1);
 		var incL = (tL - fL) / (steps - 1);
@@ -439,10 +447,10 @@ Color.prototype = {
 		var gradient = [fromColor];
 		for (var i = 1; i < steps; i++) {
 			gradient.push(Color({
-				h: Math.round(fH + incH*i),
-				s: Math.round(fS + incS*i),
-				l: Math.round(fL + incL*i),
-				alpha: fA + incA*i
+				h: Math.round(fH + incH * i),
+				s: Math.round(fS + incS * i),
+				l: Math.round(fL + incL * i),
+				alpha: fA + incA * i
 			}));
 		}
 		return gradient;
