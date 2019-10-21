@@ -384,7 +384,70 @@ Color.prototype = {
 				w1 * color1.green() + w2 * color2.green(),
 				w1 * color1.blue() + w2 * color2.blue(),
 				color1.alpha() * p + color2.alpha() * (1 - p));
+	},
+
+	gradientRGB: function (toColor, steps) {
+		if (!toColor || !toColor.rgb) {
+			throw new Error('Argument "toColor" was not a Color instance, but rather an instance of ' + typeof toColor);
+		}
+		if (steps < 2) {
+			throw new Error('Argument "steps" must to be bigger or equal to 2.');
+		}
+		var fromColor = this.rgb();
+		var toColor = toColor.rgb();
+		var [fR, fG, fB] = fromColor.color;
+		var [tR, tG, tB] = toColor.color;
+		var fA = fromColor.alpha(), tA = toColor.alpha();
+		var incR = (tR - fR) / (steps - 1);
+		var incG = (tG - fG) / (steps - 1);
+		var incB = (tB - fB) / (steps - 1);
+		var incA = (tA - fA) / (steps - 1);
+		var gradient = [fromColor];
+		for (var i = 1; i < steps; i++) {
+			gradient.push(Color({
+				r: Math.round(fR + incR*i),
+				g: Math.round(fG + incG*i),
+				b: Math.round(fB + incB*i),
+				alpha: fA + incA*i
+			}));
+		}
+		return gradient;
+	},
+
+	gradientHSL: function (toColor, steps, rotationWay) {
+		if (!toColor || !toColor.hsl) {
+			throw new Error('Argument "toColor" was not a Color instance, but rather an instance of ' + typeof toColor);
+		}
+		if (steps < 2) {
+			throw new Error('Argument "steps" must to be bigger or equal to 2.');
+		}
+		if (!rotationWay) rotationWay = 1;
+		if (rotationWay.constructor != Number || isNaN(rotationWay) || rotationWay === 0) {
+			throw new Error('Argument "rotationWay" must to be a non zero number.');
+		}
+		var fromColor = this.hsl();
+		var toColor = toColor.hsl();
+		var [fH, fS, fL] = fromColor.color;
+		var [tH, tS, tL] = toColor.color;
+		var fA = fromColor.alpha(), tA = toColor.alpha();
+		if (rotationWay > 0 &&  fH > tH) tH += 360;
+		if (rotationWay < 0 &&  fH < tH) tH -= 360;
+		var incH = (tH - fH) / (steps - 1);
+		var incS = (tS - fS) / (steps - 1);
+		var incL = (tL - fL) / (steps - 1);
+		var incA = (tA - fA) / (steps - 1);
+		var gradient = [fromColor];
+		for (var i = 1; i < steps; i++) {
+			gradient.push(Color({
+				h: Math.round(fH + incH*i),
+				s: Math.round(fS + incS*i),
+				l: Math.round(fL + incL*i),
+				alpha: fA + incA*i
+			}));
+		}
+		return gradient;
 	}
+
 };
 
 // model conversion methods and static constructors

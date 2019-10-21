@@ -657,6 +657,53 @@ it('Mix: 100%', function () {
 	equal(Color('#f00').mix(Color('#00f'), 1.0).hex(), '#0000FF');
 });
 
+it('Gradient in RGB', function () {
+	deepEqual(Color('#f10').gradientRGB(Color('#02f'), 5).map((c)=>c.string()), [
+		'rgb(255, 17, 0)',
+		'rgb(191, 21, 64)',
+		'rgb(128, 26, 128)',
+		'rgb(64, 30, 191)',
+		'rgb(0, 34, 255)'
+	]);
+});
+
+it('Gradient in RGBA', function () {
+	deepEqual(Color('#f30').gradientRGB(Color('#04f').alpha(0), 5).map((c)=>c.string()), [
+		'rgb(255, 51, 0)',
+		'rgba(191, 55, 64, 0.75)',
+		'rgba(128, 60, 128, 0.5)',
+		'rgba(64, 64, 191, 0.25)',
+		'rgba(0, 68, 255, 0)'
+	]);
+});
+
+it('Gradient in HSL', function () {
+	deepEqual(Color('#f00').gradientHSL(Color('#080'), 4).map((c)=>c.string()), [
+		'hsl(0, 100%, 50%)',
+		'hsl(40, 100%, 42%)',
+		'hsl(80, 100%, 34%)',
+		'hsl(120, 100%, 27%)'
+	]);
+});
+
+it('Gradient in HSLA', function () {
+	deepEqual(Color('#f00').gradientHSL(Color('#080').alpha(.85), 4).map((c)=>c.string()), [
+		'hsl(0, 100%, 50%)',
+		'hsla(40, 100%, 42%, 0.95)',
+		'hsla(80, 100%, 34%, 0.9)',
+		'hsla(120, 100%, 27%, 0.85)'
+	]);
+});
+
+it('Gradient in HSL counterclokwise', function () {
+	deepEqual(Color('#f00').gradientHSL(Color('#080'), 4, -1).map((c)=>c.string()), [
+		'hsl(0, 100%, 50%)',
+		'hsl(280, 100%, 42%)',
+		'hsl(200, 100%, 34%)',
+		'hsl(120, 100%, 27%)'
+	]);
+});
+
 it('Level', function () {
 	equal(Color('white').level(Color('black')), 'AAA');
 	equal(Color('grey').level(Color('black')), 'AA');
