@@ -680,27 +680,27 @@ it('Gradient in RGBA', function () {
 it('Gradient in HSL', function () {
 	deepEqual(Color('#f00').gradientHSL(Color('#080'), 4).map(c => c.string()), [
 		'hsl(0, 100%, 50%)',
-		'hsl(40, 100%, 42%)',
-		'hsl(80, 100%, 34%)',
-		'hsl(120, 100%, 27%)'
+		'hsl(40, 100%, 42.2%)',
+		'hsl(80, 100%, 34.4%)',
+		'hsl(120, 100%, 26.7%)'
 	]);
 });
 
 it('Gradient in HSLA', function () {
 	deepEqual(Color('#f00').gradientHSL(Color('#080').alpha(0.85), 4).map(c => c.string()), [
 		'hsl(0, 100%, 50%)',
-		'hsla(40, 100%, 42%, 0.95)',
-		'hsla(80, 100%, 34%, 0.9)',
-		'hsla(120, 100%, 27%, 0.85)'
+		'hsla(40, 100%, 42.2%, 0.95)',
+		'hsla(80, 100%, 34.4%, 0.9)',
+		'hsla(120, 100%, 26.7%, 0.85)'
 	]);
 });
 
 it('Gradient in HSL counterclokwise', function () {
 	deepEqual(Color('#f00').gradientHSL(Color('#080'), 4, -1).map(c => c.string()), [
 		'hsl(0, 100%, 50%)',
-		'hsl(280, 100%, 42%)',
-		'hsl(200, 100%, 34%)',
-		'hsl(120, 100%, 27%)'
+		'hsl(280, 100%, 42.2%)',
+		'hsl(200, 100%, 34.4%)',
+		'hsl(120, 100%, 26.7%)'
 	]);
 });
 

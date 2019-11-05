@@ -393,10 +393,20 @@ Color.prototype = {
 		if (steps < 2) {
 			throw new Error('Argument "steps" must to be bigger or equal to 2.');
 		}
+		if (steps === 2) {
+			return [this.rgb(), toColor.rgb()];
+		}
+		if (steps === 3) {
+			return [this.rgb(), this.mix(toColor, 0.5).rgb(), toColor.rgb()];
+		}
 		toColor = toColor.rgb();
 		var fromColor = this.rgb();
-		var [fR, fG, fB] = fromColor.color;
-		var [tR, tG, tB] = toColor.color;
+		var fR = fromColor.color[0];
+		var fG = fromColor.color[1];
+		var fB = fromColor.color[2];
+		var tR = toColor.color[0];
+		var tG = toColor.color[1];
+		var tB = toColor.color[2];
 		var fA = fromColor.alpha();
 		var tA = toColor.alpha();
 		var incR = (tR - fR) / (steps - 1);
@@ -422,6 +432,9 @@ Color.prototype = {
 		if (steps < 2) {
 			throw new Error('Argument "steps" must to be bigger or equal to 2.');
 		}
+		if (steps === 2) {
+			return [this.hsl(), toColor.hsl()];
+		}
 		if (!rotationWay) {
 			rotationWay = 1;
 		}
@@ -430,8 +443,12 @@ Color.prototype = {
 		}
 		toColor = toColor.hsl();
 		var fromColor = this.hsl();
-		var [fH, fS, fL] = fromColor.color;
-		var [tH, tS, tL] = toColor.color;
+		var fH = fromColor.color[0];
+		var fS = fromColor.color[1];
+		var fL = fromColor.color[2];
+		var tH = toColor.color[0];
+		var tS = toColor.color[1];
+		var tL = toColor.color[2];
 		var fA = fromColor.alpha();
 		var tA = toColor.alpha();
 		if (rotationWay > 0 && fH > tH) {
@@ -445,14 +462,15 @@ Color.prototype = {
 		var incL = (tL - fL) / (steps - 1);
 		var incA = (tA - fA) / (steps - 1);
 		var gradient = [fromColor];
-		for (var i = 1; i < steps; i++) {
+		for (var i = 1; i < (steps - 1); i++) {
 			gradient.push(Color({
-				h: Math.round(fH + incH * i),
-				s: Math.round(fS + incS * i),
-				l: Math.round(fL + incL * i),
+				h: fH + incH * i,
+				s: fS + incS * i,
+				l: fL + incL * i,
 				alpha: fA + incA * i
 			}));
 		}
+		gradient.push(toColor);
 		return gradient;
 	}
 
