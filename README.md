@@ -99,8 +99,8 @@ color.saturate(0.5)    // hsl(100, 50%, 50%) -> hsl(100, 75%, 50%)
 color.desaturate(0.5)  // hsl(100, 50%, 50%) -> hsl(100, 25%, 50%)
 color.grayscale()      // #5CBF54 -> #969696
 
-color.whiten(0.5)      // hwb(100, 50%, 50%) -> hwb(100, 75%, 50%)
-color.blacken(0.5)     // hwb(100, 50%, 50%) -> hwb(100, 50%, 75%)
+color.whiten(0.5)      // hwb(100, 50%, 50%) -> hwb(100, 75%, 25%)
+color.blacken(0.5)     // hwb(100, 50%, 50%) -> hwb(100, 25%, 75%)
 
 color.fade(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 0.4)
 color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
