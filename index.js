@@ -327,23 +327,27 @@ Color.prototype = {
 		return hsl;
 	},
 
+	/**
+	 * Whiten color by ratio
+	 * W + B of HWB mustn't be more 100 in total
+	 * @link https://www.w3schools.com/colors/colors_hwb.asp
+	 */
 	whiten: function (ratio) {
-		// hwb.color[1] + hwb.color[2] mustn't be more 100 in total
-		// If hwb.color[1] is 0 then use 100 * ratio.
-		// https://www.w3schools.com/colors/colors_hwb.asp
 		var hwb = this.hwb();
-		var white = (hwb.color[1] > 0) ? hwb.color[1] * ratio : 100 * ratio;
+		var white = (hwb.color[1] > 0) ? hwb.color[1] * ratio : 100 * ratio; // If hwb.color[1] is 0 then use 100 * ratio.
 		hwb.color[1] = (white + hwb.color[1] >= 100) ? 100 : white;
 		hwb.color[2] = (hwb.color[1] + hwb.color[2] > 100) ? 100 - hwb.color[1] : hwb.color[2];
 		return hwb;
 	},
 
+	/**
+	 * Blacken color by ration
+	 * W + B of HWB mustn't be more 100 in total
+	 * @link https://www.w3schools.com/colors/colors_hwb.asp
+	 */
 	blacken: function (ratio) {
-		// hwb.color[1] + hwb.color[2] mustn't be more 100 in total
-		// If hwb.color[2] is 0 then use 100 * ratio.
-		// https://www.w3schools.com/colors/colors_hwb.asp
 		var hwb = this.hwb();
-		var black = (hwb.color[2] > 0) ? hwb.color[2] * ratio : 100 * ratio;
+		var black = (hwb.color[2] > 0) ? hwb.color[2] * ratio : 100 * ratio; // If hwb.color[2] is 0 then use 100 * ratio.
 		hwb.color[2] = (black + hwb.color[1] >= 100) ? 100 : black;
 		hwb.color[1] = (hwb.color[1] + hwb.color[2] > 100) ? 100 - hwb.color[2] : hwb.color[1];
 		return hwb;
