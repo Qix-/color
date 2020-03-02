@@ -93,7 +93,11 @@ Get whether the color is "light" or "dark", useful for deciding text color.
 color.negate()         // rgb(0, 100, 255) -> rgb(255, 155, 0)
 
 color.lighten(0.5)     // hsl(100, 50%, 50%) -> hsl(100, 50%, 75%)
+color.lighten(0.1)     // hsl(100, 50%, 10%) -> hsl(100, 50%, 11%)
 color.darken(0.5)      // hsl(100, 50%, 50%) -> hsl(100, 50%, 25%)
+color.darken(0.1)      // hsl(100, 50%, 10%) -> hsl(100, 50%, 9%)
+
+color.lightness(50)    // hsl(100, 50%, 10%) -> hsl(100, 50%, 50%)
 
 color.saturate(0.5)    // hsl(100, 50%, 50%) -> hsl(100, 75%, 50%)
 color.desaturate(0.5)  // hsl(100, 50%, 50%) -> hsl(100, 25%, 50%)
