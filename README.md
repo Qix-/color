@@ -55,7 +55,7 @@ color.rgbNumber() // 16777215 (0xffffff)
 Get the rgb number value.
 
 ```js
-color.hex() // 0xffffff
+color.hex() // #ffffff
 ```
 Get the hex value.
 
