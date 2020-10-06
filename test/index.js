@@ -464,6 +464,23 @@ it('Capping values', function () {
 		l: 10
 	}).hue(), 320);
 
+	// testing some HCG ops
+	equal(Color({
+		h: 400,
+		c: 50,
+		g: 10
+	}).hue(), 40);
+	equal(Color({
+		h: 100,
+		c: 50,
+		g: 80
+	}).lightenHcg(0.5).gray(), 100);
+	equal(Color({
+		h: -400,
+		c: 50,
+		g: 10
+	}).hue(), 320);
+
 	// 0 == 360
 	equal(Color({
 		h: 400,
@@ -581,6 +598,16 @@ it('Manipulators wo/ mix', function () {
 		s: 50,
 		l: 60
 	}).darken(0.5).lightness(), 30);
+	equal(Color({
+		h: 100,
+		c: 50,
+		g: 60
+	}).lightenHcg(0.5).gray(), 90);
+	equal(Color({
+		h: 100,
+		c: 50,
+		g: 60
+	}).darkenHcg(0.5).gray(), 30);
 	equal(Color({
 		h: 100,
 		w: 50,
