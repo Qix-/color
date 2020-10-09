@@ -384,7 +384,96 @@ Color.prototype = {
 				w1 * color1.green() + w2 * color2.green(),
 				w1 * color1.blue() + w2 * color2.blue(),
 				color1.alpha() * p + color2.alpha() * (1 - p));
+	},
+
+	gradientRGB: function (toColor, steps) {
+		if (!toColor || !toColor.rgb) {
+			throw new Error('Argument "toColor" was not a Color instance, but rather an instance of ' + typeof toColor);
+		}
+		if (steps < 2) {
+			throw new Error('Argument "steps" must to be bigger or equal to 2.');
+		}
+		if (steps === 2) {
+			return [this.rgb(), toColor.rgb()];
+		}
+		if (steps === 3) {
+			return [this.rgb(), this.mix(toColor, 0.5).rgb(), toColor.rgb()];
+		}
+		toColor = toColor.rgb();
+		var fromColor = this.rgb();
+		var fR = fromColor.color[0];
+		var fG = fromColor.color[1];
+		var fB = fromColor.color[2];
+		var tR = toColor.color[0];
+		var tG = toColor.color[1];
+		var tB = toColor.color[2];
+		var fA = fromColor.alpha();
+		var tA = toColor.alpha();
+		var incR = (tR - fR) / (steps - 1);
+		var incG = (tG - fG) / (steps - 1);
+		var incB = (tB - fB) / (steps - 1);
+		var incA = (tA - fA) / (steps - 1);
+		var gradient = [fromColor];
+		for (var i = 1; i < steps; i++) {
+			gradient.push(Color({
+				r: Math.round(fR + incR * i),
+				g: Math.round(fG + incG * i),
+				b: Math.round(fB + incB * i),
+				alpha: fA + incA * i
+			}));
+		}
+		return gradient;
+	},
+
+	gradientHSL: function (toColor, steps, rotationWay) {
+		if (!toColor || !toColor.hsl) {
+			throw new Error('Argument "toColor" was not a Color instance, but rather an instance of ' + typeof toColor);
+		}
+		if (steps < 2) {
+			throw new Error('Argument "steps" must to be bigger or equal to 2.');
+		}
+		if (steps === 2) {
+			return [this.hsl(), toColor.hsl()];
+		}
+		if (!rotationWay) {
+			rotationWay = 1;
+		}
+		if (rotationWay.constructor !== Number || isNaN(rotationWay) || rotationWay === 0) {
+			throw new Error('Argument "rotationWay" must to be a non zero number.');
+		}
+		toColor = toColor.hsl();
+		var fromColor = this.hsl();
+		var fH = fromColor.color[0];
+		var fS = fromColor.color[1];
+		var fL = fromColor.color[2];
+		var tH = toColor.color[0];
+		var tS = toColor.color[1];
+		var tL = toColor.color[2];
+		var fA = fromColor.alpha();
+		var tA = toColor.alpha();
+		if (rotationWay > 0 && fH > tH) {
+			tH += 360;
+		}
+		if (rotationWay < 0 && fH < tH) {
+			tH -= 360;
+		}
+		var incH = (tH - fH) / (steps - 1);
+		var incS = (tS - fS) / (steps - 1);
+		var incL = (tL - fL) / (steps - 1);
+		var incA = (tA - fA) / (steps - 1);
+		var gradient = [fromColor];
+		for (var i = 1; i < (steps - 1); i++) {
+			gradient.push(Color({
+				h: fH + incH * i,
+				s: fS + incS * i,
+				l: fL + incL * i,
+				alpha: fA + incA * i
+			}));
+		}
+		gradient.push(toColor);
+		return gradient;
 	}
+
 };
 
 // model conversion methods and static constructors
