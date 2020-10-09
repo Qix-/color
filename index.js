@@ -311,19 +311,19 @@ Color.prototype = {
 
 	darken: function (ratio) {
 		var hsl = this.hsl();
-		hsl.color[2] -= hsl.color[2] * ratio;
+		hsl.color[2] -= 100 * ratio;
 		return hsl;
 	},
 
 	saturate: function (ratio) {
 		var hsl = this.hsl();
-		hsl.color[1] += hsl.color[1] * ratio;
+		hsl.color[1] += 100 * ratio;
 		return hsl;
 	},
 
 	desaturate: function (ratio) {
 		var hsl = this.hsl();
-		hsl.color[1] -= hsl.color[1] * ratio;
+		hsl.color[1] -= 100 * ratio;
 		return hsl;
 	},
 
