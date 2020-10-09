@@ -284,15 +284,15 @@ Color.prototype = {
 		return (contrastRatio >= 4.5) ? 'AA' : '';
 	},
 
-	isDark: function () {
+	isDark: function (threshold) {
 		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
 		var rgb = this.rgb().color;
 		var yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-		return yiq < 128;
+		return yiq < (threshold || 128);
 	},
 
-	isLight: function () {
-		return !this.isDark();
+	isLight: function (threshold) {
+		return !this.isDark(threshold);
 	},
 
 	negate: function () {
