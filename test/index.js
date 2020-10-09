@@ -675,3 +675,11 @@ it('Exceptions', function () {
 		Color('');
 	}, /Unable to parse color from string/);
 });
+
+it('Should parse alphas in RGBA hex notation correctly', function () {
+	// Tests for regression of #174
+	notStrictEqual(
+		Color('#000000ab').alpha(),
+		Color('#000000aa').alpha()
+	);
+});
