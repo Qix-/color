@@ -277,7 +277,7 @@ Color.prototype = {
 
 	level: function (color2) {
 		var contrastRatio = this.contrast(color2);
-		if (contrastRatio >= 7.1) {
+		if (contrastRatio >= 7.0) {
 			return 'AAA';
 		}
 
