@@ -304,7 +304,7 @@ Color.prototype = {
 	},
 
 	// used for light themes, but it doesn't change 'hue' and 'chroma' value
-	tinter: function (ratio) {
+	tinten: function (ratio) {
 		var hcg = this.hcg();
 		hcg.color[2] += hcg.color[2] * ratio;
 		return hcg;
