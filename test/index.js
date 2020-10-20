@@ -474,7 +474,7 @@ it('Capping values', function () {
 		h: 100,
 		c: 50,
 		g: 80
-	}).lightenHcg(0.5).gray(), 100);
+	}).tintify(0.5).gray(), 100);
 	equal(Color({
 		h: -400,
 		c: 50,
@@ -602,12 +602,12 @@ it('Manipulators wo/ mix', function () {
 		h: 100,
 		c: 50,
 		g: 60
-	}).lightenHcg(0.5).gray(), 90);
+	}).tintify(0.5).gray(), 90);
 	equal(Color({
 		h: 100,
 		c: 50,
 		g: 60
-	}).darkenHcg(0.5).gray(), 30);
+	}).shadify(0.5).gray(), 30);
 	equal(Color({
 		h: 100,
 		w: 50,

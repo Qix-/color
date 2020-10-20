@@ -304,21 +304,21 @@ Color.prototype = {
 	},
 
 	// used for light themes, but it doesn't change 'hue' and 'chroma' value
-	lightenHcg: function (ratio) {
+	tintify: function (ratio) {
 		var hcg = this.hcg();
 		hcg.color[2] += hcg.color[2] * ratio;
 		return hcg;
 	},
 
 	// used for dark themes, but it doesn't change 'hue' and 'chroma' value
-	darkenHcg: function (ratio) {
+	shadify: function (ratio) {
 		var hcg = this.hcg();
 		hcg.color[2] -= hcg.color[2] * ratio;
 		return hcg;
 	},
 
 	// used for toggle themes, but it doesn't change 'hue' and 'chroma' value
-	negateHcg: function () {
+	negateTones: function () {
 		var hcg = this.hcg();
 		hcg.color[2] = 100 - hcg.color[2];
 		return hcg;
