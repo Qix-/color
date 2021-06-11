@@ -30,7 +30,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "color-convert": "^1.9.1",
+    "color-convert": "^2.0.1",
     "color-string": "^1.5.4"
   },
   "devDependencies": {
