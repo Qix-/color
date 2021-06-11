@@ -221,9 +221,9 @@ Color.prototype = {
 	yellow: getset('cmyk', 2, maxfn(100)),
 	black: getset('cmyk', 3, maxfn(100)),
 
-	x: getset('xyz', 0, maxfn(100)),
-	y: getset('xyz', 1, maxfn(100)),
-	z: getset('xyz', 2, maxfn(100)),
+	x: getset('xyz', 0, maxfn(95.047)),
+	y: getset('xyz', 1, maxfn(100.000)),
+	z: getset('xyz', 2, maxfn(108.833)),
 
 	l: getset('lab', 0, maxfn(100)),
 	a: getset('lab', 1),
