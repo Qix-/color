@@ -1,31 +1,29 @@
-'use strict';
+const colorString = require('color-string');
+const convert = require('color-convert');
 
-var colorString = require('color-string');
-var convert = require('color-convert');
+const _slice = [].slice;
 
-var _slice = [].slice;
-
-var skippedModels = [
-	// to be honest, I don't really feel like keyword belongs in color convert, but eh.
+const skippedModels = [
+	// To be honest, I don't really feel like keyword belongs in color convert, but eh.
 	'keyword',
 
-	// gray conflicts with some method names, and has its own method defined.
+	// Gray conflicts with some method names, and has its own method defined.
 	'gray',
 
-	// shouldn't really be in color-convert either...
-	'hex'
+	// Shouldn't really be in color-convert either...
+	'hex',
 ];
 
-var hashedModelKeys = {};
-Object.keys(convert).forEach(function (model) {
+const hashedModelKeys = {};
+for (const model of Object.keys(convert)) {
 	hashedModelKeys[_slice.call(convert[model].labels).sort().join('')] = model;
-});
+}
 
-var limiters = {};
+const limiters = {};
 
-function Color(obj, model) {
+function Color(object, model) {
 	if (!(this instanceof Color)) {
-		return new Color(obj, model);
+		return new Color(object, model);
 	}
 
 	if (model && model in skippedModels) {
@@ -36,73 +34,73 @@ function Color(obj, model) {
 		throw new Error('Unknown model: ' + model);
 	}
 
-	var i;
-	var channels;
+	let i;
+	let channels;
 
-	if (obj == null) { // eslint-disable-line no-eq-null,eqeqeq
+	if (object == null) { // eslint-disable-line no-eq-null,eqeqeq
 		this.model = 'rgb';
 		this.color = [0, 0, 0];
 		this.valpha = 1;
-	} else if (obj instanceof Color) {
-		this.model = obj.model;
-		this.color = obj.color.slice();
-		this.valpha = obj.valpha;
-	} else if (typeof obj === 'string') {
-		var result = colorString.get(obj);
+	} else if (object instanceof Color) {
+		this.model = object.model;
+		this.color = object.color.slice();
+		this.valpha = object.valpha;
+	} else if (typeof object === 'string') {
+		const result = colorString.get(object);
 		if (result === null) {
-			throw new Error('Unable to parse color from string: ' + obj);
+			throw new Error('Unable to parse color from string: ' + object);
 		}
 
 		this.model = result.model;
 		channels = convert[this.model].channels;
 		this.color = result.value.slice(0, channels);
 		this.valpha = typeof result.value[channels] === 'number' ? result.value[channels] : 1;
-	} else if (obj.length) {
+	} else if (object.length > 0) {
 		this.model = model || 'rgb';
 		channels = convert[this.model].channels;
-		var newArr = _slice.call(obj, 0, channels);
-		this.color = zeroArray(newArr, channels);
-		this.valpha = typeof obj[channels] === 'number' ? obj[channels] : 1;
-	} else if (typeof obj === 'number') {
-		// this is always RGB - can be converted later on.
-		obj &= 0xFFFFFF;
+		const newArray = _slice.call(object, 0, channels);
+		this.color = zeroArray(newArray, channels);
+		this.valpha = typeof object[channels] === 'number' ? object[channels] : 1;
+	} else if (typeof object === 'number') {
+		// This is always RGB - can be converted later on.
+		object &= 0xFF_FF_FF;
 		this.model = 'rgb';
 		this.color = [
-			(obj >> 16) & 0xFF,
-			(obj >> 8) & 0xFF,
-			obj & 0xFF
+			(object >> 16) & 0xFF,
+			(object >> 8) & 0xFF,
+			object & 0xFF,
 		];
 		this.valpha = 1;
 	} else {
 		this.valpha = 1;
 
-		var keys = Object.keys(obj);
-		if ('alpha' in obj) {
+		const keys = Object.keys(object);
+		if ('alpha' in object) {
 			keys.splice(keys.indexOf('alpha'), 1);
-			this.valpha = typeof obj.alpha === 'number' ? obj.alpha : 0;
+			this.valpha = typeof object.alpha === 'number' ? object.alpha : 0;
 		}
 
-		var hashedKeys = keys.sort().join('');
+		const hashedKeys = keys.sort().join('');
 		if (!(hashedKeys in hashedModelKeys)) {
-			throw new Error('Unable to parse color from object: ' + JSON.stringify(obj));
+			throw new Error('Unable to parse color from object: ' + JSON.stringify(object));
 		}
 
 		this.model = hashedModelKeys[hashedKeys];
 
-		var labels = convert[this.model].labels;
-		var color = [];
+		const labels = convert[this.model].labels;
+		const color = [];
 		for (i = 0; i < labels.length; i++) {
-			color.push(obj[labels[i]]);
+			color.push(object[labels[i]]);
 		}
 
 		this.color = zeroArray(color);
 	}
 
-	// perform limitations (clamping, etc.)
+	// Perform limitations (clamping, etc.)
 	if (limiters[this.model]) {
 		channels = convert[this.model].channels;
 		for (i = 0; i < channels; i++) {
-			var limit = limiters[this.model][i];
+			const limit = limiters[this.model][i];
 			if (limit) {
 				this.color[i] = limit(this.color[i]);
 			}
@@ -117,37 +115,37 @@ function Color(obj, model) {
 }
 
 Color.prototype = {
-	toString: function () {
+	toString() {
 		return this.string();
 	},
 
-	toJSON: function () {
+	toJSON() {
 		return this[this.model]();
 	},
 
-	string: function (places) {
-		var self = this.model in colorString.to ? this : this.rgb();
+	string(places) {
+		let self = this.model in colorString.to ? this : this.rgb();
 		self = self.round(typeof places === 'number' ? places : 1);
-		var args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+		const args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
 		return colorString.to[self.model](args);
 	},
 
-	percentString: function (places) {
-		var self = this.rgb().round(typeof places === 'number' ? places : 1);
-		var args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+	percentString(places) {
+		const self = this.rgb().round(typeof places === 'number' ? places : 1);
+		const args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
 		return colorString.to.rgb.percent(args);
 	},
 
-	array: function () {
+	array() {
 		return this.valpha === 1 ? this.color.slice() : this.color.concat(this.valpha);
 	},
 
-	object: function () {
-		var result = {};
-		var channels = convert[this.model].channels;
-		var labels = convert[this.model].labels;
+	object() {
+		const result = {};
+		const channels = convert[this.model].channels;
+		const labels = convert[this.model].labels;
 
-		for (var i = 0; i < channels; i++) {
+		for (let i = 0; i < channels; i++) {
 			result[labels[i]] = this.color[i];
 		}
 
@@ -158,8 +156,8 @@ Color.prototype = {
 		return result;
 	},
 
-	unitArray: function () {
-		var rgb = this.rgb().color;
+	unitArray() {
+		const rgb = this.rgb().color;
 		rgb[0] /= 255;
 		rgb[1] /= 255;
 		rgb[2] /= 255;
@@ -171,8 +169,8 @@ Color.prototype = {
 		return rgb;
 	},
 
-	unitObject: function () {
-		var rgb = this.rgb().object();
+	unitObject() {
+		const rgb = this.rgb().object();
 		rgb.r /= 255;
 		rgb.g /= 255;
 		rgb.b /= 255;
@@ -184,25 +182,25 @@ Color.prototype = {
 		return rgb;
 	},
 
-	round: function (places) {
+	round(places) {
 		places = Math.max(places || 0, 0);
 		return new Color(this.color.map(roundToPlace(places)).concat(this.valpha), this.model);
 	},
 
-	alpha: function (val) {
-		if (arguments.length) {
-			return new Color(this.color.concat(Math.max(0, Math.min(1, val))), this.model);
+	alpha(value) {
+		if (arguments.length > 0) {
+			return new Color(this.color.concat(Math.max(0, Math.min(1, value))), this.model);
 		}
 
 		return this.valpha;
 	},
 
-	// rgb
+	// Rgb
 	red: getset('rgb', 0, maxfn(255)),
 	green: getset('rgb', 1, maxfn(255)),
 	blue: getset('rgb', 2, maxfn(255)),
 
-	hue: getset(['hsl', 'hsv', 'hsl', 'hwb', 'hcg'], 0, function (val) { return ((val % 360) + 360) % 360; }), // eslint-disable-line brace-style
+	hue: getset(['hsl', 'hsv', 'hsl', 'hwb', 'hcg'], 0, value => ((value % 360) + 360) % 360),
 
 	saturationl: getset('hsl', 1, maxfn(100)),
 	lightness: getset('hsl', 2, maxfn(100)),
@@ -229,44 +227,44 @@ Color.prototype = {
 	a: getset('lab', 1),
 	b: getset('lab', 2),
 
-	keyword: function (val) {
-		if (arguments.length) {
-			return new Color(val);
+	keyword(value) {
+		if (arguments.length > 0) {
+			return new Color(value);
 		}
 
 		return convert[this.model].keyword(this.color);
 	},
 
-	hex: function (val) {
-		if (arguments.length) {
-			return new Color(val);
+	hex(value) {
+		if (arguments.length > 0) {
+			return new Color(value);
 		}
 
 		return colorString.to.hex(this.rgb().round().color);
 	},
 
-	rgbNumber: function () {
-		var rgb = this.rgb().color;
+	rgbNumber() {
+		const rgb = this.rgb().color;
 		return ((rgb[0] & 0xFF) << 16) | ((rgb[1] & 0xFF) << 8) | (rgb[2] & 0xFF);
 	},
 
-	luminosity: function () {
+	luminosity() {
 		// http://www.w3.org/TR/WCAG20/#relativeluminancedef
-		var rgb = this.rgb().color;
+		const rgb = this.rgb().color;
 
-		var lum = [];
-		for (var i = 0; i < rgb.length; i++) {
-			var chan = rgb[i] / 255;
-			lum[i] = (chan <= 0.03928) ? chan / 12.92 : Math.pow(((chan + 0.055) / 1.055), 2.4);
+		const lum = [];
+		for (const [i, element] of rgb.entries()) {
+			const chan = element / 255;
+			lum[i] = (chan <= 0.039_28) ? chan / 12.92 : ((chan + 0.055) / 1.055) ** 2.4;
 		}
 
 		return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
 	},
 
-	contrast: function (color2) {
+	contrast(color2) {
 		// http://www.w3.org/TR/WCAG20/#contrast-ratiodef
-		var lum1 = this.luminosity();
-		var lum2 = color2.luminosity();
+		const lum1 = this.luminosity();
+		const lum2 = color2.luminosity();
 
 		if (lum1 > lum2) {
 			return (lum1 + 0.05) / (lum2 + 0.05);
@@ -275,8 +273,8 @@ Color.prototype = {
 		return (lum2 + 0.05) / (lum1 + 0.05);
 	},
 
-	level: function (color2) {
-		var contrastRatio = this.contrast(color2);
+	level(color2) {
+		const contrastRatio = this.contrast(color2);
 		if (contrastRatio >= 7.1) {
 			return 'AAA';
 		}
@@ -284,128 +282,130 @@ Color.prototype = {
 		return (contrastRatio >= 4.5) ? 'AA' : '';
 	},
 
-	isDark: function () {
+	isDark() {
 		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
-		var rgb = this.rgb().color;
-		var yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+		const rgb = this.rgb().color;
+		const yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
 		return yiq < 128;
 	},
 
-	isLight: function () {
+	isLight() {
 		return !this.isDark();
 	},
 
-	negate: function () {
-		var rgb = this.rgb();
-		for (var i = 0; i < 3; i++) {
+	negate() {
+		const rgb = this.rgb();
+		for (let i = 0; i < 3; i++) {
 			rgb.color[i] = 255 - rgb.color[i];
 		}
+
 		return rgb;
 	},
 
-	lighten: function (ratio) {
-		var hsl = this.hsl();
+	lighten(ratio) {
+		const hsl = this.hsl();
 		hsl.color[2] += hsl.color[2] * ratio;
 		return hsl;
 	},
 
-	darken: function (ratio) {
-		var hsl = this.hsl();
+	darken(ratio) {
+		const hsl = this.hsl();
 		hsl.color[2] -= hsl.color[2] * ratio;
 		return hsl;
 	},
 
-	saturate: function (ratio) {
-		var hsl = this.hsl();
+	saturate(ratio) {
+		const hsl = this.hsl();
 		hsl.color[1] += hsl.color[1] * ratio;
 		return hsl;
 	},
 
-	desaturate: function (ratio) {
-		var hsl = this.hsl();
+	desaturate(ratio) {
+		const hsl = this.hsl();
 		hsl.color[1] -= hsl.color[1] * ratio;
 		return hsl;
 	},
 
-	whiten: function (ratio) {
-		var hwb = this.hwb();
+	whiten(ratio) {
+		const hwb = this.hwb();
 		hwb.color[1] += hwb.color[1] * ratio;
 		return hwb;
 	},
 
-	blacken: function (ratio) {
-		var hwb = this.hwb();
+	blacken(ratio) {
+		const hwb = this.hwb();
 		hwb.color[2] += hwb.color[2] * ratio;
 		return hwb;
 	},
 
-	grayscale: function () {
+	grayscale() {
 		// http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
-		var rgb = this.rgb().color;
-		var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
-		return Color.rgb(val, val, val);
+		const rgb = this.rgb().color;
+		const value = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
+		return Color.rgb(value, value, value);
 	},
 
-	fade: function (ratio) {
+	fade(ratio) {
 		return this.alpha(this.valpha - (this.valpha * ratio));
 	},
 
-	opaquer: function (ratio) {
+	opaquer(ratio) {
 		return this.alpha(this.valpha + (this.valpha * ratio));
 	},
 
-	rotate: function (degrees) {
-		var hsl = this.hsl();
-		var hue = hsl.color[0];
+	rotate(degrees) {
+		const hsl = this.hsl();
+		let hue = hsl.color[0];
 		hue = (hue + degrees) % 360;
 		hue = hue < 0 ? 360 + hue : hue;
 		hsl.color[0] = hue;
 		return hsl;
 	},
 
-	mix: function (mixinColor, weight) {
-		// ported from sass implementation in C
+	mix(mixinColor, weight) {
+		// Ported from sass implementation in C
 		// https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
 		if (!mixinColor || !mixinColor.rgb) {
 			throw new Error('Argument to "mix" was not a Color instance, but rather an instance of ' + typeof mixinColor);
 		}
-		var color1 = mixinColor.rgb();
-		var color2 = this.rgb();
-		var p = weight === undefined ? 0.5 : weight;
 
-		var w = 2 * p - 1;
-		var a = color1.alpha() - color2.alpha();
+		const color1 = mixinColor.rgb();
+		const color2 = this.rgb();
+		const p = weight === undefined ? 0.5 : weight;
 
-		var w1 = (((w * a === -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
-		var w2 = 1 - w1;
+		const w = 2 * p - 1;
+		const a = color1.alpha() - color2.alpha();
+
+		const w1 = (((w * a === -1) ? w : (w + a) / (1 + w * a)) + 1) / 2;
+		const w2 = 1 - w1;
 
 		return Color.rgb(
-				w1 * color1.red() + w2 * color2.red(),
-				w1 * color1.green() + w2 * color2.green(),
-				w1 * color1.blue() + w2 * color2.blue(),
-				color1.alpha() * p + color2.alpha() * (1 - p));
-	}
+			w1 * color1.red() + w2 * color2.red(),
+			w1 * color1.green() + w2 * color2.green(),
+			w1 * color1.blue() + w2 * color2.blue(),
+			color1.alpha() * p + color2.alpha() * (1 - p));
+	},
 };
 
-// model conversion methods and static constructors
-Object.keys(convert).forEach(function (model) {
-	if (skippedModels.indexOf(model) !== -1) {
-		return;
+// Model conversion methods and static constructors
+for (const model of Object.keys(convert)) {
+	if (skippedModels.includes(model)) {
+		continue;
 	}
 
-	var channels = convert[model].channels;
+	const channels = convert[model].channels;
 
-	// conversion methods
+	// Conversion methods
 	Color.prototype[model] = function () {
 		if (this.model === model) {
 			return new Color(this);
 		}
 
-		if (arguments.length) {
+		if (arguments.length > 0) {
 			return new Color(arguments, model);
 		}
 
-		var newAlpha = typeof arguments[channels] === 'number' ? channels : this.valpha;
+		const newAlpha = typeof arguments[channels] === 'number' ? channels : this.valpha;
 		return new Color(assertArray(convert[this.model][model].raw(this.color)).concat(newAlpha), model);
 	};
 
@@ -414,39 +414,40 @@ Object.keys(convert).forEach(function (model) {
 		if (typeof color === 'number') {
 			color = zeroArray(_slice.call(arguments), channels);
 		}
+
 		return new Color(color, model);
 	};
-});
+}
 
-function roundTo(num, places) {
-	return Number(num.toFixed(places));
+function roundTo(number, places) {
+	return Number(number.toFixed(places));
 }
 
 function roundToPlace(places) {
-	return function (num) {
-		return roundTo(num, places);
+	return function (number) {
+		return roundTo(number, places);
 	};
 }
 
 function getset(model, channel, modifier) {
 	model = Array.isArray(model) ? model : [model];
 
-	model.forEach(function (m) {
+	for (const m of model) {
 		(limiters[m] || (limiters[m] = []))[channel] = modifier;
-	});
+	}
 
 	model = model[0];
 
-	return function (val) {
-		var result;
+	return function (value) {
+		let result;
 
-		if (arguments.length) {
+		if (arguments.length > 0) {
 			if (modifier) {
-				val = modifier(val);
+				value = modifier(value);
 			}
 
 			result = this[model]();
-			result.color[channel] = val;
+			result.color[channel] = value;
 			return result;
 		}
 
@@ -465,18 +466,18 @@ function maxfn(max) {
 	};
 }
 
-function assertArray(val) {
-	return Array.isArray(val) ? val : [val];
+function assertArray(value) {
+	return Array.isArray(value) ? value : [value];
 }
 
-function zeroArray(arr, length) {
-	for (var i = 0; i < length; i++) {
-		if (typeof arr[i] !== 'number') {
-			arr[i] = 0;
+function zeroArray(array, length) {
+	for (let i = 0; i < length; i++) {
+		if (typeof array[i] !== 'number') {
+			array[i] = 0;
 		}
 	}
 
-	return arr;
+	return array;
 }
 
 module.exports = Color;

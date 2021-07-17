@@ -17,7 +17,10 @@
   "xo": {
     "rules": {
       "no-cond-assign": 0,
-      "new-cap": 0
+      "new-cap": 0,
+      "unicorn/prefer-module": 0,
+      "no-mixed-operators": 0,
+      "complexity": 0
     }
   },
   "files": [
@@ -34,6 +37,6 @@
   },
   "devDependencies": {
     "mocha": "9.0.2",
-    "xo": "0.12.1"
+    "xo": "0.42.0"
   }
 }
