@@ -21,7 +21,6 @@
     }
   },
   "files": [
-    "CHANGELOG.md",
     "LICENSE",
     "index.js"
   ],
