@@ -3,7 +3,7 @@
 > JavaScript library for immutable color conversion and manipulation with support for CSS color strings.
 
 ```js
-var color = Color('#7743CE').alpha(0.5).lighten(0.5);
+const color = Color('#7743CE').alpha(0.5).lighten(0.5);
 console.log(color.hsl().string());  // 'hsla(262, 59%, 81%, 0.5)'
 
 console.log(color.cmyk().round().array());  // [ 16, 25, 0, 8, 0.5 ]
@@ -18,15 +18,15 @@ $ npm install color
 
 ## Usage
 ```js
-var Color = require('color');
+const Color = require('color');
 ```
 
 ### Constructors
 ```js
-var color = Color('rgb(255, 255, 255)')
-var color = Color({r: 255, g: 255, b: 255})
-var color = Color.rgb(255, 255, 255)
-var color = Color.rgb([255, 255, 255])
+const color = Color('rgb(255, 255, 255)')
+const color = Color({r: 255, g: 255, b: 255})
+const color = Color.rgb(255, 255, 255)
+const color = Color.rgb([255, 255, 255])
 ```
 
 Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hue`, `saturationl` (hsl), `saturationv` (hsv), `lightness`, `whiteness`, `blackness`, `cyan`, `magenta`, `yellow`, `black`
