@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "color-convert": "^1.9.1",
-    "color-string": "^1.5.4"
+    "color-string": "^1.6.0"
   },
   "devDependencies": {
     "mocha": "^6.1.4",
