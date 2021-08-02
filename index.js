@@ -63,7 +63,6 @@ function Color(object, model) {
 		this.valpha = typeof object[channels] === 'number' ? object[channels] : 1;
 	} else if (typeof object === 'number') {
 		// This is always RGB - can be converted later on.
-		object &= 0xFF_FF_FF;
 		this.model = 'rgb';
 		this.color = [
 			(object >> 16) & 0xFF,
