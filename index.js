@@ -254,7 +254,7 @@ Color.prototype = {
 		const lum = [];
 		for (const [i, element] of rgb.entries()) {
 			const chan = element / 255;
-			lum[i] = (chan <= 0.039_28) ? chan / 12.92 : Math.pow((chan + 0.055) / 1.055, 2.4);
+			lum[i] = (chan <= 0.03928) ? chan / 12.92 : ((chan + 0.055) / 1.055) ** 2.4;
 		}
 
 		return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
