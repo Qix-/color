@@ -1,4 +1,4 @@
-# color [![Build Status](https://travis-ci.org/Qix-/color.svg?branch=master)](https://travis-ci.org/Qix-/color)
+# color
 
 > JavaScript library for immutable color conversion and manipulation with support for CSS color strings.
 
