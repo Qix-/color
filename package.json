@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "color-convert": "^2.0.1",
-    "color-string": "^1.6.0"
+    "color-string": "^1.7.4"
   },
   "devDependencies": {
     "mocha": "9.0.2",
