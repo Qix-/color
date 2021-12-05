@@ -31,6 +31,9 @@
     "pretest": "xo",
     "test": "mocha"
   },
+  "engines": {
+    "node": ">=12.5.0"
+  },
   "dependencies": {
     "color-convert": "^2.0.1",
     "color-string": "^1.9.0"
