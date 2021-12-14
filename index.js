@@ -242,6 +242,21 @@ Color.prototype = {
 		return colorString.to.hex(this.rgb().round().color);
 	},
 
+	hexa(value) {
+		if (arguments.length > 0) {
+			return new Color(value);
+		}
+
+		const rgbArray = this.rgb().round().color;
+
+		let alphaHex = Math.round(this.valpha * 255).toString(16).toUpperCase();
+		if (alphaHex.length === 1) {
+			alphaHex = '0' + alphaHex;
+		}
+
+		return colorString.to.hex(rgbArray) + alphaHex;
+	},
+
 	rgbNumber() {
 		const rgb = this.rgb().color;
 		return ((rgb[0] & 0xFF) << 16) | ((rgb[1] & 0xFF) << 8) | (rgb[2] & 0xFF);
