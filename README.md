@@ -57,7 +57,7 @@ Get the rgb number value.
 ```js
 color.hex() // #ffffff
 ```
-Get the hex value.
+Get the hex value. (NOTE: `.hex()` throws out any alpha values the color may have)
 
 ```js
 color.red()       // 255
