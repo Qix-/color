@@ -288,8 +288,9 @@ Color.prototype = {
 	},
 
 	level(color2) {
+		// https://www.w3.org/TR/WCAG/#contrast-enhanced
 		const contrastRatio = this.contrast(color2);
-		if (contrastRatio >= 7.1) {
+		if (contrastRatio >= 7) {
 			return 'AAA';
 		}
 
