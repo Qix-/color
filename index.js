@@ -298,7 +298,7 @@ Color.prototype = {
 	isDark() {
 		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
 		const rgb = this.rgb().color;
-		const yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+		const yiq = (rgb[0] * 2126 + rgb[1] * 7152 + rgb[2] * 722) / 10_000;
 		return yiq < 128;
 	},
 
