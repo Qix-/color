@@ -418,8 +418,7 @@ for (const model of Object.keys(convert)) {
 			return new Color(args, model);
 		}
 
-		const newAlpha = typeof args[channels] === 'number' ? channels : this.valpha;
-		return new Color([...assertArray(convert[this.model][model].raw(this.color)), newAlpha], model);
+		return new Color([...assertArray(convert[this.model][model].raw(this.color)), this.valpha], model);
 	};
 
 	// 'static' construction methods
