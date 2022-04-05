@@ -512,6 +512,7 @@ it('Translate with channel setters', () => {
 
 it('CSS String getters', () => {
 	equal(Color('rgb(10, 30, 25)').hex(), '#0A1E19');
+	equal(Color('rgb(10, 30, 25, .5)').hex(), '#0A1E19');
 	equal(Color('rgb(10, 30, 25, 1)').hexa(), '#0A1E19FF');
 	equal(Color('rgb(10, 30, 25, 0.4)').hexa(), '#0A1E1966');
 	equal(Color('rgb(10, 30, 25, 0)').hexa(), '#0A1E1900');
