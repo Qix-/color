@@ -25,7 +25,7 @@ it('Color() instance (undefined)', () => {
 });
 
 it('Immutability', () => {
-	const c = Color(0xFF_00_00);
+	const c = Color(0xFF0000);
 	ok(c !== c.rgb());
 	ok(c != c.rgb()); // eslint-disable-line eqeqeq
 });

@@ -267,7 +267,7 @@ Color.prototype = {
 		const lum = [];
 		for (const [i, element] of rgb.entries()) {
 			const chan = element / 255;
-			lum[i] = (chan <= 0.040_45) ? chan / 12.92 : ((chan + 0.055) / 1.055) ** 2.4;
+			lum[i] = (chan <= 0.04045) ? chan / 12.92 : ((chan + 0.055) / 1.055) ** 2.4;
 		}
 
 		return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
@@ -298,7 +298,7 @@ Color.prototype = {
 	isDark() {
 		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
 		const rgb = this.rgb().color;
-		const yiq = (rgb[0] * 2126 + rgb[1] * 7152 + rgb[2] * 722) / 10_000;
+		const yiq = (rgb[0] * 2126 + rgb[1] * 7152 + rgb[2] * 722) / 10000;
 		return yiq < 128;
 	},
 
