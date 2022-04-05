@@ -86,7 +86,7 @@ function Color(object, model) {
 
 		this.model = hashedModelKeys[hashedKeys];
 
-		const labels = convert[this.model].labels;
+		const {labels} = convert[this.model];
 		const color = [];
 		for (i = 0; i < labels.length; i++) {
 			color.push(object[labels[i]]);
@@ -141,8 +141,8 @@ Color.prototype = {
 
 	object() {
 		const result = {};
-		const channels = convert[this.model].channels;
-		const labels = convert[this.model].labels;
+		const {channels} = convert[this.model];
+		const {labels} = convert[this.model];
 
 		for (let i = 0; i < channels; i++) {
 			result[labels[i]] = this.color[i];
@@ -408,7 +408,7 @@ for (const model of Object.keys(convert)) {
 		continue;
 	}
 
-	const channels = convert[model].channels;
+	const {channels} = convert[model];
 
 	// Conversion methods
 	Color.prototype[model] = function () {

@@ -3,11 +3,11 @@
 const assert = require('assert');
 const Color = require('..');
 
-const deepEqual = assert.deepEqual;
-const equal = assert.equal;
-const ok = assert.ok;
-const notStrictEqual = assert.notStrictEqual;
-const throws = assert.throws;
+const {deepEqual} = assert;
+const {equal} = assert;
+const {ok} = assert;
+const {notStrictEqual} = assert;
+const {throws} = assert;
 
 it('Color() instance', () => {
 	equal(new Color('red').red(), 255);

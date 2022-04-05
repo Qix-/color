@@ -20,7 +20,9 @@
       "new-cap": 0,
       "unicorn/prefer-module": 0,
       "no-mixed-operators": 0,
-      "complexity": 0
+      "complexity": 0,
+      "prefer-rest-params": 0,
+      "unicorn/prefer-spread": 0
     }
   },
   "files": [
