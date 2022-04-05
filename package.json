@@ -2,6 +2,7 @@
   "name": "color",
   "version": "4.2.2",
   "description": "Color conversion and manipulation with CSS string support",
+  "sideEffects": false,
   "keywords": [
     "color",
     "colour",
