@@ -1,8 +1,6 @@
 const colorString = require('color-string');
 const convert = require('color-convert');
 
-const _slice = [].slice;
-
 const skippedModels = [
 	// To be honest, I don't really feel like keyword belongs in color convert, but eh.
 	'keyword',
@@ -16,7 +14,7 @@ const skippedModels = [
 
 const hashedModelKeys = {};
 for (const model of Object.keys(convert)) {
-	hashedModelKeys[_slice.call(convert[model].labels).sort().join('')] = model;
+	hashedModelKeys[[...convert[model].labels].sort().join('')] = model;
 }
 
 const limiters = {};
@@ -43,7 +41,7 @@ function Color(object, model) {
 		this.valpha = 1;
 	} else if (object instanceof Color) {
 		this.model = object.model;
-		this.color = object.color.slice();
+		this.color = [...object.color];
 		this.valpha = object.valpha;
 	} else if (typeof object === 'string') {
 		const result = colorString.get(object);
@@ -58,7 +56,7 @@ function Color(object, model) {
 	} else if (object.length > 0) {
 		this.model = model || 'rgb';
 		channels = convert[this.model].channels;
-		const newArray = _slice.call(object, 0, channels);
+		const newArray = Array.prototype.slice.call(object, 0, channels);
 		this.color = zeroArray(newArray, channels);
 		this.valpha = typeof object[channels] === 'number' ? object[channels] : 1;
 	} else if (typeof object === 'number') {
@@ -86,7 +84,7 @@ function Color(object, model) {
 
 		this.model = hashedModelKeys[hashedKeys];
 
-		const labels = convert[this.model].labels;
+		const {labels} = convert[this.model];
 		const color = [];
 		for (i = 0; i < labels.length; i++) {
 			color.push(object[labels[i]]);
@@ -125,24 +123,24 @@ Color.prototype = {
 	string(places) {
 		let self = this.model in colorString.to ? this : this.rgb();
 		self = self.round(typeof places === 'number' ? places : 1);
-		const args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+		const args = self.valpha === 1 ? self.color : [...self.color, this.valpha];
 		return colorString.to[self.model](args);
 	},
 
 	percentString(places) {
 		const self = this.rgb().round(typeof places === 'number' ? places : 1);
-		const args = self.valpha === 1 ? self.color : self.color.concat(this.valpha);
+		const args = self.valpha === 1 ? self.color : [...self.color, this.valpha];
 		return colorString.to.rgb.percent(args);
 	},
 
 	array() {
-		return this.valpha === 1 ? this.color.slice() : this.color.concat(this.valpha);
+		return this.valpha === 1 ? [...this.color] : [...this.color, this.valpha];
 	},
 
 	object() {
 		const result = {};
-		const channels = convert[this.model].channels;
-		const labels = convert[this.model].labels;
+		const {channels} = convert[this.model];
+		const {labels} = convert[this.model];
 
 		for (let i = 0; i < channels; i++) {
 			result[labels[i]] = this.color[i];
@@ -183,12 +181,12 @@ Color.prototype = {
 
 	round(places) {
 		places = Math.max(places || 0, 0);
-		return new Color(this.color.map(roundToPlace(places)).concat(this.valpha), this.model);
+		return new Color([...this.color.map(roundToPlace(places)), this.valpha], this.model);
 	},
 
 	alpha(value) {
-		if (arguments.length > 0) {
-			return new Color(this.color.concat(Math.max(0, Math.min(1, value))), this.model);
+		if (value !== undefined) {
+			return new Color([...this.color, Math.max(0, Math.min(1, value))], this.model);
 		}
 
 		return this.valpha;
@@ -227,7 +225,7 @@ Color.prototype = {
 	b: getset('lab', 2),
 
 	keyword(value) {
-		if (arguments.length > 0) {
+		if (value !== undefined) {
 			return new Color(value);
 		}
 
@@ -235,7 +233,7 @@ Color.prototype = {
 	},
 
 	hex(value) {
-		if (arguments.length > 0) {
+		if (value !== undefined) {
 			return new Color(value);
 		}
 
@@ -243,7 +241,7 @@ Color.prototype = {
 	},
 
 	hexa(value) {
-		if (arguments.length > 0) {
+		if (value !== undefined) {
 			return new Color(value);
 		}
 
@@ -408,26 +406,27 @@ for (const model of Object.keys(convert)) {
 		continue;
 	}
 
-	const channels = convert[model].channels;
+	const {channels} = convert[model];
 
 	// Conversion methods
-	Color.prototype[model] = function () {
+	Color.prototype[model] = function (...args) {
 		if (this.model === model) {
 			return new Color(this);
 		}
 
-		if (arguments.length > 0) {
-			return new Color(arguments, model);
+		if (args.length > 0) {
+			return new Color(args, model);
 		}
 
-		const newAlpha = typeof arguments[channels] === 'number' ? channels : this.valpha;
-		return new Color(assertArray(convert[this.model][model].raw(this.color)).concat(newAlpha), model);
+		const newAlpha = typeof args[channels] === 'number' ? channels : this.valpha;
+		return new Color([...assertArray(convert[this.model][model].raw(this.color)), newAlpha], model);
 	};
 
 	// 'static' construction methods
-	Color[model] = function (color) {
+	Color[model] = function (...args) {
+		let color = args[0];
 		if (typeof color === 'number') {
-			color = zeroArray(_slice.call(arguments), channels);
+			color = zeroArray(args, channels);
 		}
 
 		return new Color(color, model);
@@ -456,7 +455,7 @@ function getset(model, channel, modifier) {
 	return function (value) {
 		let result;
 
-		if (arguments.length > 0) {
+		if (value !== undefined) {
 			if (modifier) {
 				value = modifier(value);
 			}
