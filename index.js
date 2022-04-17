@@ -292,7 +292,11 @@ Color.prototype = {
 			return 'AAA';
 		}
 
-		return (contrastRatio >= 4.5) ? 'AA' : '';
+		if (contrastRatio >= 4.5) {
+			return 'AA';
+		}
+
+		return (contrastRatio >= 3) ? 'AA Large' : '';
 	},
 
 	isDark() {
@@ -352,7 +356,7 @@ Color.prototype = {
 	},
 
 	grayscale() {
-		// http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+		// http://en.wikipedia.org/wiki/Grayscale#Converting_colour_to_grayscale
 		const rgb = this.rgb().color;
 		const value = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
 		return Color.rgb(value, value, value);
