@@ -665,6 +665,7 @@ it('Mix: 100%', () => {
 it('Level', () => {
 	equal(Color('white').level(Color('black')), 'AAA');
 	equal(Color('grey').level(Color('black')), 'AA');
+	equal(Color('#444').level(Color('#999')), 'AA Large');
 });
 
 it('Exceptions', () => {
