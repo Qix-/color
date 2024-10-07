@@ -94,7 +94,7 @@ Set the values for individual channels with `alpha`, `red`, `green`, `blue`, `hu
 String constructors are handled by [color-string](https://www.npmjs.com/package/color-string)
 
 ### Getters
-```jss
+```js
 color.hsl();
 ```
 Convert a color to a different space (`hsl()`, `cmyk()`, etc.).
