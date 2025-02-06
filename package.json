@@ -37,11 +37,14 @@
     "node": ">=12.5.0"
   },
   "dependencies": {
+    "@types/color-convert": "2.0.4",
+    "@types/color-string": "1.5.5",
     "color-convert": "^2.0.1",
     "color-string": "^1.9.0"
   },
   "devDependencies": {
     "mocha": "9.0.2",
+    "typescript": "5.7.3",
     "xo": "0.42.0"
   }
 }
