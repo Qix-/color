@@ -1,7 +1,7 @@
 /* eslint-env node, mocha */
 
-const assert = require('assert');
-const Color = require('..');
+import assert from 'node:assert';
+import Color from '../index.js';
 
 const {deepEqual} = assert;
 const {equal} = assert;

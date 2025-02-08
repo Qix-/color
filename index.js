@@ -1,5 +1,5 @@
-const colorString = require('color-string');
-const convert = require('color-convert');
+import colorString from 'color-string';
+import convert from 'color-convert';
 
 const skippedModels = [
 	// To be honest, I don't really feel like keyword belongs in color convert, but eh.
@@ -123,14 +123,14 @@ Color.prototype = {
 	string(places) {
 		let self = this.model in colorString.to ? this : this.rgb();
 		self = self.round(typeof places === 'number' ? places : 1);
-		const args = self.valpha === 1 ? self.color : [...self.color, this.valpha];
-		return colorString.to[self.model](args);
+		const arguments_ = self.valpha === 1 ? self.color : [...self.color, this.valpha];
+		return colorString.to[self.model](...arguments_);
 	},
 
 	percentString(places) {
 		const self = this.rgb().round(typeof places === 'number' ? places : 1);
-		const args = self.valpha === 1 ? self.color : [...self.color, this.valpha];
-		return colorString.to.rgb.percent(args);
+		const arguments_ = self.valpha === 1 ? self.color : [...self.color, this.valpha];
+		return colorString.to.rgb.percent(...arguments_);
 	},
 
 	array() {
@@ -237,7 +237,7 @@ Color.prototype = {
 			return new Color(value);
 		}
 
-		return colorString.to.hex(this.rgb().round().color);
+		return colorString.to.hex(...this.rgb().round().color);
 	},
 
 	hexa(value) {
@@ -252,7 +252,7 @@ Color.prototype = {
 			alphaHex = '0' + alphaHex;
 		}
 
-		return colorString.to.hex(rgbArray) + alphaHex;
+		return colorString.to.hex(...rgbArray) + alphaHex;
 	},
 
 	rgbNumber() {
@@ -409,23 +409,23 @@ for (const model of Object.keys(convert)) {
 	const {channels} = convert[model];
 
 	// Conversion methods
-	Color.prototype[model] = function (...args) {
+	Color.prototype[model] = function (...arguments_) {
 		if (this.model === model) {
 			return new Color(this);
 		}
 
-		if (args.length > 0) {
-			return new Color(args, model);
+		if (arguments_.length > 0) {
+			return new Color(arguments_, model);
 		}
 
 		return new Color([...assertArray(convert[this.model][model].raw(this.color)), this.valpha], model);
 	};
 
 	// 'static' construction methods
-	Color[model] = function (...args) {
-		let color = args[0];
+	Color[model] = function (...arguments_) {
+		let color = arguments_[0];
 		if (typeof color === 'number') {
-			color = zeroArray(args, channels);
+			color = zeroArray(arguments_, channels);
 		}
 
 		return new Color(color, model);
@@ -446,7 +446,7 @@ function getset(model, channel, modifier) {
 	model = Array.isArray(model) ? model : [model];
 
 	for (const m of model) {
-		(limiters[m] || (limiters[m] = []))[channel] = modifier;
+		(limiters[m] ||= [])[channel] = modifier;
 	}
 
 	model = model[0];
@@ -493,4 +493,4 @@ function zeroArray(array, length) {
 	return array;
 }
 
-module.exports = Color;
+export default Color;

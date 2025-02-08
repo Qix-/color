@@ -2,6 +2,9 @@
   "name": "color",
   "version": "4.2.3",
   "description": "Color conversion and manipulation with CSS string support",
+  "type": "module",
+  "exports": "./index.js",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "keywords": [
     "color",
@@ -17,6 +20,7 @@
   "repository": "Qix-/color",
   "xo": {
     "rules": {
+      "no-bitwise": 0,
       "no-cond-assign": 0,
       "new-cap": 0,
       "unicorn/prefer-module": 0,
@@ -27,21 +31,22 @@
   },
   "files": [
     "LICENSE",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
-    "pretest": "xo",
-    "test": "mocha"
+    "test": "xo && tsd && mocha"
   },
   "engines": {
-    "node": ">=12.5.0"
+    "node": ">=18"
   },
   "dependencies": {
-    "color-convert": "^2.0.1",
-    "color-string": "^1.9.0"
+    "color-convert": "^3.0.1",
+    "color-string": "^2.0.0"
   },
   "devDependencies": {
-    "mocha": "9.0.2",
-    "xo": "0.42.0"
+    "mocha": "11.1.0",
+    "tsd": "0.31.2",
+    "xo": "0.60.0"
   }
 }
