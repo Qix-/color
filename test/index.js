@@ -30,6 +30,106 @@ it('Immutability', () => {
 	ok(c != c.rgb()); // eslint-disable-line eqeqeq
 });
 
+it('Colors to JSON', () => {
+	deepEqual(Color('#0A1E19').rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 1,
+	});
+	deepEqual(Color('rgb(10, 30, 25)').rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 1,
+	});
+	deepEqual(Color('rgba(10, 30, 25, 0.4)').rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 0.4,
+	});
+	deepEqual(Color('rgb(4%, 12%, 10%)').rgb().toJSON(), {
+		color: [10, 31, 26],
+		model: 'rgb',
+		valpha: 1,
+	});
+	deepEqual(Color('rgba(4%, 12%, 10%, 0.4)').rgb().toJSON(), {
+		color: [10, 31, 26],
+		model: 'rgb',
+		valpha: 0.4,
+	});
+	deepEqual(Color('blue').rgb().toJSON(), {
+		color: [0, 0, 255],
+		model: 'rgb',
+		valpha: 1,
+	});
+	deepEqual(Color('hsl(120, 50%, 60%)').hsl().toJSON(), {
+		color: [120, 50, 60],
+		model: 'hsl',
+		valpha: 1,
+	});
+	deepEqual(Color('hsla(120, 50%, 60%, 0.4)').hsl().toJSON(), {
+		color: [120, 50, 60],
+		model: 'hsl',
+		valpha: 0.4,
+	});
+	deepEqual(Color('hwb(120, 50%, 60%)').hwb().toJSON(), {
+		color: [120, 50, 60],
+		model: 'hwb',
+		valpha: 1,
+	});
+	deepEqual(Color('hwb(120, 50%, 60%, 0.4)').hwb().toJSON(), {
+		color: [120, 50, 60],
+		model: 'hwb',
+		valpha: 0.4,
+	});
+
+	deepEqual(Color({
+		r: 10,
+		g: 30,
+		b: 25,
+	}).rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 1,
+	});
+	deepEqual(Color({
+		h: 10,
+		s: 30,
+		l: 25,
+	}).hsl().toJSON(), {
+		color: [10, 30, 25],
+		model: 'hsl',
+		valpha: 1,
+	});
+	deepEqual(Color({
+		h: 10,
+		s: 30,
+		v: 25,
+	}).hsv().toJSON(), {
+		color: [10, 30, 25],
+		model: 'hsv',
+		valpha: 1,
+	});
+	deepEqual(Color({
+		h: 10,
+		w: 30,
+		b: 25,
+	}).hwb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'hwb',
+		valpha: 1,
+	});
+	deepEqual(Color({
+		c: 10,
+		m: 30,
+		y: 25,
+		k: 10,
+	}).cmyk().toJSON(), {
+		color: [10, 30, 25, 10],
+		model: 'cmyk',
+		valpha: 1,
+	});
+});
+
 it('Color() argument', () => {
 	deepEqual(Color('#0A1E19').rgb().object(), {
 		r: 10,
