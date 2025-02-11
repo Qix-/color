@@ -12,13 +12,13 @@ console.log(color.ansi256().object());  // { ansi256: 183, alpha: 0.5 }
 ```
 
 ## Install
-```console
-$ npm install color
+```shell
+npm install color
 ```
 
 ## Usage
 ```js
-const Color = require('color');
+import Color from 'color';
 ```
 
 ### Constructors
@@ -95,17 +95,17 @@ String constructors are handled by [color-string](https://www.npmjs.com/package/
 
 ### Getters
 ```js
-color.hsl();
+color.hsl()
 ```
 Convert a color to a different space (`hsl()`, `cmyk()`, etc.).
 
 ```js
-color.object(); // {r: 255, g: 255, b: 255}
+color.object() // {r: 255, g: 255, b: 255}
 ```
 Get a hash of the color value. Reflects the color's current model (see above).
 
 ```js
-color.rgb().array()  // [255, 255, 255]
+color.rgb().array() // [255, 255, 255]
 ```
 Get an array of the values with `array()`. Reflects the color's current model (see above).
 
@@ -120,31 +120,31 @@ color.hex() // #ffffff
 Get the hex value. (**NOTE:** `.hex()` does not return alpha values; use `.hexa()` for an RGBA representation)
 
 ```js
-color.red()       // 255
+color.red() // 255
 ```
 Get the value for an individual channel.
 
 ### CSS Strings
 ```js
-color.hsl().string()  // 'hsl(320, 50%, 100%)'
+color.hsl().string() // 'hsl(320, 50%, 100%)'
 ```
 
 Calling `.string()` with a number rounds the numbers to that decimal place. It defaults to 1.
 
 ### Luminosity
 ```js
-color.luminosity();  // 0.412
+color.luminosity(); // 0.412
 ```
 The [WCAG luminosity](http://www.w3.org/TR/WCAG20/#relativeluminancedef) of the color. 0 is black, 1 is white.
 
 ```js
-color.contrast(Color("blue"))  // 12
+color.contrast(Color("blue")) // 12
 ```
 The [WCAG contrast ratio](http://www.w3.org/TR/WCAG20/#contrast-ratiodef) to another color, from 1 (same color) to 21 (contrast b/w white and black).
 
 ```js
-color.isLight();  // true
-color.isDark();   // false
+color.isLight()  // true
+color.isDark()   // false
 ```
 Get whether the color is "light" or "dark", useful for deciding text color.
 
@@ -166,7 +166,7 @@ color.grayscale()      // #5CBF54 -> #969696
 color.whiten(0.5)      // hwb(100, 50%, 50%) -> hwb(100, 75%, 50%)
 color.blacken(0.5)     // hwb(100, 50%, 50%) -> hwb(100, 50%, 75%)
 
-color.fade(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 0.4)
+color.fade(0.5)        // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 0.4)
 color.opaquer(0.5)     // rgba(10, 10, 10, 0.8) -> rgba(10, 10, 10, 1.0)
 
 color.rotate(180)      // hsl(60, 20%, 20%) -> hsl(240, 20%, 20%)
