@@ -335,6 +335,58 @@ it('Translations', () => {
 	});
 });
 
+it('Output to string (default rounding to 1)', () => {
+	deepEqual(Color.rgb(10, 30, 25).rgb().string(), 'rgb(10, 30, 25)');
+	deepEqual(Color.rgb(10, 30, 25).hsl().string(), 'hsl(165, 50%, 7.8%)');
+	deepEqual(Color.rgb(10, 30, 25).hwb().string(), 'hwb(165, 3.9%, 88.2%)');
+});
+
+it('Output to string (rounding to 0)', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(0), 'hsl(164, 48%, 8%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(0), 'hwb(164, 4%, 88%)');
+});
+
+it('Output to string (rounding to 1)', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(1), 'hsl(164.5, 48.5%, 8%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(1), 'hwb(164.5, 4.1%, 88.1%)');
+});
+
+it('Output to string (rounding to 2)', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(2), 'hsl(164.5, 48.46%, 7.99%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(2), 'hwb(164.5, 4.12%, 88.14%)');
+});
+
+it('Output to string (rounding to 3)', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(3), 'hsl(164.499, 48.46%, 7.99%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(3), 'hwb(164.499, 4.118%, 88.138%)');
+	deepEqual(Color.hsl(165, 50, 8).hwb().string(3), 'hwb(165, 4%, 88%)'); // No superfluous zeros.
+});
+
+it('Output to string (rgba)', () => {
+	equal(Color.rgb(10, 30, 25, 0.5).toString(), 'rgba(10, 30, 25, 0.5)');
+});
+
+it('Output to string (hsl)', () => {
+	equal(Color.hsl(165, 50, 8).toString(), 'hsl(165, 50%, 8%)');
+});
+
+it('Output to string (hsla)', () => {
+	equal(Color.hsl(165, 50, 8, 0.3).toString(), 'hsla(165, 50%, 8%, 0.3)');
+});
+
+it('Output to string (hwb)', () => {
+	equal(Color.hwb(165, 4, 88).toString(), 'hwb(165, 4%, 88%)');
+});
+
+it('Output to string (hwb with alpha)', () => {
+	equal(Color.hwb(165, 4, 88, 0.7).toString(), 'hwb(165, 4%, 88%, 0.7)');
+});
+
+it('Output to string (toString and string consistency)', () => {
+	const color = Color.rgb(255, 128, 64, 0.8);
+	equal(color.toString(), color.string());
+});
+
 it('Array getters', () => {
 	deepEqual(Color({
 		r: 10,
@@ -787,4 +839,96 @@ it('Should parse alphas in RGBA hex notation correctly', () => {
 		Color('#000000ab').alpha(),
 		Color('#000000aa').alpha(),
 	);
+});
+
+it('Should round to integers with round', () => {
+	deepEqual(Color.rgb(10.7, 30.2, 25.9).round().rgb().object(), {
+		r: 11,
+		g: 30,
+		b: 26,
+	});
+
+	deepEqual(Color.rgb(255.4, 128.6, 0.1).round().rgb().object(), {
+		r: 255,
+		g: 129,
+		b: 0,
+	});
+
+	deepEqual(Color.rgb(10.7, 30.2, 25.9, 0.456).round().rgb().object(), {
+		r: 11,
+		g: 30,
+		b: 26,
+		alpha: 0.456,
+	});
+
+	deepEqual(Color.hsl(164.7, 48.3, 7.8).round().hsl().object(), {
+		h: 165,
+		s: 48,
+		l: 8,
+	});
+
+	deepEqual(Color.hsv(164.7, 48.3, 7.8).round().hsv().object(), {
+		h: 165,
+		s: 48,
+		v: 8,
+	});
+
+	deepEqual(Color.hwb(164.7, 48.3, 7.8).round().hwb().object(), {
+		h: 165,
+		w: 48,
+		b: 8,
+	});
+
+	deepEqual(Color.cmyk(10.7, 30.2, 25.9, 15.4).round().cmyk().object(), {
+		c: 11,
+		m: 30,
+		y: 26,
+		k: 15,
+	});
+});
+
+it('Should round deterministically', () => {
+	const color = Color.rgb(10.7, 30.2, 25.9);
+	const rounded1 = color.round();
+	const rounded2 = color.round();
+	ok(rounded1 !== rounded2);
+	deepEqual(rounded1.rgb().object(), rounded2.rgb().object());
+});
+
+it('Should return arbitrary-precision strings with toFixed (precision 0)', () => {
+	deepEqual(Color.rgb(10.789, 30.234, 25.567).toFixed(0), ['11', '30', '26']);
+});
+
+it('Should return arbitrary-precision strings with toFixed (precision 1, default)', () => {
+	deepEqual(Color.rgb(10.789, 30.234, 25.567).toFixed(1), ['10.8', '30.2', '25.6']);
+
+	// eslint-disable-next-line unicorn/require-number-to-fixed-digits-argument
+	deepEqual(Color.rgb(10.789, 30.234, 25.567).toFixed(), ['10.8', '30.2', '25.6']);
+});
+
+it('Should return arbitrary-precision strings with toFixed (precision 2)', () => {
+	deepEqual(Color.rgb(10.789, 30.234, 25.567).toFixed(2), ['10.79', '30.23', '25.57']);
+});
+
+it('Should return arbitrary-precision strings with toFixed (precision 3)', () => {
+	deepEqual(Color.rgb(10.789, 30.234, 25.567).toFixed(3), ['10.789', '30.234', '25.567']);
+});
+
+it('Should remove trailing zeros when using toFixed', () => {
+	// eslint-disable-next-line unicorn/no-zero-fractions
+	deepEqual(Color.rgb(10.0, 30.100, 25.000).toFixed(2), ['10', '30.1', '25']);
+});
+
+it('Should return arbitrary-precision strings with toFixed regardless of the color model', () => {
+	deepEqual(Color.hsl(164.789, 48.234, 7.567).toFixed(1), ['164.8', '48.2', '7.6']);
+	deepEqual(Color.hsv(164.789, 48.234, 7.567).toFixed(2), ['164.79', '48.23', '7.57']);
+	deepEqual(Color.hwb(164.789, 48.234, 7.567).toFixed(0), ['165', '48', '8']);
+	deepEqual(Color.cmyk(10.789, 30.234, 25.567, 15.123).toFixed(1), ['10.8', '30.2', '25.6', '15.1']);
+});
+
+it('Should not mutate the original color when calling toFixed', () => {
+	const color = Color.rgb(10.789, 30.234, 25.567);
+	const fixed = color.toFixed(2);
+	deepEqual(fixed, ['10.79', '30.23', '25.57']);
+	equal(color.red(), 10.789);
 });
