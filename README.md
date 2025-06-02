@@ -1,3 +1,5 @@
+![NPM Version](https://img.shields.io/npm/v/color)
+
 # color
 
 > JavaScript library for immutable color conversion and manipulation with support for CSS color strings.
