@@ -1,4 +1,4 @@
-![NPM Version](https://img.shields.io/npm/v/color)
+[![NPM Version](https://img.shields.io/npm/v/color)](https://www.npmjs.com/package/color)
 
 # color
 
