@@ -184,8 +184,8 @@ Color.prototype = {
 		return rgb;
 	},
 
-	round(argument1) {
-		if (argument1 !== undefined) {
+	round() {
+		if ((arguments?.length ?? 0) !== 0) {
 			console.warn('Color.round() no longer accepts a precision argument and now rounds to the nearest integer. Consider using Color.toFixed() if you want to retrieve color elements with a precision argument.');
 		}
 
