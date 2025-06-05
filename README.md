@@ -179,5 +179,20 @@ color.mix(Color("yellow"), 0.3)   // cyan -> rgb(77, 255, 179)
 color.green(100).grayscale().lighten(0.6)
 ```
 
+### Color Rounding
+
+Due to the prevalence of floating point errors in JavaScript, options for rounding colors are limited. The library provides three methods for rounding.
+
+```js
+// Rounds all elements to the nearest integer (chainable)
+color.round();              // hsl(100.25, 50.4%, 50%)    -> hsl(100, 50%, 50%)
+
+// Returns the internal color elements rounded with `toFixed`
+color.toFixed(precision);   // hsl(100.25, 50.4%, 50%), 1 -> ['100.3', '50.4', '50']
+
+// Returns a formatted color string rounded to the given precision
+color.toString(precision);  // hsl(100.25, 50.4%, 50%), 1 -> "hsl(100.3, 50.4%, 50%)"
+```
+
 ## Propers
 The API was inspired by [color-js](https://github.com/brehaut/color-js). Manipulation functions by CSS tools like Sass, LESS, and Stylus.
