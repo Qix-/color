@@ -41,8 +41,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "color-convert": "^3.0.1",
-    "color-string": "^2.0.0"
+    "color-convert": "3.1.0",
+    "color-string": "2.1.0"
   },
   "devDependencies": {
     "mocha": "11.1.0",
