@@ -41,7 +41,17 @@ it('Colors to JSON', () => {
 		model: 'rgb',
 		valpha: 1,
 	});
+	deepEqual(Color('rgb(10 30 25)').rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 1,
+	});
 	deepEqual(Color('rgba(10, 30, 25, 0.4)').rgb().toJSON(), {
+		color: [10, 30, 25],
+		model: 'rgb',
+		valpha: 0.4,
+	});
+	deepEqual(Color('rgba(10 30 25 0.4)').rgb().toJSON(), {
 		color: [10, 30, 25],
 		model: 'rgb',
 		valpha: 0.4,
@@ -51,7 +61,17 @@ it('Colors to JSON', () => {
 		model: 'rgb',
 		valpha: 1,
 	});
+	deepEqual(Color('rgb(4% 12% 10%)').rgb().toJSON(), {
+		color: [10, 31, 26],
+		model: 'rgb',
+		valpha: 1,
+	});
 	deepEqual(Color('rgba(4%, 12%, 10%, 0.4)').rgb().toJSON(), {
+		color: [10, 31, 26],
+		model: 'rgb',
+		valpha: 0.4,
+	});
+	deepEqual(Color('rgba(4% 12% 10% 0.4)').rgb().toJSON(), {
 		color: [10, 31, 26],
 		model: 'rgb',
 		valpha: 0.4,
@@ -147,12 +167,24 @@ it('Color() argument', () => {
 		b: 25,
 		alpha: 0.4,
 	});
+	deepEqual(Color('rgba(10 30 25 0.4)').rgb().object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4,
+	});
 	deepEqual(Color('rgb(4%, 12%, 10%)').rgb().object(), {
 		r: 10,
 		g: 31,
 		b: 26,
 	});
 	deepEqual(Color('rgba(4%, 12%, 10%, 0.4)').rgb().object(), {
+		r: 10,
+		g: 31,
+		b: 26,
+		alpha: 0.4,
+	});
+	deepEqual(Color('rgba(4% 12% 10% 0.4)').rgb().object(), {
 		r: 10,
 		g: 31,
 		b: 26,
