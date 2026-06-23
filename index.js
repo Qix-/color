@@ -1,7 +1,7 @@
 import colorString from 'color-string';
 import convert from 'color-convert';
 
-const skippedModels = [
+const skippedModels = new Set([
 	// To be honest, I don't really feel like keyword belongs in color convert, but eh.
 	'keyword',
 
@@ -10,7 +10,7 @@ const skippedModels = [
 
 	// Shouldn't really be in color-convert either...
 	'hex',
-];
+]);
 
 const hashedModelKeys = {};
 for (const model of Object.keys(convert)) {
@@ -24,7 +24,7 @@ function Color(object, model) {
 		return new Color(object, model);
 	}
 
-	if (model && model in skippedModels) {
+	if (model && skippedModels.has(model)) {
 		model = null;
 	}
 
@@ -402,7 +402,7 @@ Color.prototype = {
 
 // Model conversion methods and static constructors
 for (const model of Object.keys(convert)) {
-	if (skippedModels.includes(model)) {
+	if (skippedModels.has(model)) {
 		continue;
 	}
 

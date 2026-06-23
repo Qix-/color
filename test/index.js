@@ -24,6 +24,14 @@ it('Color() instance (undefined)', () => {
 	ok((new Color(undefined)) instanceof Color);
 });
 
+it('Color() with a non-convertible model falls back to rgb', () => {
+	for (const model of ['hex', 'keyword', 'gray']) {
+		const c = Color([128, 128, 128], model);
+		equal(c.model, 'rgb');
+		equal(c.rgb().string(), 'rgb(128, 128, 128)');
+	}
+});
+
 it('Immutability', () => {
 	const c = Color(0xFF0000);
 	ok(c !== c.rgb());
