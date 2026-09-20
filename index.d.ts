@@ -3,6 +3,7 @@ import type convert from 'color-convert';
 export type ColorLike = ColorInstance | string | ArrayLike<number> | number | Record<string, any>;
 export type ColorJson = {model: string; color: number[]; valpha: number};
 export type ColorObject = {alpha?: number | undefined} & Record<string, number>;
+export type ColorSerializeOptions = {keepAlpha?: boolean | undefined};
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface ColorInstance {
@@ -11,10 +12,10 @@ export interface ColorInstance {
 	toJSON(): ColorJson;
 	string(places?: number): string;
 	percentString(places?: number): string;
-	array(): number[];
-	object(): ColorObject;
-	unitArray(): number[];
-	unitObject(): {r: number; g: number; b: number; alpha?: number | undefined};
+	array(options?: ColorSerializeOptions): number[];
+	object(options?: ColorSerializeOptions): ColorObject;
+	unitArray(options?: ColorSerializeOptions): number[];
+	unitObject(options?: ColorSerializeOptions): {r: number; g: number; b: number; alpha?: number | undefined};
 	round(places?: number): ColorInstance;
 	alpha(): number;
 	alpha(value: number): ColorInstance;

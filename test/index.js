@@ -130,6 +130,54 @@ it('Colors to JSON', () => {
 	});
 });
 
+it('object/array keepAlpha option', () => {
+	const opaque = Color.rgb(10, 30, 25);
+	const translucent = Color.rgb(10, 30, 25, 0.4);
+
+	deepEqual(opaque.object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+	});
+	deepEqual(opaque.object({keepAlpha: true}), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 1,
+	});
+	deepEqual(translucent.object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4,
+	});
+	deepEqual(translucent.object({keepAlpha: true}), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4,
+	});
+
+	deepEqual(opaque.array(), [10, 30, 25]);
+	deepEqual(opaque.array({keepAlpha: true}), [10, 30, 25, 1]);
+	deepEqual(translucent.array(), [10, 30, 25, 0.4]);
+	deepEqual(translucent.array({keepAlpha: true}), [10, 30, 25, 0.4]);
+
+	deepEqual(opaque.unitObject(), {
+		r: 10 / 255,
+		g: 30 / 255,
+		b: 25 / 255,
+	});
+	deepEqual(opaque.unitObject({keepAlpha: true}), {
+		r: 10 / 255,
+		g: 30 / 255,
+		b: 25 / 255,
+		alpha: 1,
+	});
+	deepEqual(opaque.unitArray(), [10 / 255, 30 / 255, 25 / 255]);
+	deepEqual(opaque.unitArray({keepAlpha: true}), [10 / 255, 30 / 255, 25 / 255, 1]);
+});
+
 it('Color() argument', () => {
 	deepEqual(Color('#0A1E19').rgb().object(), {
 		r: 10,

@@ -133,46 +133,54 @@ Color.prototype = {
 		return colorString.to.rgb.percent(...arguments_);
 	},
 
-	array() {
-		return this.valpha === 1 ? [...this.color] : [...this.color, this.valpha];
+	array(options) {
+		const keepAlpha = Boolean(options && options.keepAlpha);
+		if (keepAlpha || this.valpha !== 1) {
+			return [...this.color, this.valpha];
+		}
+
+		return [...this.color];
 	},
 
-	object() {
+	object(options) {
 		const result = {};
 		const {channels} = convert[this.model];
 		const {labels} = convert[this.model];
+		const keepAlpha = Boolean(options && options.keepAlpha);
 
 		for (let i = 0; i < channels; i++) {
 			result[labels[i]] = this.color[i];
 		}
 
-		if (this.valpha !== 1) {
+		if (keepAlpha || this.valpha !== 1) {
 			result.alpha = this.valpha;
 		}
 
 		return result;
 	},
 
-	unitArray() {
+	unitArray(options) {
+		const keepAlpha = Boolean(options && options.keepAlpha);
 		const rgb = this.rgb().color;
 		rgb[0] /= 255;
 		rgb[1] /= 255;
 		rgb[2] /= 255;
 
-		if (this.valpha !== 1) {
+		if (keepAlpha || this.valpha !== 1) {
 			rgb.push(this.valpha);
 		}
 
 		return rgb;
 	},
 
-	unitObject() {
-		const rgb = this.rgb().object();
+	unitObject(options) {
+		const keepAlpha = Boolean(options && options.keepAlpha);
+		const rgb = this.rgb().object(options);
 		rgb.r /= 255;
 		rgb.g /= 255;
 		rgb.b /= 255;
 
-		if (this.valpha !== 1) {
+		if (keepAlpha || this.valpha !== 1) {
 			rgb.alpha = this.valpha;
 		}
 
