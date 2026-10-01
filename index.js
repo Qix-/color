@@ -71,9 +71,8 @@ function Color(object, model) {
 	} else {
 		this.valpha = 1;
 
-		const keys = Object.keys(object);
+		const keys = Object.keys(object).filter(key => key !== 'alpha');
 		if ('alpha' in object) {
-			keys.splice(keys.indexOf('alpha'), 1);
 			this.valpha = typeof object.alpha === 'number' ? object.alpha : 0;
 		}
 

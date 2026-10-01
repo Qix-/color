@@ -235,6 +235,26 @@ it('Color() argument', () => {
 	});
 });
 
+it('Object constructor with inherited alpha', () => {
+	const color = Object.assign(Object.create({alpha: 0.4}), {r: 10, g: 30, b: 25});
+	deepEqual(Color(color).object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4,
+	});
+});
+
+it('Object constructor with non-enumerable alpha', () => {
+	const color = Object.defineProperty({r: 10, g: 30, b: 25}, 'alpha', {value: 0.4});
+	deepEqual(Color(color).object(), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 0.4,
+	});
+});
+
 it('Setters', () => {
 	deepEqual(Color.rgb(10, 30, 25).rgb().object(), {
 		r: 10,
