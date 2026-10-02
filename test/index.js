@@ -71,6 +71,11 @@ it('Colors to JSON', () => {
 		model: 'hsl',
 		valpha: 0.4,
 	});
+	deepEqual(Color('hwb(120 50% 60%)').hwb().toJSON(), {
+		color: [120, 50, 60],
+		model: 'hwb',
+		valpha: 1,
+	});
 	deepEqual(Color('hwb(120, 50%, 60%)').hwb().toJSON(), {
 		color: [120, 50, 60],
 		model: 'hwb',
@@ -173,6 +178,11 @@ it('Color() argument', () => {
 		s: 50,
 		l: 60,
 		alpha: 0.4,
+	});
+	deepEqual(Color('hwb(120 50% 60%)').hwb().object(), {
+		h: 120,
+		w: 50,
+		b: 60,
 	});
 	deepEqual(Color('hwb(120, 50%, 60%)').hwb().object(), {
 		h: 120,
