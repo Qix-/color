@@ -315,40 +315,116 @@ Color.prototype = {
 		return rgb;
 	},
 
-	lighten(ratio) {
-		const hsl = this.hsl();
-		hsl.color[2] += hsl.color[2] * ratio;
-		return hsl;
+	lighten(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[0] += lch.color[0] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[0] += oklch.color[0] * ratio;
+			return oklch;
+	}
+		else {
+			const hsl = this.hsl();
+			hsl.color[2] += hsl.color[2] * ratio;
+			return hsl;
+		}
 	},
 
-	darken(ratio) {
-		const hsl = this.hsl();
-		hsl.color[2] -= hsl.color[2] * ratio;
-		return hsl;
+	darken(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[0] -= lch.color[1] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[0] -= oklch.color[1] * ratio;
+			return oklch;
+	}
+		else {
+			const hsl = this.hsl();
+			hsl.color[2] -= hsl.color[2] * ratio;
+			return hsl;
+		}
 	},
 
-	saturate(ratio) {
-		const hsl = this.hsl();
-		hsl.color[1] += hsl.color[1] * ratio;
-		return hsl;
+	saturate(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[1] += lch.color[1] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[1] += oklch.color[1] * ratio;
+			return oklch;
+	}
+		else {
+			const hsl = this.hsl();
+			hsl.color[1] += hsl.color[1] * ratio;
+			return hsl;
+		}
 	},
 
-	desaturate(ratio) {
-		const hsl = this.hsl();
-		hsl.color[1] -= hsl.color[1] * ratio;
-		return hsl;
+	desaturate(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[1] -= lch.color[1] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[1] -= oklch.color[1] * ratio;
+			return oklch;
+	}
+		else {
+			const hsl = this.hsl();
+			hsl.color[1] -= hsl.color[1] * ratio;
+			return hsl;
+		}
 	},
 
-	whiten(ratio) {
-		const hwb = this.hwb();
-		hwb.color[1] += hwb.color[1] * ratio;
-		return hwb;
+	whiten(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[0] += (100 - lch.color[0]) * ratio;
+			lch.color[1] -= lch.color[1] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[0] += (100 - oklch.color[0]) * ratio;
+			oklch.color[1] -= oklch.color[1] * ratio;
+			return oklch;
+	}
+		else {
+			const hwb = this.hwb();
+			hwb.color[1] += hwb.color[1] * ratio;
+			return hwb;
+		}
 	},
 
-	blacken(ratio) {
-		const hwb = this.hwb();
-		hwb.color[2] += hwb.color[2] * ratio;
-		return hwb;
+	blacken(ratio, mode) {
+		if (mode === 'lab' || mode === 'lch') {
+			const lch = this.lch();
+			lch.color[0] -= lch.color[0] * ratio;
+			lch.color[1] -= lch.color[1] * ratio;
+			return lch;
+	}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			oklch.color[0] -= oklch.color[0] * ratio;
+			oklch.color[1] -= oklch.color[1] * ratio;
+			return oklch;
+	}
+		else {
+			const hwb = this.hwb();
+			hwb.color[2] += hwb.color[2] * ratio;
+			return hwb;
+		}
 	},
 
 	grayscale() {
@@ -366,13 +442,31 @@ Color.prototype = {
 		return this.alpha(this.valpha + (this.valpha * ratio));
 	},
 
-	rotate(degrees) {
-		const hsl = this.hsl();
-		let hue = hsl.color[0];
-		hue = (hue + degrees) % 360;
-		hue = hue < 0 ? 360 + hue : hue;
-		hsl.color[0] = hue;
-		return hsl;
+	rotate(degrees, mode) {
+		if (mode === lab || mode === 'lch') {
+			const lch = this.lch();
+			let hue = lch.color[0];
+			hue = (hue + degrees) % 360;
+			hue = hue < 0 ? 360 + hue : hue;
+			lch.color[0] = hue;
+			return lch;
+		}
+		else if (mode === 'oklab' || mode === 'oklch') {
+			const oklch = this.oklch();
+			let hue = oklch.color[0];
+			hue = (hue + degrees) % 360;
+			hue = hue < 0 ? 360 + hue : hue;
+			oklch.color[0] = hue;
+			return oklch;
+		}
+		else {// case for invalid mode selection or no mode specified or mode in hsv and hwb
+			const hsl = this.hsl();
+			let hue = hsl.color[0];
+			hue = (hue + degrees) % 360;
+			hue = hue < 0 ? 360 + hue : hue;
+			hsl.color[0] = hue;
+			return hsl;
+		}
 	},
 
 	mix(mixinColor, weight) {
