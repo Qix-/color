@@ -788,3 +788,44 @@ it('Should parse alphas in RGBA hex notation correctly', () => {
 		Color('#000000aa').alpha(),
 	);
 });
+
+it('toString uses the CSS string getter', () => {
+	equal(Color('red').toString(), 'rgb(255, 0, 0)');
+	equal(Color('rgba(255, 0, 0, 0.5)').toString(), 'rgba(255, 0, 0, 0.5)');
+});
+
+it('unitObject returns 0-1 channels', () => {
+	deepEqual(Color('red').unitObject(), {r: 1, g: 0, b: 0});
+	deepEqual(Color('rgba(255, 0, 0, 0.5)').unitObject(), {
+		r: 1, g: 0, b: 0, alpha: 0.5,
+	});
+});
+
+it('Skipped models in the constructor fall back to string parsing', () => {
+	equal(Color('red', 'keyword').keyword(), 'red');
+	equal(Color('#00FF00', 'hex').hex(), '#00FF00');
+});
+
+it('Unknown model throws', () => {
+	throws(() => new Color([1, 2, 3], 'foo'), /Unknown model: foo/);
+});
+
+it('CSS string setters construct a new Color', () => {
+	equal(Color('blue').keyword('red').keyword(), 'red');
+	equal(Color('blue').hex('#00FF00').hex(), '#00FF00');
+	equal(Color('blue').hexa('#00FF0080').hexa(), '#00FF0080');
+});
+
+it('mix throws for non-Color arguments', () => {
+	throws(() => Color('red').mix(null), /Argument to "mix" was not a Color instance/);
+	throws(() => Color('red').mix({}), /Argument to "mix" was not a Color instance/);
+});
+
+it('Non-number channels are zeroed', () => {
+	deepEqual(Color.rgb([1, 'x', 3]).array(), [1, 0, 3]);
+});
+
+it('Model conversion with arguments constructs in the target model', () => {
+	deepEqual(Color('red').hsl(120, 50, 60).hsl().object(), {h: 120, s: 50, l: 60});
+	equal(Color('red').hsl(120, 50, 60).model, 'hsl');
+});
