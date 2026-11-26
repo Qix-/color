@@ -32,7 +32,8 @@
   "files": [
     "LICENSE",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "polyfill.js"
   ],
   "scripts": {
     "test": "xo && tsd && mocha"
