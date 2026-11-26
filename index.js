@@ -1,3 +1,6 @@
+// Must evaluate before color-string, which calls Object.hasOwn at import time.
+// eslint-disable-next-line import/no-unassigned-import, import/order
+import './polyfill.js';
 import colorString from 'color-string';
 import convert from 'color-convert';
 

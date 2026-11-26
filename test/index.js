@@ -1,6 +1,9 @@
 /* eslint-env node, mocha */
 
 import assert from 'node:assert';
+import {execFileSync} from 'node:child_process';
+import process from 'node:process';
+import {fileURLToPath} from 'node:url';
 import Color from '../index.js';
 
 const {deepEqual} = assert;
@@ -787,4 +790,15 @@ it('Should parse alphas in RGBA hex notation correctly', () => {
 		Color('#000000ab').alpha(),
 		Color('#000000aa').alpha(),
 	);
+});
+
+it('imports on engines that do not define Object.hasOwn', () => {
+	const entry = fileURLToPath(new URL('../index.js', import.meta.url));
+	const script = `delete Object.hasOwn;
+const {default: Color} = await import(${JSON.stringify(entry)});
+if (typeof Object.hasOwn !== 'function') throw new Error('Object.hasOwn missing');
+if (new Color('red').red() !== 255) throw new Error('unexpected red');`;
+	execFileSync(process.execPath, ['--input-type=module', '-e', script], {
+		stdio: 'pipe',
+	});
 });
