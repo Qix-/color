@@ -12,7 +12,7 @@ export interface ColorInstance {
 	string(places?: number): string;
 	percentString(places?: number): string;
 	array(): number[];
-	object(): ColorObject;
+	object(keepAlpha?: boolean): ColorObject;
 	unitArray(): number[];
 	unitObject(): {r: number; g: number; b: number; alpha?: number | undefined};
 	round(places?: number): ColorInstance;

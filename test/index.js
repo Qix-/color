@@ -136,10 +136,22 @@ it('Color() argument', () => {
 		g: 30,
 		b: 25,
 	});
+	deepEqual(Color('#0A1E19').rgb().object(true), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 1,
+	});
 	deepEqual(Color('rgb(10, 30, 25)').rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25,
+	});
+	deepEqual(Color('rgb(10, 30, 25)').rgb().object(true), {
+		r: 10,
+		g: 30,
+		b: 25,
+		alpha: 1,
 	});
 	deepEqual(Color('rgba(10, 30, 25, 0.4)').rgb().object(), {
 		r: 10,

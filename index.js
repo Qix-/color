@@ -137,7 +137,7 @@ Color.prototype = {
 		return this.valpha === 1 ? [...this.color] : [...this.color, this.valpha];
 	},
 
-	object() {
+	object(keepAlpha) {
 		const result = {};
 		const {channels} = convert[this.model];
 		const {labels} = convert[this.model];
@@ -146,7 +146,7 @@ Color.prototype = {
 			result[labels[i]] = this.color[i];
 		}
 
-		if (this.valpha !== 1) {
+		if (this.valpha !== 1 || keepAlpha) {
 			result.alpha = this.valpha;
 		}
 
